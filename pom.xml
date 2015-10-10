@@ -42,6 +42,12 @@
 			<version>1.9.2</version>
 		</dependency>
 	</dependencies>
+	<distributionManagement>
+		<repository>
+			<id>ftp-repository</id>
+			<url>ftp://ftp.sellonall.com/repo</url>
+		</repository>
+	</distributionManagement>
 	<build>
 		<plugins>
 			<plugin>
