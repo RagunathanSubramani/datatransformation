@@ -20,9 +20,9 @@ public class CategoryLookup {
 		}
 	}
 
-	private static void persisitToDB(String countryCode, String categoryId, JSONObject categorySpecificsEbay) {
+	private static BasicDBObject getCategorySpecificsFromDB(String countryCode, String categoryId) {
 		// TODO Auto-generated method stub
-
+		return null;
 	}
 
 	private static JSONObject getCategorySpecificsFromEbay(String countryCode, String categoryId) {
@@ -54,9 +54,19 @@ public class CategoryLookup {
 		return categorySpecifics;
 	}
 
-	private static BasicDBObject getCategorySpecificsFromDB(String countryCode, String categoryId) {
-		// TODO Auto-generated method stub
-		return null;
+	private static void persisitToDB(String countryCode, String categoryId, JSONObject categorySpecificsEbay) {
+		/*BasicDBObject filterField1 = new BasicDBObject("SKU", sku);
+		BasicDBObject filterField2 = new BasicDBObject("userId", userId);
+		BasicDBList and = new BasicDBList();
+		and.add(filterField1);
+		and.add(filterField2);
+
+		BasicDBObject searchQuery = new BasicDBObject();
+		searchQuery.put("$and", and);
+
+		DBCollection table = DbUtilities.getInventoryDBCollection("inventory");
+		BasicDBObject inventory = (BasicDBObject) table.findOne(searchQuery);*/
+
 	}
 
 }

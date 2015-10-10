@@ -77,20 +77,16 @@ public class EBayUtil {
 	}
 
 	private static Map<String, String> getConfig(String apiCallName, String siteId) {
-		@SuppressWarnings("unchecked")
-		Map<String, String> customConfigurationMap = new HashMap();
-		// customConfigurationMap.put("mode", "sandbox");
+		Map<String, String> customConfigurationMap = new HashMap<String, String>();
 
 		customConfigurationMap.put("X-EBAY-API-COMPATIBILITY-LEVEL", "847");
 		customConfigurationMap.put("X-EBAY-API-DEV-NAME", Config.getConfig().getEbayDevName());
-
 		customConfigurationMap.put("X-EBAY-API-APP-NAME", Config.getConfig().getEbayAppName());
-
 		customConfigurationMap.put("X-EBAY-API-CERT-NAME", Config.getConfig().getEbayCertName());
-
 		customConfigurationMap.put("X-EBAY-API-SITEID", siteId);
 		customConfigurationMap.put("X-EBAY-API-CALL-NAME", apiCallName);
 		customConfigurationMap.put("Content-Type", "text/xml");
+
 		return customConfigurationMap;
 	}
 
