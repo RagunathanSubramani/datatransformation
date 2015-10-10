@@ -1,0 +1,43 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="
+            http://www.springframework.org/schema/beans     
+            http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/tx 
+            http://www.springframework.org/schema/tx/spring-tx.xsd
+            http://www.springframework.org/schema/context 
+            http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<bean id="environmentVariablesConfiguration"
+		class="org.jasypt.encryption.pbe.config.EnvironmentStringPBEConfig">
+		<property name="algorithm" value="PBEWithMD5AndDES" />
+		<property name="passwordEnvName" value="APP_ENCRYPTION_PASSWORD" />
+	</bean>
+	<bean id="configurationEncryptor" class="org.jasypt.encryption.pbe.StandardPBEStringEncryptor">
+		<property name="config" ref="environmentVariablesConfiguration" />
+	</bean>
+	<bean id="propertyConfigurer"
+		class="org.jasypt.spring31.properties.EncryptablePropertyPlaceholderConfigurer">
+		<constructor-arg ref="configurationEncryptor" />
+		<property name="location">
+			<value>Config.properties</value>
+		</property>
+	</bean>
+	<bean id="Config" class="com.sellinall.listinglookup.config.Config">
+		<!-- Ebay Values -->
+		<property name="EbayPostURL" value="${EbayPostURL}" />
+		<property name="EbayAppName" value="${EbayAppName}" />
+		<property name="EbayDevName" value="${EbayDevName}" />
+		<property name="EbayCertName" value="${EbayCertName}" />
+
+		<!-- DB Values -->
+		<property name="DbUserName" value="${DbUserName}" />
+		<property name="DbPassword" value="${DbPassword}" />
+		<property name="LookupCollectionHostName" value="${LookupCollectionHostName}" />
+		<property name="LookupCollectionPort" value="${LookupCollectionPort}" />
+		<property name="LookupCollectionDBName" value="${LookupCollectionDBName}" />
+	</bean>
+</beans>
