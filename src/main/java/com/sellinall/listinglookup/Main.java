@@ -1,7 +1,9 @@
 package com.sellinall.listinglookup;
 
 import static spark.Spark.after;
+import static spark.Spark.before;
 import static spark.Spark.get;
+import static spark.Spark.halt;
 import static spark.SparkBase.port;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -25,6 +27,12 @@ public class Main {
 
 		after((request, response) -> {
 			setResponseHeaders(response);
+		});
+
+		before((request, response) -> {
+			if (request.requestMethod().equals("OPTIONS")) {
+				halt(200);
+			}
 		});
 
 	}
