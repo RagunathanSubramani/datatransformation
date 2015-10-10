@@ -31,7 +31,7 @@ public class Main {
 
 		before((request, response) -> {
 			if (request.requestMethod().equals("OPTIONS")) {
-				response.header("Access-Control-Allow-Origin", "*");
+				setResponseHeaders(response);
 				halt(200);
 			}
 		});
