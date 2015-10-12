@@ -21,14 +21,34 @@ public class CategoryLookup {
 			return categorySpecificsDB;
 		} else {
 			JSONObject categorySpecificsEbay = getCategorySpecificsFromEbay(countryCode, categoryId);
-			persisitToDB(countryCode, categoryId, categorySpecificsEbay);
+			persistToDB(countryCode, categoryId, categorySpecificsEbay);
 			return categorySpecificsEbay;
 		}
 	}
 
 	private static BasicDBObject getCategorySpecificsFromDB(String countryCode, String categoryId) {
-		// TODO Auto-generated method stub
-		return null;
+		BasicDBObject filterField1 = new BasicDBObject("countryCode", countryCode);
+		BasicDBObject filterField2 = new BasicDBObject("categoryId", categoryId);
+		BasicDBList and = new BasicDBList();
+		and.add(filterField1);
+		and.add(filterField2);
+
+		BasicDBObject searchQuery = new BasicDBObject();
+		searchQuery.put("$and", and);
+
+		DBCollection table = DbUtilities.getLookupDBCollection("ebayCategoryLookup");
+		BasicDBObject lookupData = (BasicDBObject) table.findOne(searchQuery);
+		BasicDBObject itemSpecifics = null;
+
+		if (lookupData != null) {
+			long expiryTime = lookupData.getLong("expiryTime");
+			long currentTime = (System.currentTimeMillis() / 1000L);
+			if (expiryTime > currentTime) {
+				itemSpecifics = (BasicDBObject) lookupData.get("itemSpecifics");
+			}
+		}
+
+		return itemSpecifics;
 	}
 
 	private static JSONObject getCategorySpecificsFromEbay(String countryCode, String categoryId) {
@@ -60,7 +80,7 @@ public class CategoryLookup {
 		return categorySpecifics;
 	}
 
-	private static void persisitToDB(String countryCode, String categoryId, JSONObject itemSpecifics) {
+	private static void persistToDB(String countryCode, String categoryId, JSONObject itemSpecifics) {
 		BasicDBObject filterField1 = new BasicDBObject("countryCode", countryCode);
 		BasicDBObject filterField2 = new BasicDBObject("categoryId", categoryId);
 		BasicDBList and = new BasicDBList();
