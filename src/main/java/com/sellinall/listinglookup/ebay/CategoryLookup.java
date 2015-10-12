@@ -4,9 +4,15 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.XML;
 
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
+import com.mongodb.util.JSON;
+import com.sellinall.listinglookup.database.DbUtilities;
 
 public class CategoryLookup {
+	private static final long twoDays = 2 * 24 * 60 * 60;
+
 	public static Object getCategorySpecifics(String countryCode, String categoryId) {
 
 		BasicDBObject categorySpecificsDB = getCategorySpecificsFromDB(countryCode, categoryId);
@@ -54,9 +60,9 @@ public class CategoryLookup {
 		return categorySpecifics;
 	}
 
-	private static void persisitToDB(String countryCode, String categoryId, JSONObject categorySpecificsEbay) {
-		/*BasicDBObject filterField1 = new BasicDBObject("SKU", sku);
-		BasicDBObject filterField2 = new BasicDBObject("userId", userId);
+	private static void persisitToDB(String countryCode, String categoryId, JSONObject itemSpecifics) {
+		BasicDBObject filterField1 = new BasicDBObject("countryCode", countryCode);
+		BasicDBObject filterField2 = new BasicDBObject("categoryId", categoryId);
 		BasicDBList and = new BasicDBList();
 		and.add(filterField1);
 		and.add(filterField2);
@@ -64,9 +70,15 @@ public class CategoryLookup {
 		BasicDBObject searchQuery = new BasicDBObject();
 		searchQuery.put("$and", and);
 
-		DBCollection table = DbUtilities.getInventoryDBCollection("inventory");
-		BasicDBObject inventory = (BasicDBObject) table.findOne(searchQuery);*/
+		long expriyTime = (System.currentTimeMillis() / 1000L) + twoDays;
+		BasicDBObject updateData = new BasicDBObject();
+		updateData.put("expiryTime", expriyTime);
+		updateData.put("itemSpecifics", JSON.parse(itemSpecifics.toString()));
 
+		BasicDBObject setObject = new BasicDBObject("$set", updateData);
+
+		DBCollection table = DbUtilities.getLookupDBCollection("ebayCategoryLookup");
+		table.update(searchQuery, setObject, true, false);
 	}
 
 }
