@@ -68,6 +68,39 @@ public class EBayUtil {
 		}
 		return response;
 	}
+	
+	public static String getCategoryFeatures(String countryCode, String categoryId) {
+		String siteId = getSiteId(countryCode);
+		StringBuffer sb = new StringBuffer();
+		String eBayToken = "AgAAAA**AQAAAA**aAAAAA**L2ZaUw**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6wFk4GhC5eBpgidj6x9nY+seQ**1GkCAA**AAMAAA**B4yBM9s30VyWeK4bgDxdveY9i/cYkcY1COXnnodbDa4Xljztk5PYUwUDAf21vmCP6Q4/hY5dPv8zZJWPuqoZIB6u4f9ndYz1+Lq+AtEn32FI/EwuLIvcKT7v4vVv7XiplIrFm/NJLO7LM0UeXiDiIL51WHOaUJNwdxgGfdocN/ZID5sFPpviFXyPfTpr6eJgBqaOEoIVf6c5fBKDOm2UmahYnzGlwySm2UXie5ut7UBjimi2psVZptwwUtwtCi7cDQ9IbdmO3bkMlSQEF1vYrj72oNB7HkYb1pO3uhJZjlRra6gN2ADh366FwoDyrjp0kO7FKezWTX+FRF8L0afkTKKTYMECQJ4p/i5hAJGN3pMkvApa55YWuRnExuwBfipiTNeIjAyFuLf8+1AdEZiQiIWgEOpKHP6c6IN8/OfVyT6jls1aEsDsHl7Gxs6V3NeB5FTBsRduuEH6/i1Hr+7yQuAuy4rCl9SzSGeZpXh9ept/tVhFR4hxYakzzhTQEw/DAz/SUDIqtsyRF2cYFwVKjPMcfPg3NwlSfR23Rpbr7jeXDWvryaP028hOLMvMcAnhXTQqX0GakV5svwUIRTNaTF4MhkJLx/quethIZYaunvo7Pyem2o6ExBZwA1PgxkeORB56RfZwK8jTnm2Le0CPsHaILDfyHDleNxkkfcVW2AsC0LTYgfHxQFzH39RyWc9zOl1zbPiVezRQVVSXUpgOJCI1kS37Ma5RwFUyzOFCAINPesIW2DAsHHxWD2Y0/DlJ";
+		sb.append("<?xml version='1.0' encoding='utf-8'?>");
+		sb.append("<GetCategoryFeaturesRequest xmlns='urn:ebay:apis:eBLBaseComponents'>");
+		sb.append("<DetailLevel>ReturnAll</DetailLevel>");
+		sb.append("<ViewAllNodes>true</ViewAllNodes>");
+		sb.append("<CategoryID>" + categoryId + "</CategoryID>");
+		sb.append("<FeatureID>ConditionEnabled</FeatureID>");
+		sb.append("<FeatureID>ConditionValues</FeatureID>");
+		sb.append("<FeatureID>VariationsEnabled</FeatureID>");
+		sb.append("<FeatureID>ItemSpecificsEnabled</FeatureID>");
+		sb.append("<FeatureID>UPCEnabled</FeatureID>");
+		sb.append("<RequesterCredentials>");
+		sb.append("<eBayAuthToken>" + eBayToken + "</eBayAuthToken>");
+		sb.append("</RequesterCredentials>");
+		sb.append("<ErrorLanguage>en_US</ErrorLanguage>");
+		sb.append("<WarningLevel>High</WarningLevel>");
+		sb.append("</GetCategoryFeaturesRequest>");
+		String urlParameters = sb.toString();
+		String response = new String();
+		try {
+			System.out.println(sb.toString());
+			response = getResponse(urlParameters, "GetCategoryFeatures", siteId);
+			System.out.println(response);
+		} catch (Exception e) {
+
+		}
+		return response;
+	}
+
 
 	private static String getResponse(String urlParameter, String configValue, String siteID) throws Exception {
 		org.codehaus.jettison.json.JSONObject payLoad = new org.codehaus.jettison.json.JSONObject();
