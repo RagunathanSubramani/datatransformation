@@ -19,11 +19,10 @@ public class CategoryLookup {
 
 		if (categorySpecificsDB != null) {
 			return categorySpecificsDB;
-		} else {
-			JSONObject categorySpecificsEbay = getCategorySpecificsFromEbay(countryCode, categoryId);
-			persistToDB(countryCode, categoryId, categorySpecificsEbay);
-			return categorySpecificsEbay;
 		}
+		JSONObject categorySpecificsEbay = getCategorySpecificsFromEbay(countryCode, categoryId);
+		JSONObject categoryFeaturesEbay = getCategoryFeaturesFromEbay(countryCode, categoryId);
+		return persistToDB(countryCode, categoryId, categorySpecificsEbay, categoryFeaturesEbay);
 	}
 
 	private static BasicDBObject getCategorySpecificsFromDB(String countryCode, String categoryId) {
@@ -44,11 +43,10 @@ public class CategoryLookup {
 			long expiryTime = lookupData.getLong("expiryTime");
 			long currentTime = (System.currentTimeMillis() / 1000L);
 			if (expiryTime > currentTime) {
-				itemSpecifics = (BasicDBObject) lookupData.get("itemSpecifics");
+				return itemSpecifics;
 			}
 		}
-
-		return itemSpecifics;
+		return lookupData;
 	}
 
 	private static JSONObject getCategorySpecificsFromEbay(String countryCode, String categoryId) {
@@ -79,8 +77,24 @@ public class CategoryLookup {
 		categorySpecifics.put("NameRecommendation", NameRecommendation);
 		return categorySpecifics;
 	}
+	
+	private static JSONObject getCategoryFeaturesFromEbay(String countryCode, String categoryId) {
+		String categorySpecificsXML = EBayUtil.getCategoryFeatures(countryCode, categoryId);
 
-	private static void persistToDB(String countryCode, String categoryId, JSONObject itemSpecifics) {
+		JSONObject categoryFeaturesFromEbay = XML.toJSONObject(categorySpecificsXML);
+		System.out.println(categoryFeaturesFromEbay);
+		JSONObject GetCategoryFeaturesResponse = categoryFeaturesFromEbay
+				.getJSONObject("GetCategoryFeaturesResponse");
+		JSONObject categoryFeatures = new JSONObject();
+		if (GetCategoryFeaturesResponse.has("Category")) {
+			categoryFeatures = GetCategoryFeaturesResponse.getJSONObject("Category");
+			categoryFeatures.remove("CategoryID");
+		}
+		return categoryFeatures;
+	}
+
+
+	private static BasicDBObject persistToDB(String countryCode, String categoryId, JSONObject itemSpecifics, JSONObject categoryFeatures) {
 		BasicDBObject filterField1 = new BasicDBObject("countryCode", countryCode);
 		BasicDBObject filterField2 = new BasicDBObject("categoryId", categoryId);
 		BasicDBList and = new BasicDBList();
@@ -94,11 +108,12 @@ public class CategoryLookup {
 		BasicDBObject updateData = new BasicDBObject();
 		updateData.put("expiryTime", expriyTime);
 		updateData.put("itemSpecifics", JSON.parse(itemSpecifics.toString()));
+		updateData.put("features", JSON.parse(categoryFeatures.toString()));
 
 		BasicDBObject setObject = new BasicDBObject("$set", updateData);
-
 		DBCollection table = DbUtilities.getLookupDBCollection("ebayCategoryLookup");
 		table.update(searchQuery, setObject, true, false);
+		return updateData;
 	}
 
 }
