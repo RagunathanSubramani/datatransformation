@@ -1,5 +1,8 @@
 package com.sellinall.listinglookup.ebay;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.XML;
@@ -67,6 +70,23 @@ public class CategoryLookup {
 						"NameRecommendation").toString());
 				NameRecommendation = new JSONArray();
 				NameRecommendation.put(NameRecommendationElement);
+			}
+			for (int i = 0 ; i < NameRecommendation.length(); i++) {
+				JSONObject NameRecommendataionObj = NameRecommendation.getJSONObject(i);
+				if ( NameRecommendataionObj.has("ValueRecommendation")) {
+					JSONArray ValueRecommendation = new JSONArray();
+					if (NameRecommendataionObj.get("ValueRecommendation").getClass() == org.json.JSONArray.class) {
+						ValueRecommendation =  NameRecommendataionObj.getJSONArray("ValueRecommendation");
+					} else {
+						ValueRecommendation.put(NameRecommendataionObj.getJSONObject("ValueRecommendation"));
+					}
+					JSONArray valuesOfRecommendation = new JSONArray();
+					for ( int j = 0 ; j < ValueRecommendation.length(); j++) {
+						valuesOfRecommendation.put(ValueRecommendation.getJSONObject(j).getString("Value"));
+					}
+					NameRecommendataionObj.put("valuesOfRecommendation", valuesOfRecommendation);
+					NameRecommendation.put(i, NameRecommendataionObj);
+				}
 			}
 		} else {
 			// create empty array when NameRecommendation is not present in
