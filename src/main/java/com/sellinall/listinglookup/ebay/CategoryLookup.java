@@ -1,8 +1,5 @@
 package com.sellinall.listinglookup.ebay;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.XML;
@@ -14,7 +11,7 @@ import com.mongodb.util.JSON;
 import com.sellinall.listinglookup.database.DbUtilities;
 
 public class CategoryLookup {
-	private static final long twoDays = 2 * 24 * 60 * 60;
+	private static final long thirtyDays = 30 * 24 * 60 * 60;
 
 	public static Object getCategorySpecifics(String countryCode, String categoryId) {
 
@@ -40,14 +37,16 @@ public class CategoryLookup {
 
 		DBCollection table = DbUtilities.getLookupDBCollection("ebayCategoryLookup");
 		BasicDBObject lookupData = (BasicDBObject) table.findOne(searchQuery);
-		BasicDBObject itemSpecifics = null;
-
 		if (lookupData != null) {
 			long expiryTime = lookupData.getLong("expiryTime");
 			long currentTime = (System.currentTimeMillis() / 1000L);
-			if (expiryTime > currentTime) {
-				return itemSpecifics;
+			BasicDBObject categoryData = null;
+			if (currentTime < expiryTime) {
+				categoryData = new BasicDBObject();
+				categoryData.put("itemSpecifics", lookupData.get("itemSpecifics"));
+				categoryData.put("features", lookupData.get("features"));
 			}
+			return categoryData;
 		}
 		return lookupData;
 	}
@@ -71,18 +70,18 @@ public class CategoryLookup {
 				NameRecommendation = new JSONArray();
 				NameRecommendation.put(NameRecommendationElement);
 			}
-			for (int i = 0 ; i < NameRecommendation.length(); i++) {
+			for (int i = 0; i < NameRecommendation.length(); i++) {
 				JSONObject NameRecommendataionObj = NameRecommendation.getJSONObject(i);
-				if ( NameRecommendataionObj.has("ValueRecommendation")) {
+				if (NameRecommendataionObj.has("ValueRecommendation")) {
 					JSONArray ValueRecommendation = new JSONArray();
 					if (NameRecommendataionObj.get("ValueRecommendation").getClass() == org.json.JSONArray.class) {
-						ValueRecommendation =  NameRecommendataionObj.getJSONArray("ValueRecommendation");
+						ValueRecommendation = NameRecommendataionObj.getJSONArray("ValueRecommendation");
 					} else {
 						ValueRecommendation.put(NameRecommendataionObj.getJSONObject("ValueRecommendation"));
 					}
 					JSONArray valuesOfRecommendation = new JSONArray();
-					for ( int j = 0 ; j < ValueRecommendation.length(); j++) {
-						valuesOfRecommendation.put(ValueRecommendation.getJSONObject(j).getString("Value"));
+					for (int j = 0; j < ValueRecommendation.length(); j++) {
+						valuesOfRecommendation.put(ValueRecommendation.getJSONObject(j).get("Value").toString());
 					}
 					NameRecommendataionObj.put("valuesOfRecommendation", valuesOfRecommendation);
 					NameRecommendation.put(i, NameRecommendataionObj);
@@ -97,14 +96,13 @@ public class CategoryLookup {
 		categorySpecifics.put("NameRecommendation", NameRecommendation);
 		return categorySpecifics;
 	}
-	
+
 	private static JSONObject getCategoryFeaturesFromEbay(String countryCode, String categoryId) {
 		String categorySpecificsXML = EBayUtil.getCategoryFeatures(countryCode, categoryId);
 
 		JSONObject categoryFeaturesFromEbay = XML.toJSONObject(categorySpecificsXML);
 		System.out.println(categoryFeaturesFromEbay);
-		JSONObject GetCategoryFeaturesResponse = categoryFeaturesFromEbay
-				.getJSONObject("GetCategoryFeaturesResponse");
+		JSONObject GetCategoryFeaturesResponse = categoryFeaturesFromEbay.getJSONObject("GetCategoryFeaturesResponse");
 		JSONObject categoryFeatures = new JSONObject();
 		if (GetCategoryFeaturesResponse.has("Category")) {
 			categoryFeatures = GetCategoryFeaturesResponse.getJSONObject("Category");
@@ -113,8 +111,8 @@ public class CategoryLookup {
 		return categoryFeatures;
 	}
 
-
-	private static BasicDBObject persistToDB(String countryCode, String categoryId, JSONObject itemSpecifics, JSONObject categoryFeatures) {
+	private static BasicDBObject persistToDB(String countryCode, String categoryId, JSONObject itemSpecifics,
+			JSONObject categoryFeatures) {
 		BasicDBObject filterField1 = new BasicDBObject("countryCode", countryCode);
 		BasicDBObject filterField2 = new BasicDBObject("categoryId", categoryId);
 		BasicDBList and = new BasicDBList();
@@ -124,7 +122,7 @@ public class CategoryLookup {
 		BasicDBObject searchQuery = new BasicDBObject();
 		searchQuery.put("$and", and);
 
-		long expriyTime = (System.currentTimeMillis() / 1000L) + twoDays;
+		long expriyTime = (System.currentTimeMillis() / 1000L) + thirtyDays;
 		BasicDBObject updateData = new BasicDBObject();
 		updateData.put("expiryTime", expriyTime);
 		updateData.put("itemSpecifics", JSON.parse(itemSpecifics.toString()));
@@ -133,6 +131,7 @@ public class CategoryLookup {
 		BasicDBObject setObject = new BasicDBObject("$set", updateData);
 		DBCollection table = DbUtilities.getLookupDBCollection("ebayCategoryLookup");
 		table.update(searchQuery, setObject, true, false);
+		updateData.removeField("expiryTime");
 		return updateData;
 	}
 
