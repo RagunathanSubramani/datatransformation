@@ -12,6 +12,7 @@ import spark.Response;
 
 import com.sellinall.listinglookup.config.Config;
 import com.sellinall.listinglookup.ebay.CategoryLookup;
+import com.sellinall.listinglookup.product.ProductLookup;
 
 public class Main {
 
@@ -23,6 +24,10 @@ public class Main {
 
 		get("/services/ebay/category/:countryCode/:categoryId", (request, response) -> {
 			return CategoryLookup.getCategorySpecifics(request.params(":countryCode"), request.params(":categoryId"));
+		});
+
+		get("/services/product/:searchParam", (request, response) -> {
+			return ProductLookup.getMatchingProduct( request.params(":searchParam"));
 		});
 
 		after((request, response) -> {
