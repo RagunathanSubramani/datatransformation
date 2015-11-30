@@ -28,7 +28,6 @@ public class ProductLookup {
 		/*Need to write code to fetch from amazon
 		 */ 
 		JSONObject product = AmazonProductLookup.getProductFromSite(searchParamType, searchParam);
-		System.out.println(product);
 		return persistToDB( product,searchParamType, searchParam);
 		//return product;
 	}
