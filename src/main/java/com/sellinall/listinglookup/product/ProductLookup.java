@@ -7,6 +7,7 @@ import org.json.XML;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import com.sellinall.listinglookup.amazon.AmazonProductLookup;
 import com.sellinall.listinglookup.amazon.AmazonUtil;
@@ -25,9 +26,11 @@ public class ProductLookup {
 			return matchingProductDB;
 		}
 		/*Need to write code to fetch from amazon
-		 */ JSONObject product = AmazonProductLookup.getProductFromSite(searchParamType, searchParam);
-		//return persistToDB(countryCode, categoryId, categorySpecificsEbay, categoryFeaturesEbay);*/
-		return product;
+		 */ 
+		JSONObject product = AmazonProductLookup.getProductFromSite(searchParamType, searchParam);
+		System.out.println(product);
+		return persistToDB( product,searchParamType, searchParam);
+		//return product;
 	}
 
 	private static String findSearchParamType(String searchParam) {
@@ -37,12 +40,7 @@ public class ProductLookup {
 	}
 
 	private static BasicDBObject getProductFromDB(String searchParamType, String searchParam) {
-		BasicDBObject filterField1 = new BasicDBObject(searchParamType, searchParam);
-		BasicDBList and = new BasicDBList();
-		and.add(filterField1);
-
-		BasicDBObject searchQuery = new BasicDBObject();
-		searchQuery.put("$and", and);
+		BasicDBObject searchQuery = new BasicDBObject(searchParamType, searchParam);
 
 		DBCollection table = DbUtilities.getLookupDBCollection("amazonProductLookup");
 		BasicDBObject lookupData = (BasicDBObject) table.findOne(searchQuery);
@@ -59,27 +57,22 @@ public class ProductLookup {
 
 
 
-	private static BasicDBObject persistToDB(String countryCode, String categoryId, JSONObject itemSpecifics,
-			JSONObject categoryFeatures) {
-		BasicDBObject filterField1 = new BasicDBObject("countryCode", countryCode);
-		BasicDBObject filterField2 = new BasicDBObject("categoryId", categoryId);
-		BasicDBList and = new BasicDBList();
-		and.add(filterField1);
-		and.add(filterField2);
+	private static BasicDBObject persistToDB(JSONObject product, String searchParamType, String searchParam) {
 
-		BasicDBObject searchQuery = new BasicDBObject();
-		searchQuery.put("$and", and);
 
 		long expriyTime = (System.currentTimeMillis() / 1000L) + thirtyDays;
 		BasicDBObject updateData = new BasicDBObject();
+		updateData.putAll( (DBObject)JSON.parse(product.toString()));
 		updateData.put("expiryTime", expriyTime);
-		updateData.put("itemSpecifics", JSON.parse(itemSpecifics.toString()));
-		updateData.put("features", JSON.parse(categoryFeatures.toString()));
 
 		BasicDBObject setObject = new BasicDBObject("$set", updateData);
-		DBCollection table = DbUtilities.getLookupDBCollection("ebayCategoryLookup");
-		table.update(searchQuery, setObject, true, false);
+		DBCollection table = DbUtilities.getLookupDBCollection("amazonProductLookup");
+		BasicDBObject searchQuery = new BasicDBObject();
+		searchQuery.put(searchParamType,searchParam);
+		table.update( searchQuery , setObject, true, false);
+	
 		updateData.removeField("expiryTime");
+		updateData.removeField("_id");
 		return updateData;
 	}
 
