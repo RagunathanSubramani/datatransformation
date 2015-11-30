@@ -62,7 +62,7 @@ public class AmazonProductLookup {
 			//This is no variant route 
 			HashSet<String> jsonImageArray = extractImageSet(amazonItem);
 			System.out.println(jsonImageArray);
-			newJsonObject.append("ImageSet", jsonImageArray);
+			newJsonObject.append("imageSet", jsonImageArray);
 			newJsonObject.append("ASIN", searchParam);
 		}
 
@@ -94,7 +94,7 @@ public class AmazonProductLookup {
 			newJsonObject.append("ASIN",item.getString("ASIN"));
 			
 			JSONObject newItemObject = new JSONObject();
-			newItemObject.put("ImageSet", variantImageSet);
+			newItemObject.put("imageSet", variantImageSet);
 			newItemObject.put("ASIN", item.getString("ASIN"));
 			
 			Object jsonvariantionArrayObject = item.getJSONObject("VariationAttributes").get("VariationAttribute");
@@ -114,9 +114,9 @@ public class AmazonProductLookup {
 				HashSet<String> values = variants.get(variantName);
 				values.add(variantValue);
 			}
-			newJsonObject.append("Item", newItemObject);
+			newJsonObject.append("item", newItemObject);
 		}
-		newJsonObject.put("ImageSet", jsonImageHashSet);
+		newJsonObject.put("imageSet", jsonImageHashSet);
 		
 		insertVariants(newJsonObject, variants);
 	}
