@@ -1,11 +1,17 @@
 package com.sellinall.listinglookup.amazon;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.security.SignatureException;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 import com.mudra.sellinall.util.HttpURLConnectionUtil;
-import com.sellinall.listinglookup.config.Config;
+import com.sellinall.listinglookup.config.AmazonConfig;
 
 public class AmazonUtil {
 
@@ -42,26 +48,10 @@ public class AmazonUtil {
 		return siteIdMap.get(countryCode);
 	}
 
-	public static String getCategorySpecifics(String countryCode, String categoryId) {
-		String siteId = getSiteId(countryCode);
-		StringBuffer sb = new StringBuffer();
-		String eBayToken = "AgAAAA**AQAAAA**aAAAAA**L2ZaUw**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6wFk4GhC5eBpgidj6x9nY+seQ**1GkCAA**AAMAAA**B4yBM9s30VyWeK4bgDxdveY9i/cYkcY1COXnnodbDa4Xljztk5PYUwUDAf21vmCP6Q4/hY5dPv8zZJWPuqoZIB6u4f9ndYz1+Lq+AtEn32FI/EwuLIvcKT7v4vVv7XiplIrFm/NJLO7LM0UeXiDiIL51WHOaUJNwdxgGfdocN/ZID5sFPpviFXyPfTpr6eJgBqaOEoIVf6c5fBKDOm2UmahYnzGlwySm2UXie5ut7UBjimi2psVZptwwUtwtCi7cDQ9IbdmO3bkMlSQEF1vYrj72oNB7HkYb1pO3uhJZjlRra6gN2ADh366FwoDyrjp0kO7FKezWTX+FRF8L0afkTKKTYMECQJ4p/i5hAJGN3pMkvApa55YWuRnExuwBfipiTNeIjAyFuLf8+1AdEZiQiIWgEOpKHP6c6IN8/OfVyT6jls1aEsDsHl7Gxs6V3NeB5FTBsRduuEH6/i1Hr+7yQuAuy4rCl9SzSGeZpXh9ept/tVhFR4hxYakzzhTQEw/DAz/SUDIqtsyRF2cYFwVKjPMcfPg3NwlSfR23Rpbr7jeXDWvryaP028hOLMvMcAnhXTQqX0GakV5svwUIRTNaTF4MhkJLx/quethIZYaunvo7Pyem2o6ExBZwA1PgxkeORB56RfZwK8jTnm2Le0CPsHaILDfyHDleNxkkfcVW2AsC0LTYgfHxQFzH39RyWc9zOl1zbPiVezRQVVSXUpgOJCI1kS37Ma5RwFUyzOFCAINPesIW2DAsHHxWD2Y0/DlJ";
-		sb.append("<?xml version='1.0' encoding='utf-8'?>");
-		sb.append("<GetCategorySpecificsRequest xmlns='urn:ebay:apis:eBLBaseComponents'>");
-		sb.append("<CategorySpecific>");
-		sb.append("<CategoryID>" + categoryId + "</CategoryID>");
-		sb.append("</CategorySpecific>");
-		sb.append("<RequesterCredentials>");
-		sb.append("<eBayAuthToken>" + eBayToken + "</eBayAuthToken>");
-		sb.append("</RequesterCredentials>");
-		sb.append("<ErrorLanguage>en_US</ErrorLanguage>");
-		sb.append("<WarningLevel>High</WarningLevel>");
-		sb.append("</GetCategorySpecificsRequest>");
-		String urlParameters = sb.toString();
+	public static String getProduct(String searchParamType, String searchsearchParam) {
 		String response = new String();
 		try {
-			System.out.println(sb.toString());
-			response = getResponse(urlParameters, "GetCategorySpecifics", siteId);
+			response = getResponse(searchParamType, searchsearchParam);
 			System.out.println(response);
 		} catch (Exception e) {
 
@@ -69,58 +59,66 @@ public class AmazonUtil {
 		return response;
 	}
 	
-	public static String getCategoryFeatures(String countryCode, String categoryId) {
-		String siteId = getSiteId(countryCode);
-		StringBuffer sb = new StringBuffer();
-		String eBayToken = "AgAAAA**AQAAAA**aAAAAA**L2ZaUw**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6wFk4GhC5eBpgidj6x9nY+seQ**1GkCAA**AAMAAA**B4yBM9s30VyWeK4bgDxdveY9i/cYkcY1COXnnodbDa4Xljztk5PYUwUDAf21vmCP6Q4/hY5dPv8zZJWPuqoZIB6u4f9ndYz1+Lq+AtEn32FI/EwuLIvcKT7v4vVv7XiplIrFm/NJLO7LM0UeXiDiIL51WHOaUJNwdxgGfdocN/ZID5sFPpviFXyPfTpr6eJgBqaOEoIVf6c5fBKDOm2UmahYnzGlwySm2UXie5ut7UBjimi2psVZptwwUtwtCi7cDQ9IbdmO3bkMlSQEF1vYrj72oNB7HkYb1pO3uhJZjlRra6gN2ADh366FwoDyrjp0kO7FKezWTX+FRF8L0afkTKKTYMECQJ4p/i5hAJGN3pMkvApa55YWuRnExuwBfipiTNeIjAyFuLf8+1AdEZiQiIWgEOpKHP6c6IN8/OfVyT6jls1aEsDsHl7Gxs6V3NeB5FTBsRduuEH6/i1Hr+7yQuAuy4rCl9SzSGeZpXh9ept/tVhFR4hxYakzzhTQEw/DAz/SUDIqtsyRF2cYFwVKjPMcfPg3NwlSfR23Rpbr7jeXDWvryaP028hOLMvMcAnhXTQqX0GakV5svwUIRTNaTF4MhkJLx/quethIZYaunvo7Pyem2o6ExBZwA1PgxkeORB56RfZwK8jTnm2Le0CPsHaILDfyHDleNxkkfcVW2AsC0LTYgfHxQFzH39RyWc9zOl1zbPiVezRQVVSXUpgOJCI1kS37Ma5RwFUyzOFCAINPesIW2DAsHHxWD2Y0/DlJ";
-		sb.append("<?xml version='1.0' encoding='utf-8'?>");
-		sb.append("<GetCategoryFeaturesRequest xmlns='urn:ebay:apis:eBLBaseComponents'>");
-		sb.append("<DetailLevel>ReturnAll</DetailLevel>");
-		sb.append("<ViewAllNodes>true</ViewAllNodes>");
-		sb.append("<CategoryID>" + categoryId + "</CategoryID>");
-		sb.append("<FeatureID>ConditionEnabled</FeatureID>");
-		sb.append("<FeatureID>ConditionValues</FeatureID>");
-		sb.append("<FeatureID>VariationsEnabled</FeatureID>");
-		sb.append("<FeatureID>ItemSpecificsEnabled</FeatureID>");
-		sb.append("<FeatureID>UPCEnabled</FeatureID>");
-		sb.append("<RequesterCredentials>");
-		sb.append("<eBayAuthToken>" + eBayToken + "</eBayAuthToken>");
-		sb.append("</RequesterCredentials>");
-		sb.append("<ErrorLanguage>en_US</ErrorLanguage>");
-		sb.append("<WarningLevel>High</WarningLevel>");
-		sb.append("</GetCategoryFeaturesRequest>");
-		String urlParameters = sb.toString();
-		String response = new String();
+
+
+
+	private static String getResponse(String saerchParamType, String saerchParam) throws Exception {
+		String queryString = urlEncodeUTF8(getQueryStringwihtURL(saerchParamType,   saerchParam));
+		System.out.println(AmazonConfig.getProductAdvertisingAPIEndPoint("ATVPDKIKX0DER") + "/onca/xml?" 
+				+ queryString);
+		return HttpURLConnectionUtil.doGet( 
+				AmazonConfig.getProductAdvertisingAPIEndPoint("ATVPDKIKX0DER") + "/onca/xml?" 
+						+ queryString);
+	}
+	private static String urlEncodeUTF8(String s) {
+        try {
+            return URLEncoder.encode(s, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new UnsupportedOperationException(e);
+        }
+    }
+    private static String urlEncodeUTF8(Map<?,?> map) {
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<?,?> entry : map.entrySet()) {
+            if (sb.length() > 0) {
+                sb.append("&");
+            }
+            sb.append(String.format("%s=%s",
+                urlEncodeUTF8(entry.getKey().toString()),
+                urlEncodeUTF8(entry.getValue().toString())
+            ));
+        }
+        return sb.toString();       
+    }
+	private static Map<String, String> getQueryStringwihtURL(String saerchParamType, String saerchParam) {
+
+		HashMap<String, String> queryStringMap = new HashMap<String, String>();
+
+		// Read below from property file
+		queryStringMap.put("AWSAccessKeyId", AmazonConfig.getProductAdvertisingAPIAWSAccessKeyId());
+		queryStringMap.put("AssociateTag", AmazonConfig.getProductAdvertisingAPIAssociateTag());
+		queryStringMap.put("ResponseGroup", "Images,VariationSummary,Variations");
+		queryStringMap.put("Timestamp", AmazonUtil.getFormattedTimeInMS());
+		queryStringMap.put("Version", "2011-08-01");
+		queryStringMap.put("Operation", "ItemLookup");
+		queryStringMap.put("Service", "AWSECommerceService");
+		queryStringMap.put("IdType", saerchParamType);
+		queryStringMap.put("ItemId", saerchParam);
+		// Needs to change based on user country of posting
+		String serviceURL = AmazonConfig.getProductAdvertisingAPIEndPoint("ATVPDKIKX0DER") + "/onca/xml";
 		try {
-			System.out.println(sb.toString());
-			response = getResponse(urlParameters, "GetCategoryFeatures", siteId);
-			System.out.println(response);
-		} catch (Exception e) {
-
+			queryStringMap.put("Signature", AmazonSignatureUtil.signProductAdvertisingAPIParameters(queryStringMap,
+					AmazonConfig.getProductAdvertisingAPIAWSSecretKey(), serviceURL));
+		} catch (SignatureException e) {
+			e.printStackTrace();
 		}
-		return response;
+		return queryStringMap;
+
+
 	}
-
-
-	private static String getResponse(String urlParameter, String configValue, String siteID) throws Exception {
-		org.codehaus.jettison.json.JSONObject payLoad = new org.codehaus.jettison.json.JSONObject();
-		payLoad.put("data", urlParameter);
-		return HttpURLConnectionUtil.doPostWithHeader(Config.getConfig().getEbayPostURL(), payLoad,
-				getConfig(configValue, siteID), "xml");
+	public static String getFormattedTimeInMS() {
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.000Z'");
+			df.setTimeZone(TimeZone.getTimeZone("UTC"));
+			return df.format(new Date());
 	}
-
-	private static Map<String, String> getConfig(String apiCallName, String siteId) {
-		Map<String, String> customConfigurationMap = new HashMap<String, String>();
-
-		customConfigurationMap.put("X-EBAY-API-COMPATIBILITY-LEVEL", "847");
-		customConfigurationMap.put("X-EBAY-API-DEV-NAME", Config.getConfig().getEbayDevName());
-		customConfigurationMap.put("X-EBAY-API-APP-NAME", Config.getConfig().getEbayAppName());
-		customConfigurationMap.put("X-EBAY-API-CERT-NAME", Config.getConfig().getEbayCertName());
-		customConfigurationMap.put("X-EBAY-API-SITEID", siteId);
-		customConfigurationMap.put("X-EBAY-API-CALL-NAME", apiCallName);
-		customConfigurationMap.put("Content-Type", "text/xml");
-
-		return customConfigurationMap;
-	}
-
 }
