@@ -126,7 +126,6 @@ public class AmazonSignatureUtil {
                 data.append("&");
             }
         }
-        System.out.println("REMOVE this"+data.toString());
         return data.toString();
     }
     
@@ -176,7 +175,6 @@ public class AmazonSignatureUtil {
                 data.append("&");
             }
         }
-        System.out.println("REMOVE this"+data.toString());
         return data.toString();
     }
     /**

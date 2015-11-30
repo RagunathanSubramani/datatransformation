@@ -34,7 +34,6 @@ public class AmazonProductLookup {
 		String amazonresponseXML = AmazonUtil.getProduct(searchParamType, searchParam);
 		
 		JSONObject amazonProduct = XML.toJSONObject(amazonresponseXML);
-		System.out.println(amazonProduct);
 		JSONObject amazonItems = amazonProduct.getJSONObject("ItemLookupResponse").getJSONObject("Items");
 		JSONObject amazonItem = amazonItems.getJSONObject("Item");
 		JSONObject parentAmazonItems = amazonItems;//initiasing to parent ASIN we will correct to actual asin after validating
@@ -52,7 +51,6 @@ public class AmazonProductLookup {
 			if(!searchParam.equals(parentASIN)){
 				String parentAmazonResponseXML = AmazonUtil.getProduct(searchParamType, parentASIN);
 				JSONObject parentAmazonProduct = XML.toJSONObject(parentAmazonResponseXML);
-				System.out.println(parentAmazonProduct);
 				parentAmazonItems = parentAmazonProduct.getJSONObject("ItemLookupResponse").getJSONObject("Items");
 				parentAmazonItem = parentAmazonItems.getJSONObject("Item");
 				

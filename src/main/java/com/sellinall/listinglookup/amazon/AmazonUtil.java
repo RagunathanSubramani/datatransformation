@@ -52,7 +52,6 @@ public class AmazonUtil {
 		String response = new String();
 		try {
 			response = getResponse(searchParamType, searchsearchParam);
-			System.out.println(response);
 		} catch (Exception e) {
 
 		}
