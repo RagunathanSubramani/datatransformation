@@ -47,6 +47,8 @@ public class ProductLookup {
 			long expiryTime = lookupData.getLong("expiryTime");
 			long currentTime = (System.currentTimeMillis() / 1000L);
 			if (currentTime < expiryTime) {
+				lookupData.removeField("expiryTime");
+				lookupData.removeField("_id");
 				return lookupData;
 			}
 			return null;//Since the time is expired
