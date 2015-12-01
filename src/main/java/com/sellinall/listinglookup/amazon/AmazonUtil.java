@@ -61,8 +61,8 @@ public class AmazonUtil {
 
 
 
-	private static String getResponse(String saerchParamType, String saerchParam) throws Exception {
-		String queryString = urlEncodeUTF8(getQueryStringwihtURL(saerchParamType,   saerchParam));
+	private static String getResponse(String searchParamTypeType, String searchParamType) throws Exception {
+		String queryString = urlEncodeUTF8(getQueryStringwihtURL(searchParamTypeType,   searchParamType));
 		System.out.println(AmazonConfig.getProductAdvertisingAPIEndPoint("ATVPDKIKX0DER") + "/onca/xml?" 
 				+ queryString);
 		return HttpURLConnectionUtil.doGet( 
@@ -89,7 +89,7 @@ public class AmazonUtil {
         }
         return sb.toString();       
     }
-	private static Map<String, String> getQueryStringwihtURL(String saerchParamType, String saerchParam) {
+	private static Map<String, String> getQueryStringwihtURL(String searchParamTypeType, String searchParamType) {
 
 		HashMap<String, String> queryStringMap = new HashMap<String, String>();
 
@@ -100,10 +100,12 @@ public class AmazonUtil {
 		queryStringMap.put("Timestamp", AmazonUtil.getFormattedTimeInMS());
 		queryStringMap.put("Version", "2011-08-01");
 		queryStringMap.put("Operation", "ItemLookup");
+		if(!searchParamTypeType.equals("ASIN")){
+		queryStringMap.put("SearchIndex","All");}
 		queryStringMap.put("Service", "AWSECommerceService");
 		queryStringMap.put("Condition", "All");
-		queryStringMap.put("IdType", saerchParamType);
-		queryStringMap.put("ItemId", saerchParam);
+		queryStringMap.put("IdType", searchParamTypeType);
+		queryStringMap.put("ItemId", searchParamType);
 		// Needs to change based on user country of posting
 		String serviceURL = AmazonConfig.getProductAdvertisingAPIEndPoint("ATVPDKIKX0DER") + "/onca/xml";
 		try {
