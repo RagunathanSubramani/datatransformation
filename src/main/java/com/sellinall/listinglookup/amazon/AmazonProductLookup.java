@@ -32,11 +32,17 @@ public class AmazonProductLookup {
 	public static JSONObject getProductFromSite(String searchParamType, String searchParam) {
 		JSONObject newJsonObject = new JSONObject();
 		String amazonresponseXML = AmazonUtil.getProduct(searchParamType, searchParam);
-		
+
 		JSONObject amazonProduct = XML.toJSONObject(amazonresponseXML);
 		JSONObject amazonItems = amazonProduct.getJSONObject("ItemLookupResponse").getJSONObject("Items");
+		if (!searchParamType.equals("ASIN")){
+			JSONArray amazonUPCItemArray = makeArray(amazonItems.get("Item"));
+			JSONObject amazonUPCItem = (JSONObject)amazonUPCItemArray.get(0);
+			String tempASIN = amazonUPCItem.getString("ASIN");
+			return getProductFromSite("ASIN",tempASIN);
+		}		
 		JSONObject amazonItem = amazonItems.getJSONObject("Item");
-		JSONObject parentAmazonItems = amazonItems;//initiasing to parent ASIN we will correct to actual asin after validating
+		JSONObject parentAmazonItems = amazonItems;//initializing to parent ASIN we will correct to actual asin after validating
 		JSONObject parentAmazonItem = amazonItem;
 		if (amazonItems.has("Errors")) {
 		
@@ -55,19 +61,31 @@ public class AmazonProductLookup {
 				parentAmazonItem = parentAmazonItems.getJSONObject("Item");
 				
 			}
-			JSONObject variationsObject = parentAmazonItem.getJSONObject("Variations");
-			appendChild(variationsObject,newJsonObject);
-			newJsonObject.put("parentASIN", parentASIN);
+			if(parentAmazonItem.has("Variations")){
+				JSONObject variationsObject = parentAmazonItem.getJSONObject("Variations");
+				appendChild(variationsObject,newJsonObject);
+				newJsonObject.put("parentASIN", parentASIN);
+			}else{
+				//This is a temporary fix
+				populateNormalRecord(searchParam, newJsonObject, amazonItem);
+			}
 		}else{
 			//This is no variant route 
-			HashSet<String> jsonImageArray = extractImageSet(amazonItem);
-			System.out.println(jsonImageArray);
-			newJsonObject.append("imageSet", jsonImageArray);
-			newJsonObject.append("ASIN", searchParam);
+			populateNormalRecord(searchParam, newJsonObject, amazonItem);
 		}
 
 		return newJsonObject;
 	
+	}
+
+
+
+	private static void populateNormalRecord(String searchParam,
+			JSONObject newJsonObject, JSONObject amazonItem) {
+		HashSet<String> jsonImageArray = extractImageSet(amazonItem);
+		System.out.println(jsonImageArray);
+		newJsonObject.append("imageSet", jsonImageArray);
+		newJsonObject.append("ASIN", searchParam);
 	}
 
 	private static void appendChild(JSONObject variationsObject,
