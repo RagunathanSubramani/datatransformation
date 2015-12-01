@@ -35,7 +35,16 @@ public class ProductLookup {
 	private static String findSearchParamType(String searchParam) {
 		// TODO Auto-generated method stub
 		//Need to write code to find whether it is ASIN or UPC or EAN
-		return "ASIN";
+		int length = searchParam.length();
+		if (length == 12){
+			return "UPC";
+		}else if(length == 13){
+			return "EAN";
+		}else{
+			return "ASIN";
+		}
+
+
 	}
 
 	private static BasicDBObject getProductFromDB(String searchParamType, String searchParam) {
