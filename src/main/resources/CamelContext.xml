@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:cxf="http://camel.apache.org/schema/cxf" xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd
+       http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+       ">
+	<bean id="myPrint"
+		class="com.mudra.sellinall.inventorymgmt.processor.LoggingProcessor" />
+	<bean id="initializeOrderMessage" class="com.sellinall.order.init.InitializeOrderMessage" />
+
+	<bean id="constructPullInventoryMessage"
+		class="com.sellinall.inventory.message.ConstructPullInventoryMessage" />
+
+	<bean id="updatePullInventoryStatus" class="com.sellinall.inventory.db.UpdatePullInventoryStatus" />
+	<bean id="loadUnlinkedInventory" class="com.sellinall.inventory.db.LoadUnlinkedInventory" />
+	<bean id="insertInventory" class="com.sellinall.inventory.db.InsertInventory" />
+	<bean id="processInsertInventoryResponse"
+		class="com.sellinall.inventory.db.ProcessInsertInventoryResponse" />
+	<bean id="updateInventory" class="com.sellinall.inventory.db.UpdateInventory" />
+	<bean id="updateUnlinkedInventory" class="com.sellinall.inventory.db.UpdateUnlinkedInventory" />
+
+	<bean id="setSuccessResponse" class="com.sellinall.inventory.response.SetSuccessResponse" />
+	<bean id="setFailureResponse" class="com.sellinall.inventory.response.SetFailureResponse" />
+
+	<bean id="initializeLinkToInventoryRoute"
+		class="com.sellinall.inventory.init.InitializeLinkToInventoryRoute" />
+
+	<bean id="environmentVariablesConfiguration"
+		class="org.jasypt.encryption.pbe.config.EnvironmentStringPBEConfig">
+		<property name="algorithm" value="PBEWithMD5AndDES" />
+		<property name="passwordEnvName" value="APP_ENCRYPTION_PASSWORD" />
+	</bean>
+	<bean id="configurationEncryptor" class="org.jasypt.encryption.pbe.StandardPBEStringEncryptor">
+		<property name="config" ref="environmentVariablesConfiguration" />
+	</bean>
+	<bean
+		class="org.jasypt.spring31.properties.EncryptablePropertyPlaceholderConfigurer">
+		<constructor-arg ref="configurationEncryptor" />
+		<property name="locations">
+			<value>classpath:config.properties</value>
+		</property>
+	</bean>
+	<bean id="properties"
+		class="org.apache.camel.component.properties.PropertiesComponent">
+		<property name="location" value="classpath:config.properties" />
+	</bean>
+
+	<!-- Rabbit mq bean for PartnerNotifMessageServ -->
+	<bean id="txPartnerNotifFactory" class="com.rabbitmq.client.ConnectionFactory">
+		<property name="host" value="${partnerNotif.host}" />
+		<property name="port" value="${partnerNotif.tx.port}" />
+		<property name="username" value="${partnerNotif.username}" />
+		<property name="password" value="${partnerNotif.password}" />
+		<property name="virtualHost" value="${partnerNotif.virtualHost}" />
+	</bean>
+
+	<bean id="sellinallTxConnectionFactory" class="com.rabbitmq.client.ConnectionFactory">
+		<property name="host" value="${sellinallmq.host}" />
+		<property name="port" value="${sellinallmq.tx.port}" />
+		<property name="username" value="${sellinallmq.username}" />
+		<property name="password" value="${sellinallmq.password}" />
+		<property name="virtualHost" value="${sellinallmq.virtualHost}" />
+	</bean>
+
+	<bean id="ebayTxConnectionFactory" class="com.rabbitmq.client.ConnectionFactory">
+		<property name="host" value="${ebaymq.host}" />
+		<property name="port" value="${ebaymq.tx.port}" />
+		<property name="username" value="${ebaymq.username}" />
+		<property name="password" value="${ebaymq.password}" />
+		<property name="virtualHost" value="${ebaymq.virtualHost}" />
+	</bean>
+
+	<bean id="amazonTxConnectionFactory" class="com.rabbitmq.client.ConnectionFactory">
+		<property name="host" value="${amazonmq.host}" />
+		<property name="port" value="${amazonmq.tx.port}" />
+		<property name="username" value="${amazonmq.username}" />
+		<property name="password" value="${amazonmq.password}" />
+		<property name="virtualHost" value="${amazonmq.virtualHost}" />
+	</bean>
+	
+	<!-- mongo db bean -->
+	<bean id="mongoInventoryBean" class="com.mongodb.Mongo">
+		<constructor-arg index="0">
+			<bean class="com.mongodb.MongoURI">
+				<constructor-arg index="0" value="${mongo.inventory.uri}" />
+			</bean>
+		</constructor-arg>
+	</bean>
+
+	<!-- The camel route context -->
+	<camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
+		<route id="publishOrder">
+			<from uri="direct:publishOrder" />
+			<process ref="initializeOrderMessage" />
+			<setHeader headerName="rabbitmq.DELIVERY_MODE">
+				<constant>2</constant>
+			</setHeader>
+			<when>
+				<simple>${header.sellinall} == true</simple>
+				<setHeader headerName="rabbitmq.ROUTING_KEY">
+					<constant>sellinallListingKey</constant>
+				</setHeader>
+				<convertBodyTo type="java.lang.String" />
+				<to
+					uri="rabbitmq://{{sellinallmq.host}}:{{sellinallmq.tx.port}}/sellinallListingExchange?connectionFactory=#sellinallTxConnectionFactory&amp;exchangeType=topic&amp;autoDelete=false&amp;durable=true&amp;declare=false"
+					pattern="InOut" />
+			</when>
+			<when>
+				<simple>${header.eBay} == true</simple>
+				<setHeader headerName="rabbitmq.ROUTING_KEY">
+					<constant>ebaylistingkey</constant>
+				</setHeader>
+				<convertBodyTo type="java.lang.String" />
+				<to
+					uri="rabbitmq://{{ebaymq.host}}:{{ebaymq.tx.port}}/ebaylistingexchange?connectionFactory=#ebayTxConnectionFactory&amp;exchangeType=topic&amp;autoDelete=false&amp;durable=true&amp;declare=false"
+					pattern="InOut" />
+			</when>			
+			<when>
+				<simple>${header.site} == "amazon"</simple>
+				<setHeader headerName="rabbitmq.ROUTING_KEY">
+					<constant>amazonlistingkey</constant>
+				</setHeader>
+				<convertBodyTo type="java.lang.String" />
+				<to
+					uri="rabbitmq://{{amazonmq.host}}:{{amazonmq.tx.port}}/amazonlistingexchange?connectionFactory=#amazonTxConnectionFactory&amp;exchangeType=topic&amp;autoDelete=false&amp;durable=true&amp;declare=false"
+					pattern="InOut" />
+			</when>
+		</route>
+
+		<route id="publishPullInventoryMessage">
+			<from uri="direct:publishPullInventoryMessage" />
+			<process ref="updatePullInventoryStatus" />
+			<process ref="constructPullInventoryMessage" />
+			<setHeader headerName="rabbitmq.DELIVERY_MODE">
+				<constant>2</constant>
+			</setHeader>
+			<when>
+				<simple>${header.site} == "eBay"</simple>
+				<setHeader headerName="rabbitmq.ROUTING_KEY">
+					<constant>ebaylistingkey</constant>
+				</setHeader>
+				<convertBodyTo type="java.lang.String" />
+				<to
+					uri="rabbitmq://{{ebaymq.host}}:{{ebaymq.tx.port}}/ebaylistingexchange?connectionFactory=#ebayTxConnectionFactory&amp;exchangeType=topic&amp;autoDelete=false&amp;durable=true&amp;declare=false"
+					pattern="InOut" />
+			</when>
+		</route>
+
+		<route id="linkToInventory">
+			<from uri="direct:linkToInventory" />
+			<process ref="initializeLinkToInventoryRoute" />
+			<process ref="loadUnlinkedInventory" />
+			<to
+				uri="mongodb:mongoInventoryBean?database={{mongo.inventory.database}}&amp;collection=unlinkedInventory&amp;operation=findAll" />
+			<choice>
+				<when>
+					<simple>${exchangeProperty.isNew} == true</simple>
+					<process ref="insertInventory" />
+					<to
+						uri="mongodb:mongoInventoryBean?database={{mongo.inventory.database}}&amp;collection=inventory&amp;operation=insert" />
+					<process ref="processInsertInventoryResponse" />
+				</when>
+				<otherwise>
+					<process ref="updateInventory" />
+				</otherwise>
+			</choice>
+			<choice>
+				<when>
+					<simple>${exchangeProperty.dbUpdateSuccess} == true</simple>
+					<split parallelProcessing="true">
+						<simple>${exchangeProperty.unlinkedSKUList}</simple>
+						<process ref="updateUnlinkedInventory" />
+						<to
+							uri="mongodb:mongoInventoryBean?database={{mongo.inventory.database}}&amp;collection=unlinkedInventory&amp;operation=update" />
+					</split>
+					<process ref="setSuccessResponse" />
+				</when>
+				<otherwise>
+					<process ref="setFailureResponse" />
+				</otherwise>
+			</choice>
+		</route>
+	</camelContext>
+</beans>
