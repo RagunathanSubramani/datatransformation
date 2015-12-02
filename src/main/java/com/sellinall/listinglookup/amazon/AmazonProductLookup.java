@@ -84,7 +84,7 @@ public class AmazonProductLookup {
 			JSONObject newJsonObject, JSONObject amazonItem) {
 		HashSet<String> jsonImageArray = extractImageSet(amazonItem);
 		System.out.println(jsonImageArray);
-		newJsonObject.append("imageSet", jsonImageArray);
+		newJsonObject.put("imageSet", jsonImageArray);
 		newJsonObject.append("ASIN", searchParam);
 	}
 
