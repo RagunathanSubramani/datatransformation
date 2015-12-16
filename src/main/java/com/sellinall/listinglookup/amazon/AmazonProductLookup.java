@@ -85,6 +85,7 @@ public class AmazonProductLookup {
 		HashSet<String> jsonImageArray = extractImageSet(amazonItem);
 		System.out.println(jsonImageArray);
 		newJsonObject.put("imageSet", jsonImageArray);
+		extractTitleAndDescription(newJsonObject, amazonItem); 
 		newJsonObject.append("ASIN", searchParam);
 	}
 
@@ -110,6 +111,7 @@ public class AmazonProductLookup {
 			HashSet<String> variantImageSet = extractImageSet(item);
 			jsonImageHashSet.addAll(variantImageSet);
 			newJsonObject.append("ASIN",item.getString("ASIN"));
+			extractTitleAndDescription(newJsonObject,item);
 			
 			JSONObject newItemObject = new JSONObject();
 			newItemObject.put("imageSet", variantImageSet);
@@ -175,6 +177,17 @@ public class AmazonProductLookup {
 		return extractedImages;
 	}
 
+	//Get title and item description
+	private static JSONObject extractTitleAndDescription(JSONObject newJsonObject, JSONObject amazonItem) {
+		// TODO Auto-generated method stub
+		String description = amazonItem.getJSONObject("ItemAttributes").getString("Title");
+		String title = amazonItem.getJSONObject("EditorialReviews").getJSONObject("EditorialReview").getString("Content");
+		JSONObject titleAndDescription = new JSONObject();
+		titleAndDescription.put("itemTitle", title);
+		titleAndDescription.put("itemDescription", description);
+		return titleAndDescription ;
+	}
+	
 
 
 	private static BasicDBObject persistToDB(String countryCode, String categoryId, JSONObject itemSpecifics,

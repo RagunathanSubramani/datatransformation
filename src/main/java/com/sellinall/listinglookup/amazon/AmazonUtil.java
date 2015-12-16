@@ -96,7 +96,7 @@ public class AmazonUtil {
 		// Read below from property file
 		queryStringMap.put("AWSAccessKeyId", AmazonConfig.getProductAdvertisingAPIAWSAccessKeyId());
 		queryStringMap.put("AssociateTag", AmazonConfig.getProductAdvertisingAPIAssociateTag());
-		queryStringMap.put("ResponseGroup", "Images,ItemAttributes,VariationMatrix,VariationSummary,Variations");
+		queryStringMap.put("ResponseGroup", "EditorialReviews,Images,ItemAttributes,VariationMatrix,VariationSummary,Variations,");
 		queryStringMap.put("Timestamp", AmazonUtil.getFormattedTimeInMS());
 		queryStringMap.put("Version", "2011-08-01");
 		queryStringMap.put("Operation", "ItemLookup");
