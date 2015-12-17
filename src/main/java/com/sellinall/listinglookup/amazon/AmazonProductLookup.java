@@ -32,7 +32,6 @@ public class AmazonProductLookup {
 	public static JSONObject getProductFromSite(String searchParamType, String searchParam) {
 		JSONObject newJsonObject = new JSONObject();
 		String amazonresponseXML = AmazonUtil.getProduct(searchParamType, searchParam);
-
 		JSONObject amazonProduct = XML.toJSONObject(amazonresponseXML);
 		JSONObject amazonItems = amazonProduct.getJSONObject("ItemLookupResponse").getJSONObject("Items");
 		if (!searchParamType.equals("ASIN")){
@@ -40,17 +39,17 @@ public class AmazonProductLookup {
 			JSONObject amazonUPCItem = (JSONObject)amazonUPCItemArray.get(0);
 			String tempASIN = amazonUPCItem.getString("ASIN");
 			return getProductFromSite("ASIN",tempASIN);
-		}		
-		JSONObject amazonItem = amazonItems.getJSONObject("Item");
-		JSONObject parentAmazonItems = amazonItems;//initializing to parent ASIN we will correct to actual asin after validating
-		JSONObject parentAmazonItem = amazonItem;
+		}
 		if (amazonItems.has("Errors")) {
 		
 			// create empty array when NameRecommendation is not present in
-			// the response from eBay.
+			// the response from Amazon.
 			
 			return amazonItems.getJSONObject("Errors");
 		}
+		JSONObject amazonItem = amazonItems.getJSONObject("Item");
+		JSONObject parentAmazonItems = amazonItems;//initializing to parent ASIN we will correct to actual asin after validating
+		JSONObject parentAmazonItem = amazonItem;
 		if(amazonItem.has("ParentASIN")){//This is parent ASIN route
 			//Check if ASIN passed is child ASIN else get the Parent obj
 			String parentASIN = amazonItem.getString("ParentASIN");
@@ -82,8 +81,8 @@ public class AmazonProductLookup {
 
 	private static void populateNormalRecord(String searchParam,
 			JSONObject newJsonObject, JSONObject amazonItem) {
+		extractTitleAndDescription(newJsonObject, amazonItem); 
 		HashSet<String> jsonImageArray = extractImageSet(amazonItem);
-		System.out.println(jsonImageArray);
 		newJsonObject.put("imageSet", jsonImageArray);
 		newJsonObject.append("ASIN", searchParam);
 	}
@@ -103,7 +102,6 @@ public class AmazonProductLookup {
 		
 		Object variantionitemArrayObject = variationsObject.get("Item");
 		JSONArray variantionitemArray = makeArray(variantionitemArrayObject);
-		JSONObject newVariationObject = new JSONObject();
 		for(int i = 0;i<variantionitemArray.length();i++){
 			JSONObject item = (JSONObject) variantionitemArray.get(i);
 			//newJsonObject.append("ImageSet", jsonImageArray);
@@ -114,6 +112,7 @@ public class AmazonProductLookup {
 			JSONObject newItemObject = new JSONObject();
 			newItemObject.put("imageSet", variantImageSet);
 			newItemObject.put("ASIN", item.getString("ASIN"));
+			extractTitleAndDescription(newItemObject,item);
 			
 			Object jsonvariantionArrayObject = item.getJSONObject("VariationAttributes").get("VariationAttribute");
 			JSONArray jsonvariantionArray = makeArray(jsonvariantionArrayObject);
@@ -175,6 +174,15 @@ public class AmazonProductLookup {
 		return extractedImages;
 	}
 
+	//Get title and item description
+	private static void extractTitleAndDescription(JSONObject newJsonObject, JSONObject amazonItem) {
+		// TODO Auto-generated method stub
+		String description = amazonItem.getJSONObject("ItemAttributes").getString("Title");
+		String title = amazonItem.getJSONObject("EditorialReviews").getJSONObject("EditorialReview").getString("Content");
+		newJsonObject.put("itemTitle", title);
+		newJsonObject.put("itemDescription", description);
+	}
+	
 
 
 	private static BasicDBObject persistToDB(String countryCode, String categoryId, JSONObject itemSpecifics,
