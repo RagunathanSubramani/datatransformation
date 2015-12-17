@@ -40,12 +40,12 @@ public class AmazonProductLookup {
 			String tempASIN = amazonUPCItem.getString("ASIN");
 			return getProductFromSite("ASIN",tempASIN);
 		}
-		if (amazonItems.has("Errors")) {
+		if (amazonItems.getJSONObject("Request").has("Errors")) {
 		
 			// create empty array when NameRecommendation is not present in
 			// the response from Amazon.
 			
-			return amazonItems.getJSONObject("Errors");
+			return amazonItems.getJSONObject("Request").getJSONObject("Errors");
 		}
 		JSONObject amazonItem = amazonItems.getJSONObject("Item");
 		JSONObject parentAmazonItems = amazonItems;//initializing to parent ASIN we will correct to actual asin after validating
