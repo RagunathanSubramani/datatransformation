@@ -60,6 +60,8 @@ public class AmazonProductLookup {
 				parentAmazonItem = parentAmazonItems.getJSONObject("Item");
 				
 			}
+			extractTitleAndDescription(newJsonObject, parentAmazonItem);
+
 			if(parentAmazonItem.has("Variations")){
 				JSONObject variationsObject = parentAmazonItem.getJSONObject("Variations");
 				appendChild(variationsObject,newJsonObject);
@@ -70,6 +72,7 @@ public class AmazonProductLookup {
 			}
 		}else{
 			//This is no variant route 
+			extractTitleAndDescription(newJsonObject, amazonItem);
 			populateNormalRecord(searchParam, newJsonObject, amazonItem);
 		}
 
@@ -81,7 +84,6 @@ public class AmazonProductLookup {
 
 	private static void populateNormalRecord(String searchParam,
 			JSONObject newJsonObject, JSONObject amazonItem) {
-		extractTitleAndDescription(newJsonObject, amazonItem); 
 		HashSet<String> jsonImageArray = extractImageSet(amazonItem);
 		newJsonObject.put("imageSet", jsonImageArray);
 		newJsonObject.append("ASIN", searchParam);
@@ -112,7 +114,6 @@ public class AmazonProductLookup {
 			JSONObject newItemObject = new JSONObject();
 			newItemObject.put("imageSet", variantImageSet);
 			newItemObject.put("ASIN", item.getString("ASIN"));
-			extractTitleAndDescription(newItemObject,item);
 			
 			Object jsonvariantionArrayObject = item.getJSONObject("VariationAttributes").get("VariationAttribute");
 			JSONArray jsonvariantionArray = makeArray(jsonvariantionArrayObject);
@@ -177,10 +178,12 @@ public class AmazonProductLookup {
 	//Get title and item description
 	private static void extractTitleAndDescription(JSONObject newJsonObject, JSONObject amazonItem) {
 		// TODO Auto-generated method stub
-		String description = amazonItem.getJSONObject("ItemAttributes").getString("Title");
-		String title = amazonItem.getJSONObject("EditorialReviews").getJSONObject("EditorialReview").getString("Content");
+		String title  = amazonItem.getJSONObject("ItemAttributes").getString("Title");
+		if(amazonItem.has("EditorialReviews")){
+			String description = amazonItem.getJSONObject("EditorialReviews").getJSONObject("EditorialReview").getString("Content");
+			newJsonObject.put("itemDescription", description);
+		}
 		newJsonObject.put("itemTitle", title);
-		newJsonObject.put("itemDescription", description);
 	}
 	
 
