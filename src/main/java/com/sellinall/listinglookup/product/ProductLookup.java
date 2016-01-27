@@ -27,7 +27,7 @@ public class ProductLookup {
 		if (product.has("Error")) {
 			return product;
 		} else {
-			return persistToDB(product, searchParamType, searchParam);
+			return persistToDB(product, searchParamType, searchParam, countryCode);
 		}
 		// return product;
 	}
@@ -67,7 +67,8 @@ public class ProductLookup {
 		return lookupData;
 	}
 
-	private static BasicDBObject persistToDB(JSONObject product, String searchParamType, String searchParam) {
+	private static BasicDBObject persistToDB(JSONObject product, String searchParamType, String searchParam,
+			String countryCode) {
 
 		long expriyTime = (System.currentTimeMillis() / 1000L) + thirtyDays;
 		BasicDBObject updateData = new BasicDBObject();
@@ -78,6 +79,11 @@ public class ProductLookup {
 		DBCollection table = DbUtilities.getLookupDBCollection("amazonProductLookup");
 		BasicDBObject searchQuery = new BasicDBObject();
 		searchQuery.put(searchParamType, searchParam);
+
+		if (countryCode != null) {
+			searchQuery.put("countryCode", countryCode);
+			updateData.put("countryCode", countryCode);
+		}
 		table.update(searchQuery, setObject, true, false);
 
 		updateData.removeField("expiryTime");
