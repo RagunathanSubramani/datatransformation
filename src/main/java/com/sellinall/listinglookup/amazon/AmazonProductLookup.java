@@ -1,163 +1,138 @@
 package com.sellinall.listinglookup.amazon;
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.HashSet;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.XML;
 
-import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.util.JSON;
-import com.sellinall.listinglookup.amazon.AmazonUtil;
-import com.sellinall.listinglookup.database.DbUtilities;
-
 public class AmazonProductLookup {
-	private static final long thirtyDays = 30 * 24 * 60 * 60;
-
-
-
-	private static String findSearchParamType(String searchParam) {
-		// TODO Auto-generated method stub
-		//Need to write code to find whether it is ASIN or UPC or EAN
-		return "ASIN";
-	}
-
-	
-
-	public static JSONObject getProductFromSite(String searchParamType, String searchParam) {
+	public static JSONObject getProductFromSite(String searchParamType, String searchParam, String countryCode) {
 		JSONObject newJsonObject = new JSONObject();
-		String amazonresponseXML = AmazonUtil.getProduct(searchParamType, searchParam);
+		String amazonresponseXML = AmazonUtil.getProduct(searchParamType, searchParam, countryCode);
 		JSONObject amazonProduct = XML.toJSONObject(amazonresponseXML);
 		JSONObject amazonItems = amazonProduct.getJSONObject("ItemLookupResponse").getJSONObject("Items");
-		if (!searchParamType.equals("ASIN")){
+		if (!searchParamType.equals("ASIN")) {
 			JSONArray amazonUPCItemArray = makeArray(amazonItems.get("Item"));
-			JSONObject amazonUPCItem = (JSONObject)amazonUPCItemArray.get(0);
+			JSONObject amazonUPCItem = (JSONObject) amazonUPCItemArray.get(0);
 			String tempASIN = amazonUPCItem.getString("ASIN");
-			return getProductFromSite("ASIN",tempASIN);
+			return getProductFromSite("ASIN", tempASIN, countryCode);
 		}
 		if (amazonItems.getJSONObject("Request").has("Errors")) {
-		
+
 			// create empty array when NameRecommendation is not present in
 			// the response from Amazon.
-			
+
 			return amazonItems.getJSONObject("Request").getJSONObject("Errors");
 		}
 		JSONObject amazonItem = amazonItems.getJSONObject("Item");
-		JSONObject parentAmazonItems = amazonItems;//initializing to parent ASIN we will correct to actual asin after validating
+		JSONObject parentAmazonItems = amazonItems;// initializing to parent
+													// ASIN we will correct to
+													// actual asin after
+													// validating
 		JSONObject parentAmazonItem = amazonItem;
-		if(amazonItem.has("ParentASIN")){//This is parent ASIN route
-			//Check if ASIN passed is child ASIN else get the Parent obj
+		if (amazonItem.has("ParentASIN")) {// This is parent ASIN route
+			// Check if ASIN passed is child ASIN else get the Parent obj
 			String parentASIN = amazonItem.getString("ParentASIN");
-			if(!searchParam.equals(parentASIN)){
-				String parentAmazonResponseXML = AmazonUtil.getProduct(searchParamType, parentASIN);
+			if (!searchParam.equals(parentASIN)) {
+				String parentAmazonResponseXML = AmazonUtil.getProduct(searchParamType, parentASIN, countryCode);
 				JSONObject parentAmazonProduct = XML.toJSONObject(parentAmazonResponseXML);
 				parentAmazonItems = parentAmazonProduct.getJSONObject("ItemLookupResponse").getJSONObject("Items");
 				parentAmazonItem = parentAmazonItems.getJSONObject("Item");
-				
+
 			}
 			extractTitleAndDescription(newJsonObject, parentAmazonItem);
 
-			if(parentAmazonItem.has("Variations")){
+			if (parentAmazonItem.has("Variations")) {
 				JSONObject variationsObject = parentAmazonItem.getJSONObject("Variations");
-				appendChild(variationsObject,newJsonObject);
+				appendChild(variationsObject, newJsonObject);
 				newJsonObject.put("parentASIN", parentASIN);
-			}else{
-				//This is a temporary fix
+			} else {
+				// This is a temporary fix
 				populateNormalRecord(searchParam, newJsonObject, amazonItem);
 			}
-		}else{
-			//This is no variant route 
+		} else {
+			// This is no variant route
 			extractTitleAndDescription(newJsonObject, amazonItem);
 			populateNormalRecord(searchParam, newJsonObject, amazonItem);
 		}
 
 		return newJsonObject;
-	
+
 	}
 
-
-
-	private static void populateNormalRecord(String searchParam,
-			JSONObject newJsonObject, JSONObject amazonItem) {
+	private static void populateNormalRecord(String searchParam, JSONObject newJsonObject, JSONObject amazonItem) {
 		HashSet<String> jsonImageArray = extractImageSet(amazonItem);
 		newJsonObject.put("imageSet", jsonImageArray);
 		newJsonObject.append("ASIN", searchParam);
 	}
 
-	private static void appendChild(JSONObject variationsObject,
-			JSONObject newJsonObject) {
-		//Get VariationDimension
-		Object variantionDimensionArrayObject = variationsObject.getJSONObject("VariationDimensions").get("VariationDimension");
+	private static void appendChild(JSONObject variationsObject, JSONObject newJsonObject) {
+		// Get VariationDimension
+		Object variantionDimensionArrayObject = variationsObject.getJSONObject("VariationDimensions").get(
+				"VariationDimension");
 		JSONArray variantionDimensionArray = makeArray(variantionDimensionArrayObject);
-		Map<String,HashSet<String>> variants = new HashMap<String,HashSet<String>>();
+		Map<String, HashSet<String>> variants = new HashMap<String, HashSet<String>>();
 		HashSet<String> jsonImageHashSet = new HashSet<String>();
-		for(int i = 0;i<variantionDimensionArray.length();i++){
+		for (int i = 0; i < variantionDimensionArray.length(); i++) {
 			String variantionDimension = (String) variantionDimensionArray.get(i);
 			variants.put(variantionDimension, new HashSet<String>());
-		}		
-		
-		
+		}
+
 		Object variantionitemArrayObject = variationsObject.get("Item");
 		JSONArray variantionitemArray = makeArray(variantionitemArrayObject);
-		for(int i = 0;i<variantionitemArray.length();i++){
+		for (int i = 0; i < variantionitemArray.length(); i++) {
 			JSONObject item = (JSONObject) variantionitemArray.get(i);
-			//newJsonObject.append("ImageSet", jsonImageArray);
+			// newJsonObject.append("ImageSet", jsonImageArray);
 			HashSet<String> variantImageSet = extractImageSet(item);
 			jsonImageHashSet.addAll(variantImageSet);
-			newJsonObject.append("ASIN",item.getString("ASIN"));
-			
+			newJsonObject.append("ASIN", item.getString("ASIN"));
+
 			JSONObject newItemObject = new JSONObject();
 			newItemObject.put("imageSet", variantImageSet);
 			newItemObject.put("ASIN", item.getString("ASIN"));
-			
+
 			Object jsonvariantionArrayObject = item.getJSONObject("VariationAttributes").get("VariationAttribute");
 			JSONArray jsonvariantionArray = makeArray(jsonvariantionArrayObject);
-			for(int j = 0;j<jsonvariantionArray.length();j++){
+			for (int j = 0; j < jsonvariantionArray.length(); j++) {
 				JSONObject variationAttribute = (JSONObject) jsonvariantionArray.get(j);
 				String variantName = variationAttribute.getString("Name");
 				String variantValue = variationAttribute.getString("Value");
-				
-				//This is for child
+
+				// This is for child
 				JSONObject childVariantDetail = new JSONObject();
 				childVariantDetail.put("title", variantName);
 				childVariantDetail.put("name", variantValue);
-				newItemObject.append("variantDetails",childVariantDetail);
-				
-				//This is for parent
+				newItemObject.append("variantDetails", childVariantDetail);
+
+				// This is for parent
 				HashSet<String> values = variants.get(variantName);
 				values.add(variantValue);
 			}
 			newJsonObject.append("item", newItemObject);
 		}
 		newJsonObject.put("imageSet", jsonImageHashSet);
-		
+
 		insertVariants(newJsonObject, variants);
 	}
 
+	private static void insertVariants(JSONObject newJsonObject, Map<String, HashSet<String>> variants) {
 
-
-	private static void insertVariants(JSONObject newJsonObject,
-			Map<String, HashSet<String>> variants) {
-
-		variants.forEach((key,value) -> 
-			{
-				JSONObject variant = new JSONObject();
-				variant.put("title", key);
-				variant.put("names", value);
-				newJsonObject.append("variants", variant);
-			});
+		variants.forEach((key, value) -> {
+			JSONObject variant = new JSONObject();
+			variant.put("title", key);
+			variant.put("names", value);
+			newJsonObject.append("variants", variant);
+		});
 	}
 
 	private static JSONArray makeArray(Object object) {
 		JSONArray objArray = new JSONArray();
-		if(object instanceof JSONArray){
+		if (object instanceof JSONArray) {
 			objArray = (JSONArray) object;
-		}else{
+		} else {
 			objArray.put(object);
 		}
 		return objArray;
@@ -168,48 +143,23 @@ public class AmazonProductLookup {
 		Object imageSetArrayObject = amazonItems.getJSONObject("ImageSets").get("ImageSet");
 		JSONArray imageSetArray = makeArray(imageSetArrayObject);
 		HashSet<String> extractedImages = new HashSet<String>();
-		for(int i = 0;i<imageSetArray.length();i++){
+		for (int i = 0; i < imageSetArray.length(); i++) {
 			JSONObject imageSet = (JSONObject) imageSetArray.get(i);
 			extractedImages.add(imageSet.getJSONObject("LargeImage").getString("URL"));
 		}
 		return extractedImages;
 	}
 
-	//Get title and item description
+	// Get title and item description
 	private static void extractTitleAndDescription(JSONObject newJsonObject, JSONObject amazonItem) {
 		// TODO Auto-generated method stub
-		String title  = amazonItem.getJSONObject("ItemAttributes").getString("Title");
-		if(amazonItem.has("EditorialReviews")){
-			String description = amazonItem.getJSONObject("EditorialReviews").getJSONObject("EditorialReview").getString("Content");
+		String title = amazonItem.getJSONObject("ItemAttributes").getString("Title");
+		if (amazonItem.has("EditorialReviews")) {
+			String description = amazonItem.getJSONObject("EditorialReviews").getJSONObject("EditorialReview")
+					.getString("Content");
 			newJsonObject.put("itemDescription", description);
 		}
 		newJsonObject.put("itemTitle", title);
-	}
-	
-
-
-	private static BasicDBObject persistToDB(String countryCode, String categoryId, JSONObject itemSpecifics,
-			JSONObject categoryFeatures) {
-		BasicDBObject filterField1 = new BasicDBObject("countryCode", countryCode);
-		BasicDBObject filterField2 = new BasicDBObject("categoryId", categoryId);
-		BasicDBList and = new BasicDBList();
-		and.add(filterField1);
-		and.add(filterField2);
-
-		BasicDBObject searchQuery = new BasicDBObject();
-		searchQuery.put("$and", and);
-
-		long expriyTime = (System.currentTimeMillis() / 1000L) + thirtyDays;
-		BasicDBObject updateData = new BasicDBObject();
-		updateData.put("expiryTime", expriyTime);
-		updateData.put("itemSpecifics", JSON.parse(itemSpecifics.toString()));
-		updateData.put("features", JSON.parse(categoryFeatures.toString()));
-
-		BasicDBObject setObject = new BasicDBObject("$set", updateData);
-		DBCollection table = DbUtilities.getLookupDBCollection("ebayCategoryLookup");
-		table.update(searchQuery, setObject, true, false);
-		updateData.removeField("expiryTime");
-		return updateData;
 	}
 
 }

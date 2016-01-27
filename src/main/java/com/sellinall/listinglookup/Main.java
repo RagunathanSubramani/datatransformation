@@ -27,7 +27,7 @@ public class Main {
 		});
 
 		get("/services/product/:searchParam", (request, response) -> {
-			return ProductLookup.getMatchingProduct( request.params(":searchParam"));
+			return ProductLookup.getMatchingProduct(request.params(":searchParam"), request.queryParams("countryCode"));
 		});
 
 		after((request, response) -> {

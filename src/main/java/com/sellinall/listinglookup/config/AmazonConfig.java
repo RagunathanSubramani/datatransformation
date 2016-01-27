@@ -15,21 +15,23 @@ import java.util.Map;
  */
 public class AmazonConfig {
 
-	
-	private static final Map<String, String> productAdvertisingAPIEndPointMap = Collections.unmodifiableMap(new HashMap<String, String>() {
-		{
-			put("A2EUQ1WTGCTBG2", "https://webservices.amazon.ca");
-			put("A1PA6795UKMFR9", "https://mws-eu.amazonservices.com");
-			put("ATVPDKIKX0DER", "https://webservices.amazon.com");
-			put("A1RKKUPIHCS9HS", "https://mws-eu.amazonservices.com");
-			put("A13V1IB3VIYZZH", "https://mws-eu.amazonservices.com");
-			put("A21TJRUUN4KGV", "https://mws.amazonservices.in");
-			put("APJ6JRA9NG5V4", "https://mws-eu.amazonservices.com");
-			put("A1F83G8C2ARO7P", "https://mws-eu.amazonservices.com");
-			put("A1VC38T7YXB528", "https://mws.amazonservices.jp");
-			put("AAHKV2X7AFYLW", "https://mws.amazonservices.com.cn");
-		}
-	});
+	private static final Map<String, String> productAdvertisingAPIEndPointMap = Collections
+			.unmodifiableMap(new HashMap<String, String>() {
+				{
+					put("CA", "https://webservices.amazon.ca");
+					put("BR", "https://webservices.amazon.com.br");
+					put("US", "https://webservices.amazon.com");
+					put("CN", "https://webservices.amazon.cn");
+					put("DE", "https://webservices.amazon.de");
+					put("IN", "https://webservices.amazon.in");
+					put("ES", "https://webservices.amazon.es");
+					put("FR", "https://webservices.amazon.fr");
+					put("IT", "https://webservices.amazon.it");
+					put("JP", "https://webservices.amazon.co.jp");
+					put("MX", "https://webservices.amazon.com.mx");
+					put("GB", "https://webservices.amazon.co.uk");
+				}
+			});
 
 	/**
 	 * @return the signatureMethod
@@ -38,9 +40,6 @@ public class AmazonConfig {
 		return "HmacSHA256";
 	}
 
-
-
-	
 	public static String getProductAdvertisingAPIEndPoint(String marketplaceID) {
 		return productAdvertisingAPIEndPointMap.get(marketplaceID);
 	}
@@ -51,19 +50,19 @@ public class AmazonConfig {
 	public static String getProductAdvertisingAPIAssociateTag() {
 		return "sellinall-20";
 	}
-	
+
 	/**
 	 * @return the AWSAccessKeyId
 	 */
 	public static String getProductAdvertisingAPIAWSAccessKeyId() {
 		return "AKIAJPRBK37MZJNPI4YQ";
 	}
-	
+
 	/**
 	 * @return the AWSSecretKey
 	 */
 	public static String getProductAdvertisingAPIAWSSecretKey() {
 		return "HqMs1h3dJqkepc+PYZvbHixPGlN860WbKKFWo3c+";
 	}
-	
+
 }
