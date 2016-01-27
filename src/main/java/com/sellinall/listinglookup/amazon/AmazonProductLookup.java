@@ -1,7 +1,9 @@
 package com.sellinall.listinglookup.amazon;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import org.json.JSONArray;
@@ -139,7 +141,6 @@ public class AmazonProductLookup {
 	}
 
 	private static HashSet<String> extractImageSet(JSONObject amazonItems) {
-		// TODO Auto-generated method stub
 		Object imageSetArrayObject = amazonItems.getJSONObject("ImageSets").get("ImageSet");
 		JSONArray imageSetArray = makeArray(imageSetArrayObject);
 		HashSet<String> extractedImages = new HashSet<String>();
@@ -150,16 +151,52 @@ public class AmazonProductLookup {
 		return extractedImages;
 	}
 
-	// Get title and item description
 	private static void extractTitleAndDescription(JSONObject newJsonObject, JSONObject amazonItem) {
 		// TODO Auto-generated method stub
-		String title = amazonItem.getJSONObject("ItemAttributes").getString("Title");
+		JSONObject allAttributes = amazonItem.getJSONObject("ItemAttributes");
+		String title = allAttributes.getString("Title");
 		if (amazonItem.has("EditorialReviews")) {
 			String description = amazonItem.getJSONObject("EditorialReviews").getJSONObject("EditorialReview")
 					.getString("Content");
 			newJsonObject.put("itemDescription", description);
 		}
 		newJsonObject.put("itemTitle", title);
+		newJsonObject.put("itemAttributes", allAttributes);
+		//extractCategory(newJsonObject, amazonItem);
+	}
+
+	private static void extractCategory(JSONObject newJsonObject, JSONObject amazonItem) {
+		System.out.println("amazonItem:" + amazonItem);
+		if (amazonItem.has("BrowseNodes")) {
+			JSONObject browseNodes = amazonItem.getJSONObject("BrowseNodes");
+			JSONArray browseNodeArray = new JSONArray();
+
+			if (browseNodes.get("BrowseNode") instanceof JSONObject) {
+				browseNodeArray.put(browseNodes.getJSONObject("BrowseNode"));
+			} else {
+				browseNodeArray = browseNodes.getJSONArray("BrowseNode");
+			}
+
+			JSONArray categoryNames = new JSONArray();
+			JSONArray categoryIds = new JSONArray();
+			for (int i = 0; i < browseNodeArray.length(); i++) {
+				JSONObject browseNode = browseNodeArray.getJSONObject(i);
+				String categoryName = getCategoryName(browseNode);
+				categoryNames.put(categoryName);
+				categoryIds.put(browseNode.getLong("BrowseNodeId"));
+			}
+			newJsonObject.put("categoryNames", categoryNames);
+			newJsonObject.put("categoryIds", categoryIds);
+		}
+	}
+
+	private static String getCategoryName(JSONObject browseNode) {
+		if (!browseNode.has("Ancestors")) {
+			return browseNode.getString("Name");
+		} else {
+			JSONObject innerNode = browseNode.getJSONObject("Ancestors").getJSONObject("BrowseNode");
+			return (getCategoryName(innerNode) + "->" + browseNode.getString("Name"));
+		}
 	}
 
 }

@@ -62,7 +62,7 @@ public class AmazonUtil {
 		queryStringMap.put("AWSAccessKeyId", AmazonConfig.getProductAdvertisingAPIAWSAccessKeyId());
 		queryStringMap.put("AssociateTag", AmazonConfig.getProductAdvertisingAPIAssociateTag());
 		queryStringMap.put("ResponseGroup",
-				"EditorialReview,Images,ItemAttributes,VariationMatrix,VariationSummary,Variations,");
+				"EditorialReview,Images,ItemAttributes,VariationMatrix,VariationSummary,Variations,BrowseNodes");
 		queryStringMap.put("Timestamp", AmazonUtil.getFormattedTimeInMS());
 		queryStringMap.put("Version", "2011-08-01");
 		queryStringMap.put("Operation", "ItemLookup");
