@@ -10,6 +10,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import spark.Response;
 
+import com.sellinall.listinglookup.category.CategoryMap;
 import com.sellinall.listinglookup.config.Config;
 import com.sellinall.listinglookup.ebay.CategoryLookup;
 import com.sellinall.listinglookup.product.ProductLookup;
@@ -26,9 +27,18 @@ public class Main {
 			return CategoryLookup.getCategorySpecifics(request.params(":countryCode"), request.params(":categoryId"));
 		});
 
-		get("/services/product/:searchParam", (request, response) -> {
-			return ProductLookup.getMatchingProduct(request.params(":searchParam"), request.queryParams("countryCode"));
-		});
+		get("/services/product/:searchParam",
+				(request, response) -> {
+					return ProductLookup.getMatchingProduct(request.params(":searchParam"),
+							request.queryParams("countryCode"));
+				});
+
+		get("/services/categoryMap/:sourceChannel/:sourceCountryCode/:categoryId",
+				(request, response) -> {
+					return CategoryMap.getCategoryMap(request.params(":sourceChannel"),
+							request.params("sourceCountryCode"), request.params("categoryId"),
+							request.queryParams("targetChannel"), request.queryParams("targetCountryCode"));
+				});
 
 		after((request, response) -> {
 			setResponseHeaders(response);
