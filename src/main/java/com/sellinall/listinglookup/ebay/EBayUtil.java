@@ -4,10 +4,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.mudra.sellinall.util.HttpURLConnectionUtil;
 import com.sellinall.listinglookup.config.Config;
 
 public class EBayUtil {
+	static Logger log = Logger.getLogger(EBayUtil.class.getName());
 
 	private static final Map<String, String> siteIdMap = Collections.unmodifiableMap(new HashMap<String, String>() {
 		/**
@@ -60,11 +63,11 @@ public class EBayUtil {
 		String urlParameters = sb.toString();
 		String response = new String();
 		try {
-			System.out.println(sb.toString());
+			log.debug(sb.toString());
 			response = getResponse(urlParameters, "GetCategorySpecifics", siteId);
-			System.out.println(response);
+			log.debug(response);
 		} catch (Exception e) {
-
+			e.printStackTrace();
 		}
 		return response;
 	}
@@ -92,15 +95,22 @@ public class EBayUtil {
 		String urlParameters = sb.toString();
 		String response = new String();
 		try {
-			System.out.println(sb.toString());
+			log.debug(sb.toString());
 			response = getResponse(urlParameters, "GetCategoryFeatures", siteId);
-			System.out.println(response);
+			log.debug(response);
 		} catch (Exception e) {
-
+			e.printStackTrace();
 		}
 		return response;
 	}
 
+	public static String getCategoryInfo(String countryCode, String categoryId) {
+		String siteId = getSiteId(countryCode);
+		String url = Config.getConfig().getEbayOpenApiURL() + "/Shopping?callname=GetCategoryInfo";
+		url = url + "&appid=" + Config.getConfig().getEbayAppName();
+		url = url + "&version=677&siteid=" + siteId + "&CategoryID=" + categoryId;
+		return HttpURLConnectionUtil.doGet(url);
+	}
 
 	private static String getResponse(String urlParameter, String configValue, String siteID) throws Exception {
 		org.codehaus.jettison.json.JSONObject payLoad = new org.codehaus.jettison.json.JSONObject();

@@ -9,6 +9,7 @@ public class Config {
 	private String EbayAppName;
 	private String EbayDevName;
 	private String EbayCertName;
+	private String EbayOpenApiURL;
 
 	private String DbUserName;
 	private String DbPassword;
@@ -46,6 +47,14 @@ public class Config {
 
 	public void setEbayCertName(String ebayCertName) {
 		EbayCertName = ebayCertName;
+	}
+
+	public String getEbayOpenApiURL() {
+		return EbayOpenApiURL;
+	}
+
+	public void setEbayOpenApiURL(String ebayOpenApiURL) {
+		EbayOpenApiURL = ebayOpenApiURL;
 	}
 
 	public String getDbUserName() {
