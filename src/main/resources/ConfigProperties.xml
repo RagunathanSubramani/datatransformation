@@ -32,6 +32,7 @@
 		<property name="EbayAppName" value="${EbayAppName}" />
 		<property name="EbayDevName" value="${EbayDevName}" />
 		<property name="EbayCertName" value="${EbayCertName}" />
+		<property name="EbayOpenApiURL" value="${EbayOpenApiURL}" />
 
 		<!-- DB Values -->
 		<property name="DbUserName" value="${DbUserName}" />

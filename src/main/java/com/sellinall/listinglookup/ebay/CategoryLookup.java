@@ -1,6 +1,8 @@
 package com.sellinall.listinglookup.ebay;
 
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
 
@@ -11,6 +13,9 @@ import com.mongodb.util.JSON;
 import com.sellinall.listinglookup.database.DbUtilities;
 
 public class CategoryLookup {
+
+	static Logger log = Logger.getLogger(CategoryLookup.class.getName());
+
 	private static final long thirtyDays = 30 * 24 * 60 * 60;
 
 	public static Object getCategorySpecifics(String countryCode, String categoryId) {
@@ -22,7 +27,8 @@ public class CategoryLookup {
 		}
 		JSONObject categorySpecificsEbay = getCategorySpecificsFromEbay(countryCode, categoryId);
 		JSONObject categoryFeaturesEbay = getCategoryFeaturesFromEbay(countryCode, categoryId);
-		return persistToDB(countryCode, categoryId, categorySpecificsEbay, categoryFeaturesEbay);
+		String categoryNamePath = getCategoryNamePath(countryCode, categoryId);
+		return persistToDB(countryCode, categoryId, categoryNamePath, categorySpecificsEbay, categoryFeaturesEbay);
 	}
 
 	private static BasicDBObject getCategorySpecificsFromDB(String countryCode, String categoryId) {
@@ -101,7 +107,7 @@ public class CategoryLookup {
 		String categorySpecificsXML = EBayUtil.getCategoryFeatures(countryCode, categoryId);
 
 		JSONObject categoryFeaturesFromEbay = XML.toJSONObject(categorySpecificsXML);
-		System.out.println(categoryFeaturesFromEbay);
+		log.debug(categoryFeaturesFromEbay);
 		JSONObject GetCategoryFeaturesResponse = categoryFeaturesFromEbay.getJSONObject("GetCategoryFeaturesResponse");
 		JSONObject categoryFeatures = new JSONObject();
 		if (GetCategoryFeaturesResponse.has("Category")) {
@@ -111,8 +117,24 @@ public class CategoryLookup {
 		return categoryFeatures;
 	}
 
-	private static BasicDBObject persistToDB(String countryCode, String categoryId, JSONObject itemSpecifics,
-			JSONObject categoryFeatures) {
+	private static String getCategoryNamePath(String countryCode, String categoryId) {
+		try {
+			String categoryInfo = EBayUtil.getCategoryInfo(countryCode, categoryId);
+			JSONObject categoryInfoJson = XML.toJSONObject(categoryInfo);
+			log.debug(categoryInfoJson);
+			String categoryNamePath = categoryInfoJson.getJSONObject("GetCategoryInfoResponse")
+					.getJSONObject("CategoryArray").getJSONObject("Category").getString("CategoryNamePath");
+			return categoryNamePath;
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			log.error("returned empty category path name because of exception");
+			return "";
+		}
+	}
+
+	private static BasicDBObject persistToDB(String countryCode, String categoryId, String categoryNamePath,
+			JSONObject itemSpecifics, JSONObject categoryFeatures) {
 		BasicDBObject filterField1 = new BasicDBObject("countryCode", countryCode);
 		BasicDBObject filterField2 = new BasicDBObject("categoryId", categoryId);
 		BasicDBList and = new BasicDBList();
@@ -125,6 +147,9 @@ public class CategoryLookup {
 		long expriyTime = (System.currentTimeMillis() / 1000L) + thirtyDays;
 		BasicDBObject updateData = new BasicDBObject();
 		updateData.put("expiryTime", expriyTime);
+		if (!categoryNamePath.isEmpty()) {
+			updateData.put("categoryNamePath", categoryNamePath);
+		}
 		updateData.put("itemSpecifics", JSON.parse(itemSpecifics.toString()));
 		updateData.put("features", JSON.parse(categoryFeatures.toString()));
 

@@ -21,6 +21,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.log4j.Logger;
 
 /**
  * @author Vikraman
@@ -30,6 +31,7 @@ import org.apache.commons.codec.binary.Base64;
  * It can be broken up into many pieces later based on usecases
  */
 public class AmazonSignatureUtil {
+	static Logger log = Logger.getLogger(AmazonSignatureUtil.class.getName());
     private static String DEFAULT_ENCODING = "UTF-8";
 
     
@@ -96,7 +98,7 @@ public class AmazonSignatureUtil {
         try {
             endpoint = new URI(serviceURL);
         } catch (URISyntaxException ex) {
-            System.out.println("URI Syntax Exception"+ ex);
+            log.error("URI Syntax Exception"+ ex);
             throw new SignatureException("URI Syntax Exception thrown " +
                     "while constructing string to sign", ex);
         }
@@ -145,7 +147,7 @@ public class AmazonSignatureUtil {
         try {
             endpoint = new URI(serviceURL);
         } catch (URISyntaxException ex) {
-            System.out.println("URI Syntax Exception"+ ex);
+            log.error("URI Syntax Exception"+ ex);
             throw new SignatureException("URI Syntax Exception thrown " +
                     "while constructing string to sign", ex);
         }
@@ -250,7 +252,7 @@ public class AmazonSignatureUtil {
                                         .replace("*", "%2A")
                                         .replace("%7E","~");
         } catch (UnsupportedEncodingException ex) {
-            System.out.println("Unsupported Encoding Exception"+ ex);
+            log.error("Unsupported Encoding Exception"+ ex);
             throw new RuntimeException(ex);
         }
         return encoded;
