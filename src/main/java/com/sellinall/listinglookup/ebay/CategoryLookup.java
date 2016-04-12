@@ -27,8 +27,26 @@ public class CategoryLookup {
 		}
 		JSONObject categorySpecificsEbay = getCategorySpecificsFromEbay(countryCode, categoryId);
 		JSONObject categoryFeaturesEbay = getCategoryFeaturesFromEbay(countryCode, categoryId);
-		String categoryNamePath = getCategoryNamePath(countryCode, categoryId);
+		String categoryNamePath = getCategoryNamePathFromEbay(countryCode, categoryId);
 		return persistToDB(countryCode, categoryId, categoryNamePath, categorySpecificsEbay, categoryFeaturesEbay);
+	}
+
+	public static Object getCategoryNamePath(String countryCode, String categoryId) {
+
+		BasicDBObject categorySpecificsDB = getCategorySpecificsFromDB(countryCode, categoryId);
+		String categoryNamePath = "";
+		if ((categorySpecificsDB != null) && categorySpecificsDB.containsField("categoryNamePath")) {
+			categoryNamePath = categorySpecificsDB.getString("categoryNamePath");
+		} else {
+			JSONObject categorySpecificsEbay = getCategorySpecificsFromEbay(countryCode, categoryId);
+			JSONObject categoryFeaturesEbay = getCategoryFeaturesFromEbay(countryCode, categoryId);
+			categoryNamePath = getCategoryNamePathFromEbay(countryCode, categoryId);
+			categorySpecificsDB = persistToDB(countryCode, categoryId, categoryNamePath, categorySpecificsEbay, categoryFeaturesEbay);
+			categoryNamePath = categorySpecificsDB.getString("categoryNamePath");
+		}
+		JSONObject response = new JSONObject();
+		response.put("categoryNamePath", categoryNamePath);
+		return response;
 	}
 
 	private static BasicDBObject getCategorySpecificsFromDB(String countryCode, String categoryId) {
@@ -51,6 +69,9 @@ public class CategoryLookup {
 				categoryData = new BasicDBObject();
 				categoryData.put("itemSpecifics", lookupData.get("itemSpecifics"));
 				categoryData.put("features", lookupData.get("features"));
+				if (lookupData.containsField("categoryNamePath")) {
+					categoryData.put("categoryNamePath", lookupData.getString("categoryNamePath"));
+				}
 			}
 			return categoryData;
 		}
@@ -117,7 +138,7 @@ public class CategoryLookup {
 		return categoryFeatures;
 	}
 
-	private static String getCategoryNamePath(String countryCode, String categoryId) {
+	private static String getCategoryNamePathFromEbay(String countryCode, String categoryId) {
 		try {
 			String categoryInfo = EBayUtil.getCategoryInfo(countryCode, categoryId);
 			JSONObject categoryInfoJson = XML.toJSONObject(categoryInfo);
