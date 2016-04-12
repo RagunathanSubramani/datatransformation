@@ -21,6 +21,13 @@ public class Main {
 
 		port(Integer.valueOf(System.getenv("PORT")));
 
+System.out.println("Hello World!");
+String webPort = System.getenv("PORT");
+
+if (webPort == null || webPort.isEmpty()) {
+webPort = "8083";
+}
+
 		Config.context = new ClassPathXmlApplicationContext("ConfigProperties.xml");
 
 		get("/services/ebay/category/:countryCode/:categoryId", (request, response) -> {
@@ -32,6 +39,10 @@ public class Main {
 					request.params(":countryCode"), request.params(":categoryId"));
 		});
 		
+		get("/services/shopclues/category/:countryCode/:categoryId", (request, response) -> {
+			return com.sellinall.listinglookup.shopclues.CategoryLookup.getCategorySpecifics(
+					request.params(":countryCode"), request.params(":categoryId"));
+		});
 
 		get("/services/product/:searchParam",
 				(request, response) -> {
