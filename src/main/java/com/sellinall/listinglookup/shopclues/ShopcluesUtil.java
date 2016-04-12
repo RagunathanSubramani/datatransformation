@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
@@ -29,7 +30,7 @@ public class ShopcluesUtil {
 		}
 	});
 
-	public static JSONObject getCategorySpecifics(String countryCode, String categoryId) throws JSONException,
+	public static JSONArray getCategorySpecifics(String countryCode, String categoryId) throws JSONException,
 			IOException, TemplateException {
 		Configuration cfg = new Configuration();
 		Template template = cfg.getTemplate("src/main/resources/Template/default/shopclues/itemSpecifications.ftl");
@@ -46,10 +47,7 @@ public class ShopcluesUtil {
 		}.getType());
 
 		template.process(map, out);
-		JSONObject response_data = new JSONObject();
-		response_data.put("data", out);
-
-		return response_data;
+		return new JSONArray(out.toString());
 	}
 
 	private static String getAccessToken() throws JSONException {

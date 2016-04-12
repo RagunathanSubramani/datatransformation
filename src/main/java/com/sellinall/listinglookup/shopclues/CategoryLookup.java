@@ -1,20 +1,15 @@
 package com.sellinall.listinglookup.shopclues;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
-import org.codehaus.jettison.json.JSONObject;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
-//import org.json.JSONObject;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.util.JSON;
-import com.rabbitmq.client.AMQP.Basic;
 import com.sellinall.listinglookup.database.DbUtilities;
-
 import freemarker.template.TemplateException;
 
 public class CategoryLookup {
@@ -23,12 +18,12 @@ public class CategoryLookup {
 	public static Object getCategorySpecifics(String countryCode, String categoryId) throws JSONException, IOException,
 			TemplateException {
 
-		BasicDBObject categorySpecificsDB = getCategorySpecificsFromDB(countryCode, categoryId);
+		BasicDBObject shopcluesSpecificsDB = getCategorySpecificsFromDB(countryCode, categoryId);
 
-		if (categorySpecificsDB != null) {
-			return categorySpecificsDB;
+		if (shopcluesSpecificsDB != null) {
+			return shopcluesSpecificsDB;
 		}
-		JSONObject shopcluesAttributes = getAttributeFromShopclues(countryCode, categoryId);
+		JSONArray shopcluesAttributes = getAttributeFromShopclues(countryCode, categoryId);
 		return persistToDB(countryCode, categoryId, shopcluesAttributes);
 
 	}
@@ -51,21 +46,19 @@ public class CategoryLookup {
 			BasicDBObject attributesData = null;
 			if (currentTime < expiryTime) {
 				attributesData = new BasicDBObject();
-				attributesData.put("attributes", lookupData.get("data"));
+				attributesData.put("attributes", lookupData.get("attributes"));
 			}
 			return attributesData;
 		}
 		return lookupData;
 	}
 
-	private static JSONObject getAttributeFromShopclues(String countryCode, String categoryId) throws JSONException,
+	private static JSONArray getAttributeFromShopclues(String countryCode, String categoryId) throws JSONException,
 			IOException, TemplateException {
-		JSONObject categorySpecificsXML = ShopcluesUtil.getCategorySpecifics(countryCode, categoryId);
-
-		return categorySpecificsXML;
+		return ShopcluesUtil.getCategorySpecifics(countryCode, categoryId);
 	}
 
-	private static BasicDBObject persistToDB(String countryCode, String categoryId, JSONObject shopcluesAttributes) {
+	private static BasicDBObject persistToDB(String countryCode, String categoryId, JSONArray shopcluesAttributes) {
 		BasicDBObject filterField1 = new BasicDBObject("countryCode", countryCode);
 		BasicDBObject filterField2 = new BasicDBObject("categoryId", categoryId);
 		BasicDBList and = new BasicDBList();
