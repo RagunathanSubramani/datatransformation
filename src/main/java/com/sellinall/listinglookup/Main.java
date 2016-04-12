@@ -23,7 +23,6 @@ public class Main {
 
 		System.out.println("Hello World!");
 		String webPort = System.getenv("PORT");
-
 		if (webPort == null || webPort.isEmpty()) {
 			webPort = "8083";
 		}
