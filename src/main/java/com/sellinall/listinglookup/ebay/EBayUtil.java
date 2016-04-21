@@ -21,7 +21,7 @@ public class EBayUtil {
 		{
 			// https://developer.ebay.com/DevZone/merchandising/docs/Concepts/SiteIDToGlobalID.html
 			put("US", "0");
-			put("CA", "2");
+			put("ENCA", "2");
 			put("GB", "3");
 			put("AU", "15");
 			put("AT", "16");
