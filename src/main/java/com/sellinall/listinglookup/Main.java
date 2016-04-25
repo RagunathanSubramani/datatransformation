@@ -44,6 +44,7 @@ public class Main {
 					return com.sellinall.listinglookup.shopclues.CategoryLookup.getCategorySpecifics(
 							request.params(":countryCode"), request.params(":categoryId"));
 				});
+		
 
 		get("/services/product/:searchParam",
 				(request, response) -> {
