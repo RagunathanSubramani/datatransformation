@@ -21,7 +21,7 @@ public class Main {
 
 		port(Integer.valueOf(System.getenv("PORT")));
 
-		System.out.println("Hello World!");
+
 		String webPort = System.getenv("PORT");
 		if (webPort == null || webPort.isEmpty()) {
 			webPort = "8083";

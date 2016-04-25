@@ -17,6 +17,7 @@ import com.mudra.sellinall.util.HttpsURLConnectionUtil;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import com.sellinall.listinglookup.config.Config;
 
 public class ShopcluesUtil {
 
@@ -25,7 +26,7 @@ public class ShopcluesUtil {
 		private static final long serialVersionUID = 1L;
 
 		{
-			put("IN", "https://sandbox.shopclues.com/api/feature?");
+			put("IN", Config.getConfig().getShopcluesItemSpecificationUrl());
 
 		}
 	});
@@ -51,7 +52,7 @@ public class ShopcluesUtil {
 	}
 
 	private static String getAccessToken() throws JSONException {
-		String url = "https://sandbox.shopclues.com/oauth/loginToken.php";
+		String url = Config.getConfig().getShopcluesAuthUrl();
 		Map<String, String> mapHeader = new HashMap<String, String>();
 		mapHeader.put("Content-Type", "application/json");
 		String responseString = HttpsURLConnectionUtil.doPost(url, getPayLoadForAuthtoken(), mapHeader);
@@ -60,11 +61,11 @@ public class ShopcluesUtil {
 
 	private static JSONObject getPayLoadForAuthtoken() throws JSONException {
 		JSONObject payLoad = new JSONObject();
-		payLoad.put("username", "55@sc.com");
-		payLoad.put("password", "e10adc3949ba59abbe56e057f20f883e");
-		payLoad.put("client_id", "10945358");
-		payLoad.put("client_secret", "KM1LCWRT8E6P007");
-		payLoad.put("grant_type", "password");
+		payLoad.put("username", Config.getConfig().getUsername());
+		payLoad.put("password", Config.getConfig().getPassword());
+		payLoad.put("client_id", Config.getConfig().getClient_id());
+		payLoad.put("client_secret", Config.getConfig().getClient_secret());
+		payLoad.put("grant_type", Config.getConfig().getGrant_type());
 		return payLoad;
 	}
 
