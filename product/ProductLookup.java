@@ -1,4 +1,4 @@
-package com.sellinall.listinglookup.ebay;
+package com.sellinall.listinglookup.product;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -8,51 +8,56 @@ import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.util.JSON;
+import com.sellinall.listinglookup.amazon.AmazonUtil;
 import com.sellinall.listinglookup.database.DbUtilities;
 
-public class CategoryLookup {
+public class ProductLookup {
 	private static final long thirtyDays = 30 * 24 * 60 * 60;
 
-	public static Object getCategorySpecifics(String countryCode, String categoryId) {
 
-		BasicDBObject categorySpecificsDB = getCategorySpecificsFromDB(countryCode, categoryId);
+	public static Object getMatchingProduct( String searchParam) {
+		
+		String searchParamType = findSearchParamType(searchParam);
+		BasicDBObject matchingProductDB = getProductFromDB(searchParamType, searchParam);
 
-		if (categorySpecificsDB != null) {
-			return categorySpecificsDB;
+		if (matchingProductDB != null) {
+			return matchingProductDB;
 		}
-		JSONObject categorySpecificsEbay = getCategorySpecificsFromEbay(countryCode, categoryId);
-		JSONObject categoryFeaturesEbay = getCategoryFeaturesFromEbay(countryCode, categoryId);
-		return persistToDB(countryCode, categoryId, categorySpecificsEbay, categoryFeaturesEbay);
+		/*Need to write code to fetch from amazon
+		 */ JSONObject categorySpecificsEbay = getProductFromEbay(searchParamType, searchParam);
+		//return persistToDB(countryCode, categoryId, categorySpecificsEbay, categoryFeaturesEbay);*/
+		return null;
 	}
 
-	private static BasicDBObject getCategorySpecificsFromDB(String countryCode, String categoryId) {
-		BasicDBObject filterField1 = new BasicDBObject("countryCode", countryCode);
-		BasicDBObject filterField2 = new BasicDBObject("categoryId", categoryId);
+	private static String findSearchParamType(String searchParam) {
+		// TODO Auto-generated method stub
+		//Need to write code to find whether it is ASIN or UPC or EAN
+		return "ASIN";
+	}
+
+	private static BasicDBObject getProductFromDB(String searchParamType, String searchParam) {
+		BasicDBObject filterField1 = new BasicDBObject(searchParamType, searchParam);
 		BasicDBList and = new BasicDBList();
 		and.add(filterField1);
-		and.add(filterField2);
 
 		BasicDBObject searchQuery = new BasicDBObject();
 		searchQuery.put("$and", and);
 
-		DBCollection table = DbUtilities.getLookupDBCollection("ebayCategoryLookup");
+		DBCollection table = DbUtilities.getLookupDBCollection("amazonProductLookup");
 		BasicDBObject lookupData = (BasicDBObject) table.findOne(searchQuery);
 		if (lookupData != null) {
 			long expiryTime = lookupData.getLong("expiryTime");
 			long currentTime = (System.currentTimeMillis() / 1000L);
-			BasicDBObject categoryData = null;
 			if (currentTime < expiryTime) {
-				categoryData = new BasicDBObject();
-				categoryData.put("itemSpecifics", lookupData.get("itemSpecifics"));
-				categoryData.put("features", lookupData.get("features"));
+				return lookupData;
 			}
-			return categoryData;
+			return null;//Since the time is expired
 		}
 		return lookupData;
 	}
 
-	private static JSONObject getCategorySpecificsFromEbay(String countryCode, String categoryId) {
-		String categorySpecificsXML = EBayUtil.getCategorySpecifics(countryCode, categoryId);
+	private static JSONObject getProductFromAmazon(String searchParamType, String searchParam) {
+		String categorySpecificsXML = AmazonUtil.getCategorySpecifics(countryCode, categoryId);
 
 		JSONObject categorySpecificsFromEbay = XML.toJSONObject(categorySpecificsXML);
 		JSONObject GetCategorySpecificsResponse = categorySpecificsFromEbay
@@ -98,7 +103,7 @@ public class CategoryLookup {
 	}
 
 	private static JSONObject getCategoryFeaturesFromEbay(String countryCode, String categoryId) {
-		String categorySpecificsXML = EBayUtil.getCategoryFeatures(countryCode, categoryId);
+		String categorySpecificsXML = AmazonUtil.getCategoryFeatures(countryCode, categoryId);
 
 		JSONObject categoryFeaturesFromEbay = XML.toJSONObject(categorySpecificsXML);
 		System.out.println(categoryFeaturesFromEbay);

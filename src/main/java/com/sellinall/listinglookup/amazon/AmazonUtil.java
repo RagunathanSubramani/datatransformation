@@ -9,13 +9,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.apache.log4j.Logger;
-
 import com.mudra.sellinall.util.HttpURLConnectionUtil;
 import com.sellinall.listinglookup.config.AmazonConfig;
 
 public class AmazonUtil {
-	static Logger log = Logger.getLogger(AmazonUtil.class.getName());
 
 	public static String getProduct(String searchParamType, String searchsearchParam, String countryCode) {
 		String response = new String();
@@ -31,7 +28,7 @@ public class AmazonUtil {
 			throws Exception {
 		countryCode = (countryCode == null) ? "US" : countryCode;
 		String queryString = urlEncodeUTF8(getQueryStringwihtURL(searchParamTypeType, searchParamType, countryCode));
-		log.debug(AmazonConfig.getProductAdvertisingAPIEndPoint(countryCode) + "/onca/xml?" + queryString);
+		System.out.println(AmazonConfig.getProductAdvertisingAPIEndPoint(countryCode) + "/onca/xml?" + queryString);
 		return HttpURLConnectionUtil.doGet(AmazonConfig.getProductAdvertisingAPIEndPoint(countryCode) + "/onca/xml?"
 				+ queryString);
 	}

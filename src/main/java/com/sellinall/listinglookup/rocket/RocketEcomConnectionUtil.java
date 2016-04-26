@@ -16,13 +16,9 @@ import java.util.TreeMap;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.log4j.Logger;
-
 import com.mudra.sellinall.util.HttpsURLConnectionUtil;
 
 public class RocketEcomConnectionUtil {
-	static Logger log = Logger.getLogger(RocketEcomConnectionUtil.class.getName());
-
 	private static final Map<String, String> ScApiHost = Collections.unmodifiableMap(new HashMap<String, String>() {
 		/**
 		 * 
@@ -46,7 +42,7 @@ public class RocketEcomConnectionUtil {
     final String apiKey = "3802dac6a310f90583ddabb0f0f446fb7692423b";
     String scApiHost =  getScApiHost(countryCode);
     final String out = getSellercenterApiResponse(params, scApiHost, apiKey,"", "GET"); // provide XML as an empty string when not needed
-    log.debug(out); // print out the XML response
+    System.out.println(out); // print out the XML response
     return out;
   }
 
@@ -74,7 +70,7 @@ public class RocketEcomConnectionUtil {
     queryString = toQueryString(sortedParams);
     final String signature = hmacDigest(queryString, apiKey, HASH_ALGORITHM);
     queryString = queryString.concat("&Signature=".concat(signature));
-    log.debug(queryString);
+    System.out.println(queryString);
     
     final String request = ScApiHost.concat("?".concat(queryString));
     try {
