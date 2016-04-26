@@ -13,11 +13,11 @@ import org.codehaus.jettison.json.JSONObject;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.mudra.sellinall.util.HttpsURLConnectionUtil;
+import com.sellinall.listinglookup.config.Config;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import com.sellinall.listinglookup.config.Config;
 
 public class ShopcluesUtil {
 
