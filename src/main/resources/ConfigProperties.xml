@@ -49,5 +49,6 @@
 		<property name="LookupCollectionHostName" value="${LookupCollectionHostName}" />
 		<property name="LookupCollectionPort" value="${LookupCollectionPort}" />
 		<property name="LookupCollectionDBName" value="${LookupCollectionDBName}" />
+		<property name="SIAAuthServerURL" value="${SIAAuthServerURL}" />
 	</bean>
 </beans>

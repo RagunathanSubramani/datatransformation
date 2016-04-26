@@ -16,6 +16,7 @@ public class Config {
 	private String LookupCollectionHostName;
 	private String LookupCollectionPort;
 	private String LookupCollectionDBName;
+	private String SIAAuthServerURL;
 
 	private String shopcluesItemSpecificationUrl;
 	private String shopcluesAuthUrl;
@@ -159,6 +160,14 @@ public class Config {
 
 	public void setLookupCollectionDBName(String userCollectionDBName) {
 		LookupCollectionDBName = userCollectionDBName;
+	}
+
+	public String getSIAAuthServerURL() {
+		return SIAAuthServerURL;
+	}
+
+	public void setSIAAuthServerURL(String sIAAuthServerURL) {
+		SIAAuthServerURL = sIAAuthServerURL;
 	}
 
 	public static Config getConfig() {
