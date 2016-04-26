@@ -21,29 +21,20 @@ public class Main {
 
 		port(Integer.valueOf(System.getenv("PORT")));
 
-
-		String webPort = System.getenv("PORT");
-		if (webPort == null || webPort.isEmpty()) {
-			webPort = "8083";
-		}
-
 		Config.context = new ClassPathXmlApplicationContext("ConfigProperties.xml");
 
 		get("/services/ebay/category/:countryCode/:categoryId", (request, response) -> {
 			return CategoryLookup.getCategorySpecifics(request.params(":countryCode"), request.params(":categoryId"));
 		});
 
-		get("/services/lazada/category/:countryCode/:categoryId",
-				(request, response) -> {
-					return com.sellinall.listinglookup.rocket.CategoryLookup.getCategorySpecifics(
-							request.params(":countryCode"), request.params(":categoryId"));
-				});
+		get("/services/ebay/category/categoryNamePath/:countryCode/:categoryId", (request, response) -> {
+			return CategoryLookup.getCategoryNamePath(request.params(":countryCode"), request.params(":categoryId"));
+		});
 
-		get("/services/shopclues/category/:countryCode/:categoryId",
-				(request, response) -> {
-					return com.sellinall.listinglookup.shopclues.CategoryLookup.getCategorySpecifics(
-							request.params(":countryCode"), request.params(":categoryId"));
-				});
+		get("/services/lazada/category/:countryCode/:categoryId", (request, response) -> {
+			return com.sellinall.listinglookup.rocket.CategoryLookup.getCategorySpecifics(
+					request.params(":countryCode"), request.params(":categoryId"));
+		});
 		
 
 		get("/services/product/:searchParam",

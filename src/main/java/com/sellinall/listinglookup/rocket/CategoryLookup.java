@@ -1,8 +1,8 @@
 package com.sellinall.listinglookup.rocket;
 
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.XML;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
@@ -11,6 +11,7 @@ import com.mongodb.util.JSON;
 import com.sellinall.listinglookup.database.DbUtilities;
 
 public class CategoryLookup {
+	static Logger log = Logger.getLogger(CategoryLookup.class.getName());
 	private static final long thirtyDays = 30 * 24 * 60 * 60;
 
 	public static Object getCategorySpecifics(String countryCode, String categoryId) {
@@ -53,7 +54,7 @@ public class CategoryLookup {
 		String categorySpecificsXML = RocketEcomConnectionUtil.getCategorySpecifics(countryCode, categoryId);
 
 		JSONObject categorySpecificsFromLazada = new JSONObject(categorySpecificsXML);
-		System.out.println(categorySpecificsFromLazada);
+		log.debug(categorySpecificsFromLazada);
 		JSONObject body = categorySpecificsFromLazada
 				.getJSONObject("SuccessResponse")
 				.getJSONObject("Body");
@@ -94,7 +95,7 @@ public class CategoryLookup {
 //		}
 //		JSONObject categorySpecifics = new JSONObject();
 //		categorySpecifics.put("NameRecommendation", NameRecommendation);
-		System.out.println(attributes);
+		log.debug(attributes);
 		return attributes;
 	}
 
