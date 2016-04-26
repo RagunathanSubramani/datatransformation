@@ -32,15 +32,7 @@
 		<property name="EbayAppName" value="${EbayAppName}" />
 		<property name="EbayDevName" value="${EbayDevName}" />
 		<property name="EbayCertName" value="${EbayCertName}" />
-
-		<!--Shopclues value  -->
-		<property name="shopcluesItemSpecificationUrl" value="${shopcluesItemSpecificationUrl}" />
-		<property name="shopcluesAuthUrl" value="${shopcluesAuthUrl}" />
-		<property name="username" value="${username}" />
-		<property name="password" value="${password}" />
-		<property name="client_id" value="${client_id}" />
-		<property name="client_secret" value="${client_secret}" />
-		<property name="grant_type" value="${grant_type}" />
+		<property name="EbayOpenApiURL" value="${EbayOpenApiURL}" />
 
 		<!-- DB Values -->
 		<property name="DbUserName" value="${DbUserName}" />
