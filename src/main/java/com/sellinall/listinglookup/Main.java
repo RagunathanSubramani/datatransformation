@@ -56,12 +56,6 @@ public class Main {
 							request.params(":countryCode"), request.params(":categoryId"));
 				});
 
-		get("/services/lazada/category/:countryCode/:categoryId",
-				(request, response) -> {
-					return com.sellinall.listinglookup.rocket.CategoryLookup.getCategorySpecifics(
-							request.params(":countryCode"), request.params(":categoryId"));
-				});
-
 		get("/services/product/:searchParam",
 				(request, response) -> {
 					return ProductLookup.getMatchingProduct(request.params(":searchParam"),
