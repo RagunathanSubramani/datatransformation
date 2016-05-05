@@ -24,7 +24,7 @@
 		<dependency>
 			<groupId>com.mudra.sellinall.util</groupId>
 			<artifactId>sellinall-util</artifactId>
-			<version>0.0.53-SNAPSHOT</version>
+			<version>0.0.58-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.jettison</groupId>
@@ -45,6 +45,11 @@
 			<groupId>cglib</groupId>
 			<artifactId>cglib</artifactId>
 			<version>2.2.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.6.2</version>
 		</dependency>
 	</dependencies>
 	<distributionManagement>

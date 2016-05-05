@@ -36,4 +36,9 @@ public class CategoryMap {
 		return map;
 	}
 
+	public static BasicDBObject createMap(String Mudra, String body) {
+		// TODO Auto-generated method stub
+		return new BasicDBObject();
+	}
+
 }
