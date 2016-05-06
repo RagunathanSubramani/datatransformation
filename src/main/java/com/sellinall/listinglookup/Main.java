@@ -44,6 +44,10 @@ public class Main {
 			return CategoryLookup.getCategorySpecifics(request.params(":countryCode"), request.params(":categoryId"));
 		});
 
+		get("/services/ebay/category/categoryNamePath/:countryCode/:categoryId", (request, response) -> {
+			return CategoryLookup.getCategoryNamePath(request.params(":countryCode"), request.params(":categoryId"));
+		});
+
 		get("/services/lazada/category/:countryCode/:categoryId",
 				(request, response) -> {
 					return com.sellinall.listinglookup.rocket.CategoryLookup.getCategorySpecifics(
