@@ -26,6 +26,10 @@ public class Config {
 	private String client_secret;
 	private String grant_type;
 
+	private String snapdealUrl;
+	private String snapdealClientId;
+	private String snapdealAuthToken;
+
 	public String getGrant_type() {
 		return grant_type;
 	}
@@ -168,6 +172,30 @@ public class Config {
 
 	public void setSIAAuthServerURL(String sIAAuthServerURL) {
 		SIAAuthServerURL = sIAAuthServerURL;
+	}
+
+	public String getSnapdealUrl() {
+		return snapdealUrl;
+	}
+
+	public void setSnapdealUrl(String snapdealUrl) {
+		this.snapdealUrl = snapdealUrl;
+	}
+
+	public String getSnapdealClientId() {
+		return snapdealClientId;
+	}
+
+	public void setSnapdealClientId(String snapdealClientId) {
+		this.snapdealClientId = snapdealClientId;
+	}
+
+	public String getSnapdealAuthToken() {
+		return snapdealAuthToken;
+	}
+
+	public void setSnapdealAuthToken(String snapdealAuthToken) {
+		this.snapdealAuthToken = snapdealAuthToken;
 	}
 
 	public static Config getConfig() {

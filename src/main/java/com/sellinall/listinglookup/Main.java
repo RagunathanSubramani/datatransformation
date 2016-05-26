@@ -40,25 +40,25 @@ public class Main {
 
 		Config.context = new ClassPathXmlApplicationContext("ConfigProperties.xml");
 
-		get("/services/ebay/category/:countryCode/:categoryId", (request, response) -> {
-			return CategoryLookup.getCategorySpecifics(request.params(":countryCode"), request.params(":categoryId"));
-		});
+		get("/services/:channelName/category/:countryCode/:categoryId",
+				(request, response) -> {
+					String channelName = request.params("channelName");
+					switch (channelName) {
+					case "ebay":
+						return com.sellinall.listinglookup.ebay.CategoryLookup.getCategorySpecifics(
+								request.params(":countryCode"), request.params(":categoryId"));
+					case "lazada":
+						return com.sellinall.listinglookup.rocket.CategoryLookup.getCategorySpecifics(
+								request.params(":countryCode"), request.params(":categoryId"));
+					default:
+						return com.sellinall.listinglookup.CategoryLookup.getCategorySpecifics(
+								request.params(":countryCode"), request.params(":categoryId"), channelName);
+					}
+				});
 
 		get("/services/ebay/category/categoryNamePath/:countryCode/:categoryId", (request, response) -> {
 			return CategoryLookup.getCategoryNamePath(request.params(":countryCode"), request.params(":categoryId"));
 		});
-
-		get("/services/lazada/category/:countryCode/:categoryId",
-				(request, response) -> {
-					return com.sellinall.listinglookup.rocket.CategoryLookup.getCategorySpecifics(
-							request.params(":countryCode"), request.params(":categoryId"));
-				});
-
-		get("/services/shopclues/category/:countryCode/:categoryId",
-				(request, response) -> {
-					return com.sellinall.listinglookup.shopclues.CategoryLookup.getCategorySpecifics(
-							request.params(":countryCode"), request.params(":categoryId"));
-				});
 
 		get("/services/product/:searchParam",
 				(request, response) -> {
