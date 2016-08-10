@@ -18,11 +18,11 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import spark.Request;
 import spark.Response;
 
-import com.mudra.sellinall.util.NewHttpURLConnectionUtil;
 import com.sellinall.listinglookup.category.CategoryMap;
 import com.sellinall.listinglookup.config.Config;
 import com.sellinall.listinglookup.ebay.CategoryLookup;
 import com.sellinall.listinglookup.product.ProductLookup;
+import com.sellinall.util.NewHttpURLConnectionUtil;
 import com.sun.jersey.api.client.ClientResponse;
 
 public class Main {

@@ -17,8 +17,9 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.log4j.Logger;
+import org.codehaus.jettison.json.JSONObject;
 
-import com.mudra.sellinall.util.HttpsURLConnectionUtil;
+import com.sellinall.util.HttpsURLConnectionUtil;
 
 public class RocketEcomConnectionUtil {
 	static Logger log = Logger.getLogger(RocketEcomConnectionUtil.class.getName());
@@ -66,7 +67,7 @@ public class RocketEcomConnectionUtil {
   */
   public static String getSellercenterApiResponse(Map<String, String> params, String ScApiHost, String apiKey,String xml,String method) {
     String queryString = "";
-    String Output = "";
+    String output = "";
     params.put("Timestamp", getCurrentTimestamp());
     params.put("Version", "1.0");
     params.put("Format", "JSON");
@@ -83,15 +84,16 @@ public class RocketEcomConnectionUtil {
 		config.put("charset", CHAR_UTF_8);
 		Thread.sleep(1000);
 		if(method.equals("GET")){
-			Output = HttpsURLConnectionUtil.doGet(request);
+			JSONObject response = HttpsURLConnectionUtil.doGet(request);
+			output = response.getString("payload");
 		}else if(method.equals("POST")){
-			Output = HttpsURLConnectionUtil.doPostWithXML(request, xml);
+			output = HttpsURLConnectionUtil.doPostWithXML(request, xml);
 		}
 
     } catch (Exception e) {
       e.printStackTrace();
     }
-    return Output;
+    return output;
   }
 
   /**

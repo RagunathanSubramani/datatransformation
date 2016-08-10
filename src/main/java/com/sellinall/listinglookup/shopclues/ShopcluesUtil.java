@@ -12,8 +12,8 @@ import org.codehaus.jettison.json.JSONObject;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
-import com.mudra.sellinall.util.HttpsURLConnectionUtil;
 import com.sellinall.listinglookup.config.Config;
+import com.sellinall.util.HttpsURLConnectionUtil;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -43,7 +43,8 @@ public class ShopcluesUtil {
 		String url = ScApiHost.get(countryCode);
 		String urlCat = url + "category_id=" + categoryId;
 		StringWriter out = new StringWriter();
-		String responseString = HttpsURLConnectionUtil.doGet(urlCat, data);
+		JSONObject responseJson = HttpsURLConnectionUtil.doGet(urlCat, data);
+		String responseString = responseJson.getString("payload");
 		Map<String, Object> map = new Gson().fromJson(responseString, new TypeToken<HashMap<String, Object>>() {
 		}.getType());
 

@@ -11,8 +11,8 @@ import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
 
-import com.mudra.sellinall.util.HttpURLConnectionUtil;
 import com.sellinall.listinglookup.config.AmazonConfig;
+import com.sellinall.util.HttpURLConnectionUtil;
 
 public class AmazonUtil {
 	static Logger log = Logger.getLogger(AmazonUtil.class.getName());
