@@ -9,9 +9,9 @@ import org.apache.log4j.Logger;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
-import com.mudra.sellinall.util.HttpURLConnectionUtil;
 import com.sellinall.listinglookup.CategoryLookup;
 import com.sellinall.listinglookup.config.Config;
+import com.sellinall.util.HttpURLConnectionUtil;
 
 import freemarker.template.TemplateException;
 
