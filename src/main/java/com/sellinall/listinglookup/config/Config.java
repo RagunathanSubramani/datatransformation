@@ -16,6 +16,75 @@ public class Config {
 	private String LookupCollectionHostName;
 	private String LookupCollectionPort;
 	private String LookupCollectionDBName;
+	private String SIAAuthServerURL;
+
+	private String shopcluesItemSpecificationUrl;
+	private String shopcluesAuthUrl;
+	private String username;
+	private String password;
+	private String client_id;
+	private String client_secret;
+	private String grant_type;
+
+	private String snapdealUrl;
+	private String snapdealClientId;
+	private String snapdealAuthToken;
+
+	public String getGrant_type() {
+		return grant_type;
+	}
+
+	public void setGrant_type(String grant_type) {
+		this.grant_type = grant_type;
+	}
+
+	public String getClient_secret() {
+		return client_secret;
+	}
+
+	public void setClient_secret(String client_secret) {
+		this.client_secret = client_secret;
+	}
+
+	public String getClient_id() {
+		return client_id;
+	}
+
+	public void setClient_id(String client_id) {
+		this.client_id = client_id;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getShopcluesItemSpecificationUrl() {
+		return shopcluesItemSpecificationUrl;
+	}
+
+	public void setShopcluesItemSpecificationUrl(String shopcluesItemSpecificationUrl) {
+		this.shopcluesItemSpecificationUrl = shopcluesItemSpecificationUrl;
+	}
+
+	public String getShopcluesAuthUrl() {
+		return shopcluesAuthUrl;
+	}
+
+	public void setShopcluesAuthUrl(String shopcluesAuthUrl) {
+		this.shopcluesAuthUrl = shopcluesAuthUrl;
+	}
 
 	public String getEbayPostURL() {
 		return EbayPostURL;
@@ -95,6 +164,38 @@ public class Config {
 
 	public void setLookupCollectionDBName(String userCollectionDBName) {
 		LookupCollectionDBName = userCollectionDBName;
+	}
+
+	public String getSIAAuthServerURL() {
+		return SIAAuthServerURL;
+	}
+
+	public void setSIAAuthServerURL(String sIAAuthServerURL) {
+		SIAAuthServerURL = sIAAuthServerURL;
+	}
+
+	public String getSnapdealUrl() {
+		return snapdealUrl;
+	}
+
+	public void setSnapdealUrl(String snapdealUrl) {
+		this.snapdealUrl = snapdealUrl;
+	}
+
+	public String getSnapdealClientId() {
+		return snapdealClientId;
+	}
+
+	public void setSnapdealClientId(String snapdealClientId) {
+		this.snapdealClientId = snapdealClientId;
+	}
+
+	public String getSnapdealAuthToken() {
+		return snapdealAuthToken;
+	}
+
+	public void setSnapdealAuthToken(String snapdealAuthToken) {
+		this.snapdealAuthToken = snapdealAuthToken;
 	}
 
 	public static Config getConfig() {

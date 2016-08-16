@@ -6,8 +6,8 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.mudra.sellinall.util.HttpURLConnectionUtil;
 import com.sellinall.listinglookup.config.Config;
+import com.sellinall.util.HttpURLConnectionUtil;
 
 public class EBayUtil {
 	static Logger log = Logger.getLogger(EBayUtil.class.getName());
