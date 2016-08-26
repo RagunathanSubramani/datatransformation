@@ -19,6 +19,7 @@ import spark.Request;
 import spark.Response;
 
 import com.sellinall.listinglookup.category.CategoryMap;
+import com.sellinall.listinglookup.category.CategorySpecific;
 import com.sellinall.listinglookup.config.Config;
 import com.sellinall.listinglookup.ebay.CategoryLookup;
 import com.sellinall.listinglookup.product.ProductLookup;
@@ -73,9 +74,21 @@ public class Main {
 							request.queryParams("targetChannel"), request.queryParams("targetCountryCode"));
 				});
 
+		get("/services/categorySpecificValues/:channel/:categoryId",
+				(request, response) -> {
+					return CategorySpecific.getValues(request.params(":channel"), request.params("categoryId"),
+							request.queryParams("countryCode"), request.attribute("accountNumber").toString());
+				});
+
 		put("/services/categoryMap", (request, response) -> {
 			return CategoryMap.createMap(request.headers("Mudra"), request.body());
 		});
+
+		put("/services/categorySpecificValues/:channel/:categoryId",
+				(request, response) -> {
+					return CategorySpecific.upsertValues(request.params(":channel"), request.params("categoryId"),
+							request.body());
+				});
 
 		after((request, response) -> {
 			setResponseHeaders(response);
@@ -86,7 +99,10 @@ public class Main {
 				setResponseHeaders(response);
 				halt(200);
 			}
-			if (request.requestMethod().equals("PUT")) {
+			if ((request.requestMethod().equals("PUT") && request.pathInfo().startsWith(
+					"/services/categoryMap"))
+					|| (request.requestMethod().equals("GET") && request.pathInfo().startsWith(
+							"/services/categorySpecificValues"))) {
 				boolean isValidRequest = validate(request);
 				if (!isValidRequest) {
 					halt(401);
@@ -109,8 +125,8 @@ public class Main {
 			// TODO: map the response http code
 			if (response.getStatus() == HttpStatus.OK_200) {
 				JSONObject responseEntity = new JSONObject(response.getEntity(String.class));
-				String userId = responseEntity.getString("userId");
-				request.attribute("userId", userId);
+				String accountNumber = responseEntity.getString("userId");
+				request.attribute("accountNumber", accountNumber);
 				return true;
 			}
 			return false;
