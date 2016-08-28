@@ -74,9 +74,9 @@ public class Main {
 							request.queryParams("targetChannel"), request.queryParams("targetCountryCode"));
 				});
 
-		get("/services/categorySpecificValues/:channel/:categoryId",
+		get("/services/categorySpecificValues/:nicknameId/:categoryId",
 				(request, response) -> {
-					return CategorySpecific.getValues(request.params(":channel"), request.params("categoryId"),
+					return CategorySpecific.getValues(request.params(":nicknameId"), request.params("categoryId"),
 							request.queryParams("countryCode"), request.queryParams("accountNumber"));
 				});
 
@@ -84,9 +84,9 @@ public class Main {
 			return CategoryMap.createMap(request.headers("Mudra"), request.body());
 		});
 
-		put("/services/categorySpecificValues/:channel/:categoryId",
+		put("/services/categorySpecificValues/:nicknameId/:categoryId",
 				(request, response) -> {
-					return CategorySpecific.upsertValues(request.params(":channel"), request.params("categoryId"),
+					return CategorySpecific.upsertValues(request.params(":nicknameId"), request.params("categoryId"),
 							request.queryParams("accountNumber"), request.body());
 				});
 
