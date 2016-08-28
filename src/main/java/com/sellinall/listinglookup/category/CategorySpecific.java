@@ -29,13 +29,13 @@ public class CategorySpecific {
 		}
 	}
 
-	public static Object upsertValues(String channel, String categoryId, String request) {
+	public static Object upsertValues(String channel, String categoryId, String accountNumber, String request) {
 		JSONObject jsonRequest = new JSONObject(request);
-		String accountNumber = jsonRequest.getString("accountNumber");
 		String countryCode = jsonRequest.has("countryCode") ? jsonRequest.getString("countryCode") : null;
 
 		DBCollection collection = getCollection(channel);
 		BasicDBObject query = getQueryObject(categoryId, accountNumber, countryCode);
+		log.debug("query:" + query);
 		BasicDBObject fields = new BasicDBObject("_id", 0);
 		BasicDBObject update = new BasicDBObject("$set", JSON.parse(request));
 		BasicDBObject result = (BasicDBObject) collection.findAndModify(query, fields, null, false, update, true, true);

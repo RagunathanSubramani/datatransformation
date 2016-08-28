@@ -77,7 +77,7 @@ public class Main {
 		get("/services/categorySpecificValues/:channel/:categoryId",
 				(request, response) -> {
 					return CategorySpecific.getValues(request.params(":channel"), request.params("categoryId"),
-							request.queryParams("countryCode"), request.attribute("accountNumber").toString());
+							request.queryParams("countryCode"), request.queryParams("accountNumber"));
 				});
 
 		put("/services/categoryMap", (request, response) -> {
@@ -87,7 +87,7 @@ public class Main {
 		put("/services/categorySpecificValues/:channel/:categoryId",
 				(request, response) -> {
 					return CategorySpecific.upsertValues(request.params(":channel"), request.params("categoryId"),
-							request.body());
+							request.queryParams("accountNumber"), request.body());
 				});
 
 		after((request, response) -> {
@@ -99,8 +99,7 @@ public class Main {
 				setResponseHeaders(response);
 				halt(200);
 			}
-			if ((request.requestMethod().equals("PUT") && request.pathInfo().startsWith(
-					"/services/categoryMap"))
+			if ((request.requestMethod().equals("PUT"))
 					|| (request.requestMethod().equals("GET") && request.pathInfo().startsWith(
 							"/services/categorySpecificValues"))) {
 				boolean isValidRequest = validate(request);
@@ -114,6 +113,11 @@ public class Main {
 
 	private static boolean validate(Request request) {
 		try {
+			String isSIAServer = request.headers("SIAServer");
+			if ( isSIAServer != null && isSIAServer.equals("true")) {
+				return true;
+			}
+			String accountNumQueryParam = request.queryParams("accountNumber");
 			String mudraToken = request.headers("Mudra");
 			Map<String, String> header = new HashMap<String, String>();
 			header.put("authType", "facebook");
@@ -127,6 +131,9 @@ public class Main {
 				JSONObject responseEntity = new JSONObject(response.getEntity(String.class));
 				String accountNumber = responseEntity.getString("userId");
 				request.attribute("accountNumber", accountNumber);
+				if (accountNumQueryParam != null && !accountNumQueryParam.equals(accountNumber)){
+					return false;
+				}
 				return true;
 			}
 			return false;
