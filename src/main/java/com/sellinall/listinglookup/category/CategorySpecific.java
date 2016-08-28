@@ -37,7 +37,7 @@ public class CategorySpecific {
 		BasicDBObject query = getQueryObject(categoryId, accountNumber, countryCode);
 		log.debug("query:" + query);
 		BasicDBObject fields = new BasicDBObject("_id", 0);
-		BasicDBObject update = new BasicDBObject("$set", JSON.parse(request));
+		BasicDBObject update = (BasicDBObject) JSON.parse(request);
 		BasicDBObject result = (BasicDBObject) collection.findAndModify(query, fields, null, false, update, true, true);
 		return result;
 	}
