@@ -18,7 +18,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import spark.Request;
 import spark.Response;
 
-import com.sellinall.listinglookup.category.CategoryMap;
+import com.sellinall.listinglookup.category.FieldsMap;
 import com.sellinall.listinglookup.category.CategorySpecific;
 import com.sellinall.listinglookup.config.Config;
 import com.sellinall.listinglookup.ebay.CategoryLookup;
@@ -69,7 +69,7 @@ public class Main {
 
 		get("/services/categoryMap/:sourceChannel/:sourceCountryCode/:categoryId",
 				(request, response) -> {
-					return CategoryMap.getCategoryMap(request.params(":sourceChannel"),
+					return FieldsMap.getCategoryMap(request.params(":sourceChannel"),
 							request.params("sourceCountryCode"), request.params("categoryId"),
 							request.queryParams("targetChannel"), request.queryParams("targetCountryCode"));
 				});
@@ -80,8 +80,8 @@ public class Main {
 							request.queryParams("countryCode"), request.queryParams("accountNumber"));
 				});
 
-		put("/services/categoryMap", (request, response) -> {
-			return CategoryMap.createMap(request.headers("Mudra"), request.body());
+		put("/services/fieldsMap", (request, response) -> {
+			return FieldsMap.createMap(request.headers("Mudra"), request.body());
 		});
 
 		put("/services/categorySpecificValues/:nicknameId/:categoryId",

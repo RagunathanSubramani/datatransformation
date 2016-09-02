@@ -15,7 +15,7 @@ import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import com.sellinall.listinglookup.database.DbUtilities;
 
-public class CategoryMap {
+public class FieldsMap {
 	static Logger log = Logger.getLogger(CategorySpecific.class.getName());
 
 	public static Object getCategoryMap(String sourceChannel, String sourceCountryCode, String categoryId,
@@ -40,7 +40,7 @@ public class CategoryMap {
 		BasicDBObject fields = new BasicDBObject("_id", 0);
 		fields.put("score", new BasicDBObject("$meta", "textScore"));
 		log.debug("fields " + fields);
-		DBCollection collection = DbUtilities.getLookupDBCollection("categoryMapPoC");
+		DBCollection collection = DbUtilities.getLookupDBCollection("fieldsMap");
 		List<DBObject> result = (List<DBObject>) collection.find(query, fields)
 				.sort(new BasicDBObject("score", new BasicDBObject("$meta", "textScore"))).limit(1).toArray();
 		if (result.size() > 0) {
@@ -50,10 +50,9 @@ public class CategoryMap {
 		}
 	}
 
-	public static BasicDBObject createMap(String Mudra, String body) {
-		String input = "{\"sourceNicknameId\":\"eBay-1\",\"sourceCountryCode\":\"US\",\"targetNicknameId\":\"eBay-2\",\"targetCountryCode\":\"AU\",\"accountNumber\":\"12345\",\"map\":[{\"source\":[{\"field\":\"categoryId\",\"value\":\"12344\"},{\"parent\":\"itemSpecifics\",\"field\":\"title+names\",\"value\":\"Gem Type+Chrysoberyl\"},],\"target\":{\"field\":\"categoryId\",\"value\":\"12345\"}},{\"source\":[{\"field\":\"storeFront.storeCategoryID\",\"value\":\"12\"}],\"target\":{\"field\":\"storeFront.storeCategoryID\",\"value\":\"15\"}}]}";
-		JSONObject jsonInput = new JSONObject(input);
-		JSONArray map = jsonInput.getJSONArray("map");
+	public static BasicDBObject createMap(String Mudra, String request) {
+		JSONObject jsonRequest = new JSONObject(request);
+		JSONArray map = jsonRequest.getJSONArray("map");
 		String key = "";
 		for (int i = 0; i < map.length(); i++) {
 			key = addDelimiter(i, key, ",");
@@ -62,19 +61,19 @@ public class CategoryMap {
 			key = getKeyFromSource(source, key);
 		}
 		log.debug("key:" + key);
-		BasicDBObject update = (BasicDBObject) JSON.parse(jsonInput.toString());
+		BasicDBObject update = (BasicDBObject) JSON.parse(jsonRequest.toString());
 		update.put("key", key);
 
 		BasicDBObject query = new BasicDBObject();
-		query.put("sourceNicknameId", jsonInput.getString("sourceNicknameId"));
-		query.put("sourceCountryCode", jsonInput.getString("sourceCountryCode"));
-		query.put("targetNicknameId", jsonInput.getString("targetNicknameId"));
-		query.put("targetCountryCode", jsonInput.getString("targetCountryCode"));
-		query.put("accountNumber", jsonInput.getString("accountNumber"));
+		query.put("sourceNicknameId", jsonRequest.getString("sourceNicknameId"));
+		query.put("sourceCountryCode", jsonRequest.getString("sourceCountryCode"));
+		query.put("targetNicknameId", jsonRequest.getString("targetNicknameId"));
+		query.put("targetCountryCode", jsonRequest.getString("targetCountryCode"));
+		query.put("accountNumber", jsonRequest.getString("accountNumber"));
 		query.put("key", key);
 
 		BasicDBObject fields = new BasicDBObject("_id", 0);
-		DBCollection collection = DbUtilities.getLookupDBCollection("categoryMapPoC");
+		DBCollection collection = DbUtilities.getLookupDBCollection("fieldsMap");
 		BasicDBObject result = (BasicDBObject) collection.findAndModify(query, fields, null, false, update, true, true);
 		return result;
 	}
@@ -99,9 +98,15 @@ public class CategoryMap {
 					mapIndex++;
 				}
 			}
-			key = key + field.replace(" ", "_").replace("+", "_").replace(".", "_") + "_";
-			key = key + value.replace(" ", "_").replace("+", "_").replace(".", "_");
+			key = replacePunctuationMarks(key, field, value);
 		}
+		return key;
+	}
+
+	private static String replacePunctuationMarks(String key, String field, String value) {
+		//TODO: fix this to replace all punctuation marks with _.
+		key = key + field.replace(" ", "_").replace("+", "_").replace(".", "_") + "_";
+		key = key + value.replace(" ", "_").replace("+", "_").replace(".", "_");
 		return key;
 	}
 
