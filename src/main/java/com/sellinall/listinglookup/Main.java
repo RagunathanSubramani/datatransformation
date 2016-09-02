@@ -19,6 +19,7 @@ import spark.Request;
 import spark.Response;
 
 import com.sellinall.listinglookup.category.CategoryMap;
+import com.sellinall.listinglookup.category.CategorySpecific;
 import com.sellinall.listinglookup.config.Config;
 import com.sellinall.listinglookup.ebay.CategoryLookup;
 import com.sellinall.listinglookup.product.ProductLookup;
@@ -73,9 +74,21 @@ public class Main {
 							request.queryParams("targetChannel"), request.queryParams("targetCountryCode"));
 				});
 
+		get("/services/categorySpecificValues/:nicknameId/:categoryId",
+				(request, response) -> {
+					return CategorySpecific.getValues(request.params(":nicknameId"), request.params("categoryId"),
+							request.queryParams("countryCode"), request.queryParams("accountNumber"));
+				});
+
 		put("/services/categoryMap", (request, response) -> {
 			return CategoryMap.createMap(request.headers("Mudra"), request.body());
 		});
+
+		put("/services/categorySpecificValues/:nicknameId/:categoryId",
+				(request, response) -> {
+					return CategorySpecific.upsertValues(request.params(":nicknameId"), request.params("categoryId"),
+							request.queryParams("accountNumber"), request.body());
+				});
 
 		after((request, response) -> {
 			setResponseHeaders(response);
@@ -86,7 +99,9 @@ public class Main {
 				setResponseHeaders(response);
 				halt(200);
 			}
-			if (request.requestMethod().equals("PUT")) {
+			if ((request.requestMethod().equals("PUT"))
+					|| (request.requestMethod().equals("GET") && request.pathInfo().startsWith(
+							"/services/categorySpecificValues"))) {
 				boolean isValidRequest = validate(request);
 				if (!isValidRequest) {
 					halt(401);
@@ -98,6 +113,11 @@ public class Main {
 
 	private static boolean validate(Request request) {
 		try {
+			String isSIAServer = request.headers("SIAServer");
+			if ( isSIAServer != null && isSIAServer.equals("true")) {
+				return true;
+			}
+			String accountNumQueryParam = request.queryParams("accountNumber");
 			String mudraToken = request.headers("Mudra");
 			Map<String, String> header = new HashMap<String, String>();
 			header.put("authType", "facebook");
@@ -109,8 +129,11 @@ public class Main {
 			// TODO: map the response http code
 			if (response.getStatus() == HttpStatus.OK_200) {
 				JSONObject responseEntity = new JSONObject(response.getEntity(String.class));
-				String userId = responseEntity.getString("userId");
-				request.attribute("userId", userId);
+				String accountNumber = responseEntity.getString("userId");
+				request.attribute("accountNumber", accountNumber);
+				if (accountNumQueryParam != null && !accountNumQueryParam.equals(accountNumber)){
+					return false;
+				}
 				return true;
 			}
 			return false;
