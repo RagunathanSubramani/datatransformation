@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
@@ -17,24 +18,31 @@ import com.mongodb.util.JSON;
 import com.sellinall.listinglookup.database.DbUtilities;
 
 public class FieldsMap {
-	static Logger log = Logger.getLogger(CategorySpecific.class.getName());
+	static Logger log = Logger.getLogger(FieldsMap.class.getName());
 
-	public static Object getCategoryMap(String sourceChannel, String sourceCountryCode, String categoryId,
-			String targetChannel, String targetCountryCode) {
-		String input = "{\"sourceNicknameId\":\"eBay-1\",\"sourceCountryCode\":\"US\",\"targetNicknameId\":\"eBay-2\",\"targetCountryCode\":\"AU\",\"accountNumber\":\"12345\",\"source\":[{\"field\":\"auction\",\"value\":\"true\"},{\"field\":\"bestOffer\",\"value\":\"false\"},{\"field\":\"categoryID\",\"value\":\"12344\"},{\"field\":\"conditionID\",\"value\":\"1000\"},{\"field\":\"storeFront.storeCategoryID\",\"value\":\"12\"},{\"field\":\"itemDuration\",\"value\":\"Days_7\"},{\"parent\":\"itemSpecifics\",\"field\":\"title+names\",\"value\":\"Gem Type+Chrysoberyl\"},{\"parent\":\"itemSpecifics\",\"field\":\"title+names\",\"value\":\"Color+Lime_Green\"},{\"parent\":\"itemSpecifics\",\"field\":\"title+names\",\"value\":\"Hardness+8.0_MOH' SCALE\"}]}";
-		JSONObject jsonInput = new JSONObject(input);
-		JSONArray source = jsonInput.getJSONArray("source");
+	public static Object postSourceChannelDetails(String request, String standardFormat) {
+
+		JSONArray standardFormatSource;
+		JSONObject jsonRequest = new JSONObject(request);
+
+		if (!Boolean.parseBoolean(standardFormat)) {
+			JSONObject source = jsonRequest.getJSONObject("source");
+			standardFormatSource = convertToStandardFormatSource(source);
+		} else {
+			standardFormatSource = jsonRequest.getJSONArray("source");
+		}
+		log.debug(standardFormatSource);
 		String key = "";
-		key = getKeyFromSource(source, key);
+		key = getKeyFromSource(standardFormatSource, key);
 
 		log.debug("key = " + key);
 
 		BasicDBObject query = new BasicDBObject();
-		query.put("sourceNicknameId", jsonInput.getString("sourceNicknameId"));
-		query.put("sourceCountryCode", jsonInput.getString("sourceCountryCode"));
-		query.put("targetNicknameId", jsonInput.getString("targetNicknameId"));
-		query.put("targetCountryCode", jsonInput.getString("targetCountryCode"));
-		query.put("accountNumber", jsonInput.getString("accountNumber"));
+		query.put("sourceNicknameId", jsonRequest.getString("sourceNicknameId"));
+		query.put("sourceCountryCode", jsonRequest.getString("sourceCountryCode"));
+		query.put("targetNicknameId", jsonRequest.getString("targetNicknameId"));
+		query.put("targetCountryCode", jsonRequest.getString("targetCountryCode"));
+		query.put("accountNumber", jsonRequest.getString("accountNumber"));
 		query.put("$text", new BasicDBObject("$search", key));
 		log.debug("query " + query);
 
@@ -51,7 +59,58 @@ public class FieldsMap {
 		}
 	}
 
-	public static BasicDBObject createMap(String Mudra, String request) {
+	private static JSONArray convertToStandardFormatSource(JSONObject source) {
+		JSONArray output = new JSONArray();
+		Set<String> keySet = source.keySet();
+		for (String key : keySet) {
+
+			Object value = source.get(key);
+			if (value instanceof JSONObject) {
+				JSONArray outputArray = convertToStandardFormatSource((JSONObject) value);
+				for (int i = 0; i < outputArray.length(); i++) {
+					JSONObject json = new JSONObject();
+					json.put("field", key + "." + outputArray.getJSONObject(i).getString("field"));
+					json.put("value", outputArray.getJSONObject(i).getString("value"));
+					output.put(json);
+				}
+			} else if (value instanceof JSONArray) {
+				JSONArray valueArray = (JSONArray) value;
+				if (!"itemSpecifics".equals(key)) {
+					JSONObject json = new JSONObject();
+					json.put("field", key);
+					json.put("value", getCSV(valueArray));
+					output.put(json);
+				} else {
+					for (int i = 0; i < valueArray.length(); i++) {
+						String title = valueArray.getJSONObject(i).getString("title");
+						JSONArray names = valueArray.getJSONObject(i).getJSONArray("names");
+						JSONObject json = new JSONObject();
+						json.put("field", key + "." + title);
+						json.put("value", getCSV(names));
+						output.put(json);
+					}
+				}
+			} else {
+				JSONObject json = new JSONObject();
+				json.put("field", key);
+				json.put("value", value.toString());
+				output.put(json);
+			}
+		}
+
+		return output;
+	}
+
+	private static String getCSV(JSONArray names) {
+		String str = "";
+		for (int i = 0; i < names.length(); i++) {
+			str = addDelimiter(i, str, ",");
+			str = str + names.get(i).toString();
+		}
+		return str;
+	}
+
+	public static BasicDBObject createMap(String request) {
 		JSONObject jsonRequest = new JSONObject(request);
 		JSONArray map = jsonRequest.getJSONArray("map");
 		String key = "";
@@ -108,7 +167,7 @@ public class FieldsMap {
 	}
 
 	private static String replacePunctuationMarks(String key, String field, String value) {
-		//TODO: fix this to replace all punctuation marks with _.
+		// TODO: fix this to replace all punctuation marks with _.
 		key = key + field.replace(" ", "_").replace("+", "_").replace(".", "_") + "_";
 		key = key + value.replace(" ", "_").replace("+", "_").replace(".", "_");
 		return key;
