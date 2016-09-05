@@ -1,5 +1,6 @@
 package com.sellinall.listinglookup.category;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -70,10 +71,10 @@ public class FieldsMap {
 		query.put("targetNicknameId", jsonRequest.getString("targetNicknameId"));
 		query.put("targetCountryCode", jsonRequest.getString("targetCountryCode"));
 		query.put("accountNumber", jsonRequest.getString("accountNumber"));
-		query.put("key", key);
 
 		BasicDBObject fields = new BasicDBObject("_id", 0);
 		DBCollection collection = DbUtilities.getLookupDBCollection("fieldsMap");
+		log.debug("query " + query + "fields " + fields + "update " + update);
 		BasicDBObject result = (BasicDBObject) collection.findAndModify(query, fields, null, false, update, true, true);
 		return result;
 	}
@@ -83,7 +84,10 @@ public class FieldsMap {
 			key = addDelimiter(j, key, ",");
 			JSONObject sourceItem = source.getJSONObject(j);
 			String field = sourceItem.getString("field");
-			String value = sourceItem.getString("value");
+			String value = null;
+			if (sourceItem.has("value")) {
+				value = sourceItem.getString("value");
+			}
 			if (sourceItem.has("parent")) {
 				key = key + sourceItem.getString("parent") + "_";
 				Map<String, String> fieldValueMap = getMap(field, value);
@@ -112,7 +116,13 @@ public class FieldsMap {
 
 	private static Map<String, String> getMap(String field, String value) {
 		String[] fields = field.split("\\+");
-		String[] values = value.split("\\+");
+		String[] values;
+		if (value != null) {
+			values = value.split("\\+");
+		} else {
+			values = new String[fields.length];
+			Arrays.fill(values, "");
+		}
 		Map<String, String> fieldValueMap = new TreeMap<String, String>();
 		for (int fieldIndex = 0; fieldIndex < fields.length; fieldIndex++) {
 			fieldValueMap.put(fields[fieldIndex], values[fieldIndex]);
