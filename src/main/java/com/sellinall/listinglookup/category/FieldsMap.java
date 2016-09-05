@@ -1,11 +1,7 @@
 package com.sellinall.listinglookup.category;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -32,10 +28,10 @@ public class FieldsMap {
 			standardFormatSource = jsonRequest.getJSONArray("source");
 		}
 		log.debug(standardFormatSource);
-		String key = "";
-		key = getKeyFromSource(standardFormatSource, key);
+		String searchKey = "";
+		searchKey = getKeyFromSource(standardFormatSource, searchKey);
 
-		log.debug("key = " + key);
+		log.debug("searchKey = " + searchKey);
 
 		BasicDBObject query = new BasicDBObject();
 		query.put("sourceNicknameId", jsonRequest.getString("sourceNicknameId"));
@@ -43,7 +39,7 @@ public class FieldsMap {
 		query.put("targetNicknameId", jsonRequest.getString("targetNicknameId"));
 		query.put("targetCountryCode", jsonRequest.getString("targetCountryCode"));
 		query.put("accountNumber", jsonRequest.getString("accountNumber"));
-		query.put("$text", new BasicDBObject("$search", key));
+		query.put("$text", new BasicDBObject("$search", searchKey));
 		log.debug("query " + query);
 
 		BasicDBObject fields = new BasicDBObject("_id", 0);
@@ -113,16 +109,16 @@ public class FieldsMap {
 	public static BasicDBObject createMap(String request) {
 		JSONObject jsonRequest = new JSONObject(request);
 		JSONArray map = jsonRequest.getJSONArray("map");
-		String key = "";
+		String searchKey = "";
 		for (int i = 0; i < map.length(); i++) {
-			key = addDelimiter(i, key, ",");
+			searchKey = addDelimiter(i, searchKey, ",");
 			JSONObject entry = map.getJSONObject(i);
 			JSONArray source = entry.getJSONArray("source");
-			key = getKeyFromSource(source, key);
+			searchKey = getKeyFromSource(source, searchKey);
 		}
-		log.debug("key:" + key);
+		log.debug("searchKey:" + searchKey);
 		BasicDBObject update = (BasicDBObject) JSON.parse(jsonRequest.toString());
-		update.put("key", key);
+		update.put("searchKey", searchKey);
 
 		BasicDBObject query = new BasicDBObject();
 		query.put("sourceNicknameId", jsonRequest.getString("sourceNicknameId"));
@@ -143,23 +139,9 @@ public class FieldsMap {
 			key = addDelimiter(j, key, ",");
 			JSONObject sourceItem = source.getJSONObject(j);
 			String field = sourceItem.getString("field");
-			String value = null;
+			String value = "";
 			if (sourceItem.has("value")) {
 				value = sourceItem.getString("value");
-			}
-			if (sourceItem.has("parent")) {
-				key = key + sourceItem.getString("parent") + "_";
-				Map<String, String> fieldValueMap = getMap(field, value);
-				field = "";
-				value = "";
-				int mapIndex = 0;
-				for (Entry<String, String> fieldValueEntry : fieldValueMap.entrySet()) {
-					field = addDelimiter(mapIndex, field, "+");
-					value = addDelimiter(mapIndex, value, "+");
-					field = field + fieldValueEntry.getKey();
-					value = value + fieldValueEntry.getValue();
-					mapIndex++;
-				}
 			}
 			key = replacePunctuationMarks(key, field, value);
 		}
@@ -171,22 +153,6 @@ public class FieldsMap {
 		key = key + field.replace(" ", "_").replace("+", "_").replace(".", "_") + "_";
 		key = key + value.replace(" ", "_").replace("+", "_").replace(".", "_");
 		return key;
-	}
-
-	private static Map<String, String> getMap(String field, String value) {
-		String[] fields = field.split("\\+");
-		String[] values;
-		if (value != null) {
-			values = value.split("\\+");
-		} else {
-			values = new String[fields.length];
-			Arrays.fill(values, "");
-		}
-		Map<String, String> fieldValueMap = new TreeMap<String, String>();
-		for (int fieldIndex = 0; fieldIndex < fields.length; fieldIndex++) {
-			fieldValueMap.put(fields[fieldIndex], values[fieldIndex]);
-		}
-		return fieldValueMap;
 	}
 
 	private static String addDelimiter(int index, String str, String delimiter) {
