@@ -115,13 +115,25 @@ public class FieldsMap {
 			if (targetValue != null) {
 				String targetField = target.getString("field");
 				JSONObject json = getJSONObjectFromDotNotation(targetField, targetValue);
-				String key = json.keys().next();
-				// TODO: merge objects if the key is already existing
-				output.put(key, json.get(key));
+				mergeKeys(json, output);
 			}
 
 		}
 		return output;
+	}
+
+	//Merge is done only for nested json objects
+	private static void mergeKeys(JSONObject mergeFrom, JSONObject mergeTo) {
+		String key = mergeFrom.keys().next();
+		if (mergeTo.has(key)) {
+			if ((mergeFrom.get(key) instanceof JSONObject) && (mergeFrom.get(key) instanceof JSONObject)) {
+				mergeKeys(mergeFrom.getJSONObject(key), mergeTo.getJSONObject(key));
+			} else {
+				mergeTo.put(key, mergeFrom.get(key));
+			}
+		} else {
+			mergeTo.put(key, mergeFrom.get(key));
+		}
 	}
 
 	private static Object getValueFromSource(String field, JSONObject sourceFromRequest) {
