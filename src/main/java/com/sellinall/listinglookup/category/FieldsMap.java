@@ -27,18 +27,9 @@ public class FieldsMap {
 		} else {
 			standardFormatSource = jsonRequest.getJSONArray("source");
 		}
-		log.debug(standardFormatSource);
 		String searchKey = "";
 		searchKey = getKeyFromSource(standardFormatSource, searchKey);
-
-		log.debug("searchKey = " + searchKey);
-
-		BasicDBObject query = new BasicDBObject();
-		query.put("sourceNicknameId", jsonRequest.getString("sourceNicknameId"));
-		query.put("sourceCountryCode", jsonRequest.getString("sourceCountryCode"));
-		query.put("targetNicknameId", jsonRequest.getString("targetNicknameId"));
-		query.put("targetCountryCode", jsonRequest.getString("targetCountryCode"));
-		query.put("accountNumber", jsonRequest.getString("accountNumber"));
+		BasicDBObject query = getQueryObject(jsonRequest);
 		query.put("$text", new BasicDBObject("$search", searchKey));
 		log.debug("query " + query);
 
@@ -46,10 +37,16 @@ public class FieldsMap {
 		fields.put("score", new BasicDBObject("$meta", "textScore"));
 		log.debug("fields " + fields);
 		DBCollection collection = DbUtilities.getLookupDBCollection("fieldsMap");
-		List<DBObject> result = (List<DBObject>) collection.find(query, fields)
+		List<DBObject> results = (List<DBObject>) collection.find(query, fields)
 				.sort(new BasicDBObject("score", new BasicDBObject("$meta", "textScore"))).limit(1).toArray();
-		if (result.size() > 0) {
-			return result.get(0);
+		if (results.size() > 0) {
+			if (Boolean.parseBoolean(standardFormat)) {
+				return results.get(0);
+			} else {
+				DBObject result = results.get(0);
+				JSONObject siteFormatResult = convertToSiteFormat(result, jsonRequest.getJSONObject("source"));
+				return siteFormatResult;
+			}
 		} else {
 			return new BasicDBObject();
 		}
@@ -97,6 +94,56 @@ public class FieldsMap {
 		return output;
 	}
 
+	@SuppressWarnings("unchecked")
+	private static JSONObject convertToSiteFormat(DBObject result, JSONObject sourceFromRequest) {
+		JSONObject output = new JSONObject();
+		List<BasicDBObject> map = (List<BasicDBObject>) result.get("map");
+		for (BasicDBObject mapEntry : map) {
+			List<BasicDBObject> sourceList = (List<BasicDBObject>) mapEntry.get("source");
+			BasicDBObject target = (BasicDBObject) mapEntry.get("target");
+			Object targetValue = null;
+			if (target.containsField("value")) {
+				targetValue = target.getString("value");
+			} else {
+				// For the current use cases, only one object can be present in
+				// the array. Handle multiple objects use case in future as
+				// needed.
+				BasicDBObject source = sourceList.get(0);
+				targetValue = getValueFromSource(source.getString("field"), sourceFromRequest);
+			}
+
+			if (targetValue != null) {
+				String targetField = target.getString("field");
+				JSONObject json = getJSONObjectFromDotNotation(targetField, targetValue);
+				String key = json.keys().next();
+				// TODO: merge objects if the key is already existing
+				output.put(key, json.get(key));
+			}
+
+		}
+		return output;
+	}
+
+	private static Object getValueFromSource(String field, JSONObject sourceFromRequest) {
+		String[] fields = field.split("\\.", 2);
+		if (fields.length == 2) {
+			return getValueFromSource(fields[1], sourceFromRequest);
+		} else {
+			return sourceFromRequest.get(fields[0]);
+		}
+	}
+
+	private static JSONObject getJSONObjectFromDotNotation(String field, Object value) {
+		String[] fields = field.split("\\.", 2);
+		JSONObject result = new JSONObject();
+		if (fields.length == 2) {
+			result.put(fields[0], getJSONObjectFromDotNotation(fields[1], value));
+		} else {
+			result.put(fields[0], value);
+		}
+		return result;
+	}
+
 	private static String getCSV(JSONArray names) {
 		String str = "";
 		for (int i = 0; i < names.length(); i++) {
@@ -120,18 +167,23 @@ public class FieldsMap {
 		BasicDBObject update = (BasicDBObject) JSON.parse(jsonRequest.toString());
 		update.put("searchKey", searchKey);
 
-		BasicDBObject query = new BasicDBObject();
-		query.put("sourceNicknameId", jsonRequest.getString("sourceNicknameId"));
-		query.put("sourceCountryCode", jsonRequest.getString("sourceCountryCode"));
-		query.put("targetNicknameId", jsonRequest.getString("targetNicknameId"));
-		query.put("targetCountryCode", jsonRequest.getString("targetCountryCode"));
-		query.put("accountNumber", jsonRequest.getString("accountNumber"));
+		BasicDBObject query = getQueryObject(jsonRequest);
 
 		BasicDBObject fields = new BasicDBObject("_id", 0);
 		DBCollection collection = DbUtilities.getLookupDBCollection("fieldsMap");
 		log.debug("query " + query + "fields " + fields + "update " + update);
 		BasicDBObject result = (BasicDBObject) collection.findAndModify(query, fields, null, false, update, true, true);
 		return result;
+	}
+
+	private static BasicDBObject getQueryObject(JSONObject jsonRequest) {
+		BasicDBObject query = new BasicDBObject();
+		query.put("sourceNicknameId", jsonRequest.getString("sourceNicknameId"));
+		query.put("sourceCountryCode", jsonRequest.getString("sourceCountryCode"));
+		query.put("targetNicknameId", jsonRequest.getString("targetNicknameId"));
+		query.put("targetCountryCode", jsonRequest.getString("targetCountryCode"));
+		query.put("accountNumber", jsonRequest.getString("accountNumber"));
+		return query;
 	}
 
 	private static String getKeyFromSource(JSONArray source, String key) {
@@ -149,7 +201,9 @@ public class FieldsMap {
 	}
 
 	private static String replacePunctuationMarks(String key, String field, String value) {
-		// TODO: fix this to replace all punctuation marks with _.
+		// TODO: fix this to replace all punctuation marks with _. The list can
+		// be found at
+		// https://docs.mongodb.com/manual/core/index-text/#tokenization-delimiters.
 		key = key + field.replace(" ", "_").replace("+", "_").replace(".", "_") + "_";
 		key = key + value.replace(" ", "_").replace("+", "_").replace(".", "_");
 		return key;
