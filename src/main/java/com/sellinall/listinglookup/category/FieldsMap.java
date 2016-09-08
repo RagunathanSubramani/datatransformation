@@ -206,6 +206,7 @@ public class FieldsMap {
 		update.put("searchKey", searchKey);
 
 		BasicDBObject query = getQueryObject(jsonRequest);
+		query.put("searchKey", searchKey);
 
 		BasicDBObject fields = new BasicDBObject("_id", 0);
 		DBCollection collection = DbUtilities.getLookupDBCollection("fieldsMap");
