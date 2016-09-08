@@ -38,16 +38,17 @@ public class FieldsMap {
 			}
 		}
 
+		DBObject result = new BasicDBObject();
 		if (!results.isEmpty()) {
-			DBObject result = results.get(0);
-			if (Boolean.parseBoolean(standardFormat)) {
-				return result;
-			} else {
-				JSONObject siteFormatResult = convertToSiteFormat(result, jsonRequest.getJSONObject("source"));
-				return siteFormatResult;
-			}
+			result = results.get(0);
 		}
-		return new BasicDBObject();
+
+		if (Boolean.parseBoolean(standardFormat)) {
+			return result;
+		} else {
+			JSONObject siteFormatResult = convertToSiteFormat(result, jsonRequest.getJSONObject("source"));
+			return siteFormatResult;
+		}
 	}
 
 	private static List<DBObject> readDB(JSONObject jsonRequest, JSONArray standardFormatSource) {
@@ -110,28 +111,31 @@ public class FieldsMap {
 
 	@SuppressWarnings("unchecked")
 	private static JSONObject convertToSiteFormat(DBObject result, JSONObject sourceFromRequest) {
-		JSONObject output = new JSONObject();
-		List<BasicDBObject> map = (List<BasicDBObject>) result.get("map");
-		for (BasicDBObject mapEntry : map) {
-			List<BasicDBObject> sourceList = (List<BasicDBObject>) mapEntry.get("source");
-			BasicDBObject target = (BasicDBObject) mapEntry.get("target");
-			Object targetValue = null;
-			if (target.containsField("value")) {
-				targetValue = target.getString("value");
-			} else {
-				// For the current use cases, only one object can be present in
-				// the array. Handle multiple objects use case in future as
-				// needed.
-				BasicDBObject source = sourceList.get(0);
-				targetValue = getValueFromSource(source.getString("field"), sourceFromRequest);
-			}
+		JSONObject output = new JSONObject(sourceFromRequest.toString());
+		if (result.containsField("map")) {
+			List<BasicDBObject> map = (List<BasicDBObject>) result.get("map");
+			for (BasicDBObject mapEntry : map) {
+				List<BasicDBObject> sourceList = (List<BasicDBObject>) mapEntry.get("source");
+				BasicDBObject target = (BasicDBObject) mapEntry.get("target");
+				Object targetValue = null;
+				if (target.containsField("value")) {
+					targetValue = target.getString("value");
+				} else {
+					// For the current use cases, only one object can be present
+					// in
+					// the array. Handle multiple objects use case in future as
+					// needed.
+					BasicDBObject source = sourceList.get(0);
+					targetValue = getValueFromSource(source.getString("field"), sourceFromRequest);
+				}
 
-			if (targetValue != null) {
-				String targetField = target.getString("field");
-				JSONObject json = getJSONObjectFromDotNotation(targetField, targetValue);
-				mergeKeys(json, output);
-			}
+				if (targetValue != null) {
+					String targetField = target.getString("field");
+					JSONObject json = getJSONObjectFromDotNotation(targetField, targetValue);
+					mergeKeys(json, output);
+				}
 
+			}
 		}
 		return output;
 	}
