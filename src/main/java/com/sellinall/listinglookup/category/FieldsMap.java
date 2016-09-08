@@ -20,13 +20,37 @@ public class FieldsMap {
 
 		JSONArray standardFormatSource;
 		JSONObject jsonRequest = new JSONObject(request);
-
 		if (!Boolean.parseBoolean(standardFormat)) {
 			JSONObject source = jsonRequest.getJSONObject("source");
 			standardFormatSource = convertToStandardFormatSource(source);
 		} else {
 			standardFormatSource = jsonRequest.getJSONArray("source");
 		}
+
+		List<DBObject> results = readDB(jsonRequest, standardFormatSource);
+		if (results.isEmpty() && !jsonRequest.getString("accountNumber").equals(CategoryUtil.DEFAULT_ACCOUNT_NUMBER)) {
+			jsonRequest.put("sourceNicknameId", jsonRequest.getString("sourceNicknameId").split("-")[0]);
+			jsonRequest.put("targetNicknameId", jsonRequest.getString("targetNicknameId").split("-")[0]);
+			results = readDB(jsonRequest, standardFormatSource);
+			if (results.isEmpty()) {
+				jsonRequest.put("accountNumber", CategoryUtil.DEFAULT_ACCOUNT_NUMBER);
+				results = readDB(jsonRequest, standardFormatSource);
+			}
+		}
+
+		if (!results.isEmpty()) {
+			DBObject result = results.get(0);
+			if (Boolean.parseBoolean(standardFormat)) {
+				return result;
+			} else {
+				JSONObject siteFormatResult = convertToSiteFormat(result, jsonRequest.getJSONObject("source"));
+				return siteFormatResult;
+			}
+		}
+		return new BasicDBObject();
+	}
+
+	private static List<DBObject> readDB(JSONObject jsonRequest, JSONArray standardFormatSource) {
 		String searchKey = "";
 		searchKey = getKeyFromSource(standardFormatSource, searchKey);
 		BasicDBObject query = getQueryObject(jsonRequest);
@@ -39,17 +63,7 @@ public class FieldsMap {
 		DBCollection collection = DbUtilities.getLookupDBCollection("fieldsMap");
 		List<DBObject> results = (List<DBObject>) collection.find(query, fields)
 				.sort(new BasicDBObject("score", new BasicDBObject("$meta", "textScore"))).limit(1).toArray();
-		if (results.size() > 0) {
-			if (Boolean.parseBoolean(standardFormat)) {
-				return results.get(0);
-			} else {
-				DBObject result = results.get(0);
-				JSONObject siteFormatResult = convertToSiteFormat(result, jsonRequest.getJSONObject("source"));
-				return siteFormatResult;
-			}
-		} else {
-			return new BasicDBObject();
-		}
+		return results;
 	}
 
 	private static JSONArray convertToStandardFormatSource(JSONObject source) {
@@ -122,7 +136,7 @@ public class FieldsMap {
 		return output;
 	}
 
-	//Merge is done only for nested json objects
+	// Merge is done only for nested json objects
 	private static void mergeKeys(JSONObject mergeFrom, JSONObject mergeTo) {
 		String key = mergeFrom.keys().next();
 		if (mergeTo.has(key)) {
@@ -167,8 +181,16 @@ public class FieldsMap {
 
 	public static BasicDBObject createMap(String request) {
 		JSONObject jsonRequest = new JSONObject(request);
-		JSONArray map = jsonRequest.getJSONArray("map");
+		BasicDBObject result = updateDB(jsonRequest, true);
+		if (!jsonRequest.getString("accountNumber").equals(CategoryUtil.DEFAULT_ACCOUNT_NUMBER)) {
+			persistAccountGenericData(jsonRequest);
+		}
+		return result;
+	}
+
+	private static BasicDBObject updateDB(JSONObject jsonRequest, boolean returnResult) {
 		String searchKey = "";
+		JSONArray map = jsonRequest.getJSONArray("map");
 		for (int i = 0; i < map.length(); i++) {
 			searchKey = addDelimiter(i, searchKey, ",");
 			JSONObject entry = map.getJSONObject(i);
@@ -184,8 +206,38 @@ public class FieldsMap {
 		BasicDBObject fields = new BasicDBObject("_id", 0);
 		DBCollection collection = DbUtilities.getLookupDBCollection("fieldsMap");
 		log.debug("query " + query + "fields " + fields + "update " + update);
-		BasicDBObject result = (BasicDBObject) collection.findAndModify(query, fields, null, false, update, true, true);
-		return result;
+		if (returnResult) {
+			BasicDBObject result = (BasicDBObject) collection.findAndModify(query, fields, null, false, update, true,
+					true);
+			return result;
+		} else {
+			collection.update(query, update, true, false);
+			return null;
+		}
+	}
+
+	private static void persistAccountGenericData(JSONObject jsonRequest) {
+		jsonRequest.put("sourceNicknameId", jsonRequest.getString("sourceNicknameId").split("-")[0]);
+		jsonRequest.put("targetNicknameId", jsonRequest.getString("targetNicknameId").split("-")[0]);
+		removeSiteSpecificFields(jsonRequest);
+		updateDB(jsonRequest, false);
+	}
+
+	private static void removeSiteSpecificFields(JSONObject jsonRequest) {
+		JSONArray map = jsonRequest.getJSONArray("map");
+		for (int i = 0; i < map.length(); i++) {
+			JSONObject entry = map.getJSONObject(i);
+			JSONArray source = entry.getJSONArray("source");
+			for (int j = 0; j < source.length(); j++) {
+				JSONObject sourceItem = source.getJSONObject(j);
+				String field = sourceItem.getString("field");
+				if (CategoryUtil.isFieldAccountAndSiteSpecific(jsonRequest.getString("sourceNicknameId"), field)) {
+					map.remove(i);
+					i--;
+					break;
+				}
+			}
+		}
 	}
 
 	private static BasicDBObject getQueryObject(JSONObject jsonRequest) {
