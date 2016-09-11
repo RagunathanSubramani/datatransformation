@@ -47,7 +47,7 @@ public class CategorySpecific {
 
 		jsonRequest.put("accountNumber", accountNumber);
 		jsonRequest.put("nicknameId", nicknameId);
-		jsonRequest.put("categoryId", categoryId);
+		jsonRequest.put("categoryID", categoryId);
 		if (countryCode != null) {
 			jsonRequest.put("countryCode", countryCode);
 		}
@@ -66,7 +66,7 @@ public class CategorySpecific {
 	private static BasicDBObject getQueryObject(String nicknameId, String categoryId, String accountNumber,
 			String countryCode) {
 		BasicDBObject query = new BasicDBObject("accountNumber", accountNumber);
-		query.put("categoryId", categoryId);
+		query.put("categoryID", categoryId);
 		query.put("nicknameId", nicknameId);
 		if (countryCode != null) {
 			query.put("countryCode", countryCode);
