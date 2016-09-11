@@ -9,7 +9,6 @@ import com.mongodb.util.JSON;
 import com.sellinall.listinglookup.database.DbUtilities;
 
 public class CategorySpecific {
-	private static final String DEFAULT = "default";
 	static Logger log = Logger.getLogger(CategorySpecific.class.getName());
 
 	public static BasicDBObject getValues(String nicknameId, String categoryId, String countryCode, String accountNumber) {
@@ -20,7 +19,7 @@ public class CategorySpecific {
 		BasicDBObject result = (BasicDBObject) collection.findOne(query, fields);
 
 		if (result == null) {
-			query.put("accountNumber", DEFAULT);
+			query.put("accountNumber", CategoryUtil.DEFAULT_ACCOUNT_NUMBER);
 			query.put("nicknameId", channel);
 			result = (BasicDBObject) collection.findOne(query, fields);
 		}
@@ -38,7 +37,7 @@ public class CategorySpecific {
 
 		String channel = nicknameId.split("-")[0];
 		DBCollection collection = getCollection(channel);
-		if (accountNumber.equals(DEFAULT)) {
+		if (accountNumber.equals(CategoryUtil.DEFAULT_ACCOUNT_NUMBER)) {
 			nicknameId = channel;
 		}
 

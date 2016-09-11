@@ -4,6 +4,7 @@ import static spark.Spark.after;
 import static spark.Spark.before;
 import static spark.Spark.get;
 import static spark.Spark.halt;
+import static spark.Spark.post;
 import static spark.Spark.put;
 import static spark.SparkBase.port;
 
@@ -18,8 +19,8 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import spark.Request;
 import spark.Response;
 
-import com.sellinall.listinglookup.category.CategoryMap;
 import com.sellinall.listinglookup.category.CategorySpecific;
+import com.sellinall.listinglookup.category.FieldsMap;
 import com.sellinall.listinglookup.config.Config;
 import com.sellinall.listinglookup.ebay.CategoryLookup;
 import com.sellinall.listinglookup.product.ProductLookup;
@@ -67,21 +68,19 @@ public class Main {
 							request.queryParams("countryCode"));
 				});
 
-		get("/services/categoryMap/:sourceChannel/:sourceCountryCode/:categoryId",
+		post("/services/fieldsMap/sourceChannel",
 				(request, response) -> {
-					return CategoryMap.getCategoryMap(request.params(":sourceChannel"),
-							request.params("sourceCountryCode"), request.params("categoryId"),
-							request.queryParams("targetChannel"), request.queryParams("targetCountryCode"));
+					return FieldsMap.postSourceChannelDetails(request.body(), request.queryParams("standardFormat"));
 				});
 
 		get("/services/categorySpecificValues/:nicknameId/:categoryId",
 				(request, response) -> {
-					return CategorySpecific.getValues(request.params(":nicknameId"), request.params("categoryId"),
+					return CategorySpecific.getValues(request.params(":nicknameId"), request.params(":categoryId"),
 							request.queryParams("countryCode"), request.queryParams("accountNumber"));
 				});
 
-		put("/services/categoryMap", (request, response) -> {
-			return CategoryMap.createMap(request.headers("Mudra"), request.body());
+		put("/services/fieldsMap", (request, response) -> {
+			return FieldsMap.createMap(request.body());
 		});
 
 		put("/services/categorySpecificValues/:nicknameId/:categoryId",
@@ -100,6 +99,7 @@ public class Main {
 				halt(200);
 			}
 			if ((request.requestMethod().equals("PUT"))
+					|| (request.requestMethod().equals("POST"))
 					|| (request.requestMethod().equals("GET") && request.pathInfo().startsWith(
 							"/services/categorySpecificValues"))) {
 				boolean isValidRequest = validate(request);
