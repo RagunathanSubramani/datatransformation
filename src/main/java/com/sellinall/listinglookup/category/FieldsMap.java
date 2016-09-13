@@ -29,9 +29,13 @@ public class FieldsMap {
 
 		List<DBObject> results = readDB(jsonRequest, standardFormatSource);
 		if (results.isEmpty() && !jsonRequest.getString("accountNumber").equals(CategoryUtil.DEFAULT_ACCOUNT_NUMBER)) {
-			jsonRequest.put("sourceNicknameId", jsonRequest.getString("sourceNicknameId").split("-")[0]);
-			jsonRequest.put("targetNicknameId", jsonRequest.getString("targetNicknameId").split("-")[0]);
-			results = readDB(jsonRequest, standardFormatSource);
+			String sourceNicknameId = jsonRequest.getString("sourceNicknameId");
+			String targetNicknameId = jsonRequest.getString("targetNicknameId");
+			if (sourceNicknameId.contains("-") || targetNicknameId.contains("-")) {
+				jsonRequest.put("sourceNicknameId", sourceNicknameId.split("-")[0]);
+				jsonRequest.put("targetNicknameId", targetNicknameId.split("-")[0]);
+				results = readDB(jsonRequest, standardFormatSource);
+			}
 			if (results.isEmpty()) {
 				jsonRequest.put("accountNumber", CategoryUtil.DEFAULT_ACCOUNT_NUMBER);
 				results = readDB(jsonRequest, standardFormatSource);
@@ -277,8 +281,8 @@ public class FieldsMap {
 		// TODO: fix this to replace all punctuation marks with _. The list can
 		// be found at
 		// https://docs.mongodb.com/manual/core/index-text/#tokenization-delimiters.
-		key = key + enclosingChar + field.replace(" ", "_").replace("+", "_").replace(".", "_") + "_";
-		key = key + value.replace(" ", "_").replace("+", "_").replace(".", "_") + enclosingChar;
+		key = key + enclosingChar + field.replace(" ", "_").replace("+", "_").replace(".", "_").replace("\"", "") + "_";
+		key = key + value.replace(" ", "_").replace("+", "_").replace(".", "_").replace("\"", "") + enclosingChar;
 		return key;
 	}
 
