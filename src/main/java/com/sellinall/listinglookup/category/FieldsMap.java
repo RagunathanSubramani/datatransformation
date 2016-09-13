@@ -53,7 +53,7 @@ public class FieldsMap {
 
 	private static List<DBObject> readDB(JSONObject jsonRequest, JSONArray standardFormatSource) {
 		String searchKey = "";
-		searchKey = getKeyFromSource(standardFormatSource, searchKey);
+		searchKey = getKeyFromSource(standardFormatSource, searchKey, true);
 		BasicDBObject query = getQueryObject(jsonRequest);
 		query.put("$text", new BasicDBObject("$search", searchKey));
 		log.debug("query " + query);
@@ -199,7 +199,7 @@ public class FieldsMap {
 			searchKey = addDelimiter(i, searchKey, ",");
 			JSONObject entry = map.getJSONObject(i);
 			JSONArray source = entry.getJSONArray("source");
-			searchKey = getKeyFromSource(source, searchKey);
+			searchKey = getKeyFromSource(source, searchKey, false);
 		}
 		log.debug("searchKey:" + searchKey);
 		BasicDBObject update = (BasicDBObject) JSON.parse(jsonRequest.toString());
@@ -255,7 +255,7 @@ public class FieldsMap {
 		return query;
 	}
 
-	private static String getKeyFromSource(JSONArray source, String key) {
+	private static String getKeyFromSource(JSONArray source, String key, boolean strictSearch) {
 		for (int j = 0; j < source.length(); j++) {
 			key = addDelimiter(j, key, ",");
 			JSONObject sourceItem = source.getJSONObject(j);
@@ -264,17 +264,21 @@ public class FieldsMap {
 			if (sourceItem.has("value")) {
 				value = sourceItem.getString("value");
 			}
-			key = replacePunctuationMarks(key, field, value);
+			key = replacePunctuationMarks(key, field, value, strictSearch);
 		}
 		return key;
 	}
 
-	private static String replacePunctuationMarks(String key, String field, String value) {
+	private static String replacePunctuationMarks(String key, String field, String value, boolean strictSearch) {
+		String enclosingChar = "";
+		if (strictSearch && "categoryID".equalsIgnoreCase(field)) {
+			enclosingChar = "\"";
+		}
 		// TODO: fix this to replace all punctuation marks with _. The list can
 		// be found at
 		// https://docs.mongodb.com/manual/core/index-text/#tokenization-delimiters.
-		key = key + field.replace(" ", "_").replace("+", "_").replace(".", "_") + "_";
-		key = key + value.replace(" ", "_").replace("+", "_").replace(".", "_");
+		key = key + enclosingChar + field.replace(" ", "_").replace("+", "_").replace(".", "_") + "_";
+		key = key + value.replace(" ", "_").replace("+", "_").replace(".", "_") + enclosingChar;
 		return key;
 	}
 
