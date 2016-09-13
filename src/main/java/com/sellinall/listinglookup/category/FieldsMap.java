@@ -252,6 +252,7 @@ public class FieldsMap {
 		query.put("targetNicknameId", jsonRequest.getString("targetNicknameId"));
 		query.put("targetCountryCode", jsonRequest.getString("targetCountryCode"));
 		query.put("accountNumber", jsonRequest.getString("accountNumber"));
+		query.put("sourceCategoryId", jsonRequest.getString("sourceCategoryId"));
 		return query;
 	}
 
