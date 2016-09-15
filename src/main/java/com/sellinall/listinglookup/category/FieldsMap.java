@@ -192,6 +192,7 @@ public class FieldsMap {
 		BasicDBObject result = updateDB(jsonRequest, true);
 		if (!jsonRequest.getString("accountNumber").equals(CategoryUtil.DEFAULT_ACCOUNT_NUMBER)) {
 			persistAccountGenericData(jsonRequest);
+			persistDefaultData(jsonRequest);
 		}
 		return result;
 	}
@@ -229,6 +230,11 @@ public class FieldsMap {
 		jsonRequest.put("sourceNicknameId", jsonRequest.getString("sourceNicknameId").split("-")[0]);
 		jsonRequest.put("targetNicknameId", jsonRequest.getString("targetNicknameId").split("-")[0]);
 		removeSiteSpecificFields(jsonRequest);
+		updateDB(jsonRequest, false);
+	}
+
+	private static void persistDefaultData(JSONObject jsonRequest) {
+		jsonRequest.put("accountNumber", CategoryUtil.DEFAULT_ACCOUNT_NUMBER);
 		updateDB(jsonRequest, false);
 	}
 
