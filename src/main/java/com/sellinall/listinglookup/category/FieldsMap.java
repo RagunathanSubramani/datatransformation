@@ -20,11 +20,11 @@ public class FieldsMap {
 
 		JSONArray standardFormatSource;
 		JSONObject jsonRequest = new JSONObject(request);
-		if (!Boolean.parseBoolean(standardFormat)) {
+		if (Boolean.parseBoolean(standardFormat)) {
+			standardFormatSource = jsonRequest.getJSONArray("source");
+		} else {
 			JSONObject source = jsonRequest.getJSONObject("source");
 			standardFormatSource = convertToStandardFormatSource(source);
-		} else {
-			standardFormatSource = jsonRequest.getJSONArray("source");
 		}
 
 		List<DBObject> results = readDB(jsonRequest, standardFormatSource);

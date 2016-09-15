@@ -68,26 +68,23 @@ public class Main {
 							request.queryParams("countryCode"));
 				});
 
-		post("/services/fieldsMap/sourceChannel",
-				(request, response) -> {
-					return FieldsMap.postSourceChannelDetails(request.body(), request.queryParams("standardFormat"));
-				});
+		post("/services/fieldsMap/sourceChannel", (request, response) -> {
+			return FieldsMap.postSourceChannelDetails(request.body(), request.queryParams("standardFormat"));
+		});
 
-		get("/services/categorySpecificValues/:nicknameId/:categoryId",
-				(request, response) -> {
-					return CategorySpecific.getValues(request.params(":nicknameId"), request.params(":categoryId"),
-							request.queryParams("countryCode"), request.queryParams("accountNumber"));
-				});
+		get("/services/categorySpecificValues/:nicknameId/:categoryId", (request, response) -> {
+			return CategorySpecific.getValues(request.params(":nicknameId"), request.params(":categoryId"),
+					request.queryParams("countryCode"), request.queryParams("accountNumber"));
+		});
 
 		put("/services/fieldsMap", (request, response) -> {
 			return FieldsMap.createMap(request.body());
 		});
 
-		put("/services/categorySpecificValues/:nicknameId/:categoryId",
-				(request, response) -> {
-					return CategorySpecific.upsertValues(request.params(":nicknameId"), request.params("categoryId"),
-							request.queryParams("accountNumber"), request.body());
-				});
+		put("/services/categorySpecificValues/:nicknameId/:categoryId", (request, response) -> {
+			return CategorySpecific.upsertValues(request.params(":nicknameId"), request.params(":categoryId"),
+					request.queryParams("countryCode"), request.queryParams("accountNumber"), request.body());
+		});
 
 		after((request, response) -> {
 			setResponseHeaders(response);
@@ -114,7 +111,7 @@ public class Main {
 	private static boolean validate(Request request) {
 		try {
 			String isSIAServer = request.headers("SIAServer");
-			if ( isSIAServer != null && isSIAServer.equals("true")) {
+			if (isSIAServer != null && isSIAServer.equals("true")) {
 				return true;
 			}
 			String accountNumQueryParam = request.queryParams("accountNumber");
@@ -131,7 +128,7 @@ public class Main {
 				JSONObject responseEntity = new JSONObject(response.getEntity(String.class));
 				String accountNumber = responseEntity.getString("userId");
 				request.attribute("accountNumber", accountNumber);
-				if (accountNumQueryParam != null && !accountNumQueryParam.equals(accountNumber)){
+				if (accountNumQueryParam != null && !accountNumQueryParam.equals(accountNumber)) {
 					return false;
 				}
 				return true;

@@ -18,10 +18,13 @@ public class CategorySpecific {
 		BasicDBObject fields = new BasicDBObject("_id", 0);
 		BasicDBObject result = (BasicDBObject) collection.findOne(query, fields);
 
-		if (result == null) {
-			query.put("accountNumber", CategoryUtil.DEFAULT_ACCOUNT_NUMBER);
+		if (result == null && !accountNumber.equals(CategoryUtil.DEFAULT_ACCOUNT_NUMBER)) {
 			query.put("nicknameId", channel);
 			result = (BasicDBObject) collection.findOne(query, fields);
+			if (result == null) {
+				query.put("accountNumber", CategoryUtil.DEFAULT_ACCOUNT_NUMBER);
+				result = (BasicDBObject) collection.findOne(query, fields);
+			}
 		}
 
 		if (result != null) {
@@ -31,15 +34,11 @@ public class CategorySpecific {
 		}
 	}
 
-	public static Object upsertValues(String nicknameId, String categoryId, String accountNumber, String request) {
+	public static Object upsertValues(String nicknameId, String categoryId, String countryCode, String accountNumber,
+			String request) {
 		JSONObject jsonRequest = new JSONObject(request);
-		String countryCode = jsonRequest.has("countryCode") ? jsonRequest.getString("countryCode") : null;
-
 		String channel = nicknameId.split("-")[0];
 		DBCollection collection = getCollection(channel);
-		if (accountNumber.equals(CategoryUtil.DEFAULT_ACCOUNT_NUMBER)) {
-			nicknameId = channel;
-		}
 
 		BasicDBObject query = getQueryObject(nicknameId, categoryId, accountNumber, countryCode);
 		log.debug("query:" + query);
@@ -48,11 +47,22 @@ public class CategorySpecific {
 		jsonRequest.put("accountNumber", accountNumber);
 		jsonRequest.put("nicknameId", nicknameId);
 		jsonRequest.put("categoryID", categoryId);
-		if (countryCode != null) {
-			jsonRequest.put("countryCode", countryCode);
-		}
+		jsonRequest.put("countryCode", countryCode);
 		BasicDBObject update = (BasicDBObject) JSON.parse(jsonRequest.toString());
 		BasicDBObject result = (BasicDBObject) collection.findAndModify(query, fields, null, false, update, true, true);
+		if (!jsonRequest.getString("accountNumber").equals(CategoryUtil.DEFAULT_ACCOUNT_NUMBER)) {
+			// add record specific to account, but general to country and site
+			query.put("nicknameId", channel);
+			jsonRequest.put("nicknameId", channel);
+			update = (BasicDBObject) JSON.parse(jsonRequest.toString());
+			collection.update(query, update, true, false);
+
+			// add default record
+			query.put("accountNumber", CategoryUtil.DEFAULT_ACCOUNT_NUMBER);
+			jsonRequest.put("accountNumber", CategoryUtil.DEFAULT_ACCOUNT_NUMBER);
+			update = (BasicDBObject) JSON.parse(jsonRequest.toString());
+			collection.update(query, update, true, false);
+		}
 		return result;
 	}
 
@@ -68,9 +78,7 @@ public class CategorySpecific {
 		BasicDBObject query = new BasicDBObject("accountNumber", accountNumber);
 		query.put("categoryID", categoryId);
 		query.put("nicknameId", nicknameId);
-		if (countryCode != null) {
-			query.put("countryCode", countryCode);
-		}
+		query.put("countryCode", countryCode);
 		return query;
 	}
 }
