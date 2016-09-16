@@ -1,5 +1,7 @@
 package com.sellinall.listinglookup.category;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
@@ -32,6 +34,24 @@ public class CategorySpecific {
 		} else {
 			return new BasicDBObject();
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public static JSONObject getSiteFormatValues(String nicknameId, String categoryId, String countryCode,
+			String accountNumber) {
+		JSONObject output = new JSONObject();
+		BasicDBObject result = getValues(nicknameId, categoryId, countryCode, accountNumber);
+		if (result.containsField("values")) {
+			List<BasicDBObject> values = (List<BasicDBObject>) result.get("values");
+			for (BasicDBObject value : values) {
+				JSONObject json = CategoryUtil.getJSONObjectFromDotNotation(value.getString("field"),
+						value.get("value"));
+				String key = json.keys().next();
+				output.put(key, json.get(key));
+			}
+		}
+		log.debug("output:" + output);
+		return output;
 	}
 
 	public static Object upsertValues(String nicknameId, String categoryId, String countryCode, String accountNumber,

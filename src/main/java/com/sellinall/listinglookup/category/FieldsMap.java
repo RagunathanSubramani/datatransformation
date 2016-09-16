@@ -28,9 +28,11 @@ public class FieldsMap {
 		}
 
 		List<DBObject> results = readDB(jsonRequest, standardFormatSource);
-		if (results.isEmpty() && !jsonRequest.getString("accountNumber").equals(CategoryUtil.DEFAULT_ACCOUNT_NUMBER)) {
-			String sourceNicknameId = jsonRequest.getString("sourceNicknameId");
-			String targetNicknameId = jsonRequest.getString("targetNicknameId");
+		String targetNicknameId = jsonRequest.getString("targetNicknameId");
+		String accountNumber = jsonRequest.getString("accountNumber");
+		String targetCountryCode = jsonRequest.getString("targetCountryCode");
+		String sourceNicknameId = jsonRequest.getString("sourceNicknameId");
+		if (results.isEmpty() && !accountNumber.equals(CategoryUtil.DEFAULT_ACCOUNT_NUMBER)) {
 			if (sourceNicknameId.contains("-") || targetNicknameId.contains("-")) {
 				jsonRequest.put("sourceNicknameId", sourceNicknameId.split("-")[0]);
 				jsonRequest.put("targetNicknameId", targetNicknameId.split("-")[0]);
@@ -50,9 +52,64 @@ public class FieldsMap {
 		if (Boolean.parseBoolean(standardFormat)) {
 			return result;
 		} else {
-			JSONObject siteFormatResult = convertToSiteFormat(result, jsonRequest.getJSONObject("source"));
-			return siteFormatResult;
+			JSONObject output = getSiteFormat(jsonRequest, targetNicknameId, accountNumber, targetCountryCode,
+					sourceNicknameId, result);
+			return output;
 		}
+	}
+
+	private static JSONObject getSiteFormat(JSONObject jsonRequest, String targetNicknameId, String accountNumber,
+			String targetCountryCode, String sourceNicknameId, DBObject result) {
+		String targetCategoryID = getTargetCategoryID(result, jsonRequest.getJSONObject("source"));
+		if (targetCategoryID == null && sourceNicknameId.split("-")[0].equals(targetNicknameId.split("-")[0])
+				&& jsonRequest.has("categoryID")) {
+			targetCategoryID = jsonRequest.getString("categoryID");
+		}
+		JSONObject siteFormatResult = convertToSiteFormat(result, jsonRequest.getJSONObject("source"));
+		if (targetCategoryID != null) {
+			JSONObject defaultValues = CategorySpecific.getSiteFormatValues(targetNicknameId, targetCategoryID,
+					targetCountryCode, accountNumber);
+			Set<String> keySet = defaultValues.keySet();
+			for (String key : keySet) {
+				if (!siteFormatResult.has(key)) {
+					siteFormatResult.put(key, defaultValues.get(key));
+				}
+			}
+		}
+		JSONObject output = new JSONObject(jsonRequest.getJSONObject("source").toString());
+		Set<String> keySet = siteFormatResult.keySet();
+		for (String key : keySet) {
+			JSONObject json = new JSONObject();
+			json.put(key, siteFormatResult.get(key));
+			mergeKeys(json, output);
+		}
+		return output;
+	}
+
+	@SuppressWarnings("unchecked")
+	private static String getTargetCategoryID(DBObject result, JSONObject sourceFromRequest) {
+		String categoryID = null;
+		if (result.containsField("map")) {
+			List<BasicDBObject> map = (List<BasicDBObject>) result.get("map");
+			for (BasicDBObject mapEntry : map) {
+				List<BasicDBObject> sourceList = (List<BasicDBObject>) mapEntry.get("source");
+				BasicDBObject target = (BasicDBObject) mapEntry.get("target");
+				if ("categoryID".equals(target.getString("field"))) {
+					if (target.containsField("value")) {
+						categoryID = target.getString("value");
+					} else {
+						// For the current use cases, only one object can be
+						// present in the array. Handle multiple objects use
+						// case in future as needed.
+						BasicDBObject source = sourceList.get(0);
+						categoryID = (String) getValueFromSource(source.getString("field"), sourceFromRequest);
+					}
+					break;
+				}
+
+			}
+		}
+		return categoryID;
 	}
 
 	private static List<DBObject> readDB(JSONObject jsonRequest, JSONArray standardFormatSource) {
@@ -115,7 +172,7 @@ public class FieldsMap {
 
 	@SuppressWarnings("unchecked")
 	private static JSONObject convertToSiteFormat(DBObject result, JSONObject sourceFromRequest) {
-		JSONObject output = new JSONObject(sourceFromRequest.toString());
+		JSONObject output = new JSONObject();
 		if (result.containsField("map")) {
 			List<BasicDBObject> map = (List<BasicDBObject>) result.get("map");
 			for (BasicDBObject mapEntry : map) {
@@ -123,20 +180,20 @@ public class FieldsMap {
 				BasicDBObject target = (BasicDBObject) mapEntry.get("target");
 				Object targetValue = null;
 				if (target.containsField("value")) {
-					targetValue = target.getString("value");
+					targetValue = target.get("value");
 				} else {
 					// For the current use cases, only one object can be present
-					// in
-					// the array. Handle multiple objects use case in future as
-					// needed.
+					// in the array. Handle multiple objects use case in future
+					// as needed.
 					BasicDBObject source = sourceList.get(0);
 					targetValue = getValueFromSource(source.getString("field"), sourceFromRequest);
 				}
 
 				if (targetValue != null) {
 					String targetField = target.getString("field");
-					JSONObject json = getJSONObjectFromDotNotation(targetField, targetValue);
-					mergeKeys(json, output);
+					JSONObject json = CategoryUtil.getJSONObjectFromDotNotation(targetField, targetValue);
+					String key = json.keys().next();
+					output.put(key, json.get(key));
 				}
 
 			}
@@ -146,6 +203,7 @@ public class FieldsMap {
 
 	// Merge is done only for nested json objects
 	private static void mergeKeys(JSONObject mergeFrom, JSONObject mergeTo) {
+		//mergeFrom has only one key
 		String key = mergeFrom.keys().next();
 		if (mergeTo.has(key)) {
 			if ((mergeFrom.get(key) instanceof JSONObject) && (mergeFrom.get(key) instanceof JSONObject)) {
@@ -165,17 +223,6 @@ public class FieldsMap {
 		} else {
 			return sourceFromRequest.get(fields[0]);
 		}
-	}
-
-	private static JSONObject getJSONObjectFromDotNotation(String field, Object value) {
-		String[] fields = field.split("\\.", 2);
-		JSONObject result = new JSONObject();
-		if (fields.length == 2) {
-			result.put(fields[0], getJSONObjectFromDotNotation(fields[1], value));
-		} else {
-			result.put(fields[0], value);
-		}
-		return result;
 	}
 
 	private static String getCSV(JSONArray names) {

@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONObject;
+
 public class CategoryUtil {
 	public static final String DEFAULT_ACCOUNT_NUMBER = "default";
 
@@ -19,5 +21,16 @@ public class CategoryUtil {
 	public static boolean isFieldAccountAndSiteSpecific(String site, String field) {
 		return (accountAndSiteSpecificFieldsMap.containsKey(site) && accountAndSiteSpecificFieldsMap.get(site)
 				.contains(field));
+	}
+
+	public static JSONObject getJSONObjectFromDotNotation(String field, Object value) {
+		String[] fields = field.split("\\.", 2);
+		JSONObject result = new JSONObject();
+		if (fields.length == 2) {
+			result.put(fields[0], getJSONObjectFromDotNotation(fields[1], value));
+		} else {
+			result.put(fields[0], value);
+		}
+		return result;
 	}
 }
