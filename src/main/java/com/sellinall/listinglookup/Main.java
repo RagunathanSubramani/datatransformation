@@ -73,8 +73,14 @@ public class Main {
 		});
 
 		get("/services/categorySpecificValues/:nicknameId/:categoryId", (request, response) -> {
-			return CategorySpecific.getValues(request.params(":nicknameId"), request.params(":categoryId"),
-					request.queryParams("countryCode"), request.queryParams("accountNumber"));
+			if (Boolean.parseBoolean(request.queryParams("standardFormat"))) {
+				return CategorySpecific.getValues(request.params(":nicknameId"), request.params(":categoryId"),
+						request.queryParams("countryCode"), request.queryParams("accountNumber"));
+			} else {
+				return CategorySpecific.getSiteFormatValues(request.params(":nicknameId"),
+						request.params(":categoryId"), request.queryParams("countryCode"),
+						request.queryParams("accountNumber"));
+			}
 		});
 
 		put("/services/fieldsMap", (request, response) -> {

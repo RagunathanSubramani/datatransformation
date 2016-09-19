@@ -56,6 +56,7 @@ public class CategorySpecific {
 						itemSpecifics = output.getJSONArray("itemSpecifics");
 					}
 					itemSpecifics.put(itemSpecificsSiteFormat);
+					output.put("itemSpecifics", itemSpecifics);
 				} else {
 					JSONObject json = CategoryUtil.getJSONObjectFromDotNotation(defaultField, defaultValue);
 					String key = json.keys().next();
