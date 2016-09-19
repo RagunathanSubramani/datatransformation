@@ -15,6 +15,7 @@ public class CategoryUtil {
 			.unmodifiableMap(new HashMap<String, List<String>>() {
 				{
 					put("eBay", Arrays.asList("storeFront.storeCategoryID"));
+					put("etsy", Arrays.asList("shopSectionId"));
 				}
 			});
 
