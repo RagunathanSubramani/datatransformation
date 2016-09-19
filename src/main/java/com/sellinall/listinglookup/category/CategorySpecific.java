@@ -45,10 +45,22 @@ public class CategorySpecific {
 		if (result.containsField("values")) {
 			List<BasicDBObject> values = (List<BasicDBObject>) result.get("values");
 			for (BasicDBObject value : values) {
-				JSONObject json = CategoryUtil.getJSONObjectFromDotNotation(value.getString("field"),
-						value.get("value"));
-				String key = json.keys().next();
-				output.put(key, json.get(key));
+				String defaultField = value.getString("field");
+				Object defaultValue = value.get("value");
+				if (defaultField.startsWith("itemSpecifics")) {
+					JSONObject itemSpecificsSiteFormat = new JSONObject();
+					itemSpecificsSiteFormat.put("title", defaultField.split("\\.")[1]);
+					itemSpecificsSiteFormat.put("names", CategoryUtil.getJSONArrayFromCSV((String) defaultValue));
+					JSONArray itemSpecifics = new JSONArray();
+					if (output.has("itemSpecifics")) {
+						itemSpecifics = output.getJSONArray("itemSpecifics");
+					}
+					itemSpecifics.put(itemSpecificsSiteFormat);
+				} else {
+					JSONObject json = CategoryUtil.getJSONObjectFromDotNotation(defaultField, defaultValue);
+					String key = json.keys().next();
+					output.put(key, json.get(key));
+				}
 			}
 		}
 		log.debug("output:" + output);

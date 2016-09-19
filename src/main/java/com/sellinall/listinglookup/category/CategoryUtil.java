@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class CategoryUtil {
@@ -33,5 +34,30 @@ public class CategoryUtil {
 			result.put(fields[0], value);
 		}
 		return result;
+	}
+
+	public static JSONArray getJSONArrayFromCSV(String targetValue) {
+		JSONArray jsonArray = new JSONArray();
+		String[] strArray = targetValue.split(",");
+		for (int i = 0; i < strArray.length; i++) {
+			jsonArray.put(strArray[i]);
+		}
+		return jsonArray;
+	}
+
+	public static String getCSVFromJSONArray(JSONArray names) {
+		String str = "";
+		for (int i = 0; i < names.length(); i++) {
+			str = addDelimiter(i, str, ",");
+			str = str + names.get(i).toString();
+		}
+		return str;
+	}
+
+	public static String addDelimiter(int index, String str, String delimiter) {
+		if (index > 0) {
+			str = str + delimiter;
+		}
+		return str;
 	}
 }

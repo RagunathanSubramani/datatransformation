@@ -26,6 +26,7 @@ public class FieldsMap {
 			JSONObject source = jsonRequest.getJSONObject("source");
 			standardFormatSource = convertToStandardFormatSource(source);
 		}
+		log.debug("standardFormatSource:" + standardFormatSource);
 
 		List<DBObject> results = readDB(jsonRequest, standardFormatSource);
 		String targetNicknameId = jsonRequest.getString("targetNicknameId");
@@ -48,6 +49,7 @@ public class FieldsMap {
 		if (!results.isEmpty()) {
 			result = results.get(0);
 		}
+		log.debug("result:" + result);
 
 		if (Boolean.parseBoolean(standardFormat)) {
 			return result;
@@ -65,7 +67,9 @@ public class FieldsMap {
 				&& jsonRequest.has("categoryID")) {
 			targetCategoryID = jsonRequest.getString("categoryID");
 		}
+		log.debug("targetCategoryID:" + targetCategoryID);
 		JSONObject siteFormatResult = convertToSiteFormat(result, jsonRequest.getJSONObject("source"));
+		log.debug("siteFormatResult:" + siteFormatResult);
 		if (targetCategoryID != null) {
 			JSONObject defaultValues = CategorySpecific.getSiteFormatValues(targetNicknameId, targetCategoryID,
 					targetCountryCode, accountNumber);
@@ -76,11 +80,14 @@ public class FieldsMap {
 				}
 			}
 		}
+		log.debug("siteFormatResult:" + siteFormatResult);
 		JSONObject output = new JSONObject(jsonRequest.getJSONObject("source").toString());
+		log.debug("output:" + output);
 		Set<String> keySet = siteFormatResult.keySet();
 		for (String key : keySet) {
 			JSONObject json = new JSONObject();
 			json.put(key, siteFormatResult.get(key));
+			log.debug("json:" + json);
 			mergeKeys(json, output);
 		}
 		return output;
@@ -147,7 +154,7 @@ public class FieldsMap {
 				if (!"itemSpecifics".equals(key)) {
 					JSONObject json = new JSONObject();
 					json.put("field", key);
-					json.put("value", getCSV(valueArray));
+					json.put("value", CategoryUtil.getCSVFromJSONArray(valueArray));
 					output.put(json);
 				} else {
 					for (int i = 0; i < valueArray.length(); i++) {
@@ -155,7 +162,7 @@ public class FieldsMap {
 						JSONArray names = valueArray.getJSONObject(i).getJSONArray("names");
 						JSONObject json = new JSONObject();
 						json.put("field", key + "." + title);
-						json.put("value", getCSV(names));
+						json.put("value", CategoryUtil.getCSVFromJSONArray(names));
 						output.put(json);
 					}
 				}
@@ -178,6 +185,7 @@ public class FieldsMap {
 			for (BasicDBObject mapEntry : map) {
 				List<BasicDBObject> sourceList = (List<BasicDBObject>) mapEntry.get("source");
 				BasicDBObject target = (BasicDBObject) mapEntry.get("target");
+				String targetField = target.getString("field");
 				Object targetValue = null;
 				if (target.containsField("value")) {
 					targetValue = target.get("value");
@@ -186,14 +194,37 @@ public class FieldsMap {
 					// in the array. Handle multiple objects use case in future
 					// as needed.
 					BasicDBObject source = sourceList.get(0);
-					targetValue = getValueFromSource(source.getString("field"), sourceFromRequest);
+					String sourceField = source.getString("field");
+					// special handling for item specifics
+					if (sourceField.startsWith("itemSpecifics")) {
+						String itemSpecificTitle = sourceField.split("\\.")[1];
+						targetValue = getNamesFromItemSpecifics(sourceFromRequest, itemSpecificTitle);
+					} else {
+						targetValue = getValueFromSource(sourceField, sourceFromRequest);
+					}
 				}
 
 				if (targetValue != null) {
-					String targetField = target.getString("field");
-					JSONObject json = CategoryUtil.getJSONObjectFromDotNotation(targetField, targetValue);
-					String key = json.keys().next();
-					output.put(key, json.get(key));
+					// special handling for item specifics
+					if (targetField.startsWith("itemSpecifics")) {
+						JSONObject itemSpecificsSiteFormat = new JSONObject();
+						itemSpecificsSiteFormat.put("title", targetField.split("\\.")[1]);
+						// targetValue can either be CSV string or JSON array
+						if (targetValue instanceof String) {
+							targetValue = CategoryUtil.getJSONArrayFromCSV((String) targetValue);
+						}
+						itemSpecificsSiteFormat.put("names", targetValue);
+						JSONArray itemSpecifics = new JSONArray();
+						if (output.has("itemSpecifics")) {
+							itemSpecifics = output.getJSONArray("itemSpecifics");
+						}
+						itemSpecifics.put(itemSpecificsSiteFormat);
+						output.put("itemSpecifics", itemSpecifics);
+					} else {
+						JSONObject json = CategoryUtil.getJSONObjectFromDotNotation(targetField, targetValue);
+						String key = json.keys().next();
+						output.put(key, json.get(key));
+					}
 				}
 
 			}
@@ -201,12 +232,24 @@ public class FieldsMap {
 		return output;
 	}
 
+	private static JSONArray getNamesFromItemSpecifics(JSONObject sourceFromRequest, String itemSpecificTitle) {
+		if (sourceFromRequest.has("itemSpecifics")) {
+			JSONArray itemSpecifics = sourceFromRequest.getJSONArray("itemSpecifics");
+			for (int i = 0; i < itemSpecifics.length(); i++) {
+				if (itemSpecifics.getJSONObject(i).getString("title").equals(itemSpecificTitle)) {
+					return itemSpecifics.getJSONObject(i).getJSONArray("names");
+				}
+			}
+		}
+		return null;
+	}
+
 	// Merge is done only for nested json objects
 	private static void mergeKeys(JSONObject mergeFrom, JSONObject mergeTo) {
-		//mergeFrom has only one key
+		// mergeFrom has only one key
 		String key = mergeFrom.keys().next();
 		if (mergeTo.has(key)) {
-			if ((mergeFrom.get(key) instanceof JSONObject) && (mergeFrom.get(key) instanceof JSONObject)) {
+			if ((mergeFrom.get(key) instanceof JSONObject) && (mergeTo.get(key) instanceof JSONObject)) {
 				mergeKeys(mergeFrom.getJSONObject(key), mergeTo.getJSONObject(key));
 			} else {
 				mergeTo.put(key, mergeFrom.get(key));
@@ -225,15 +268,6 @@ public class FieldsMap {
 		}
 	}
 
-	private static String getCSV(JSONArray names) {
-		String str = "";
-		for (int i = 0; i < names.length(); i++) {
-			str = addDelimiter(i, str, ",");
-			str = str + names.get(i).toString();
-		}
-		return str;
-	}
-
 	public static BasicDBObject createMap(String request) {
 		JSONObject jsonRequest = new JSONObject(request);
 		BasicDBObject result = updateDB(jsonRequest, true);
@@ -248,7 +282,7 @@ public class FieldsMap {
 		String searchKey = "";
 		JSONArray map = jsonRequest.getJSONArray("map");
 		for (int i = 0; i < map.length(); i++) {
-			searchKey = addDelimiter(i, searchKey, ",");
+			searchKey = CategoryUtil.addDelimiter(i, searchKey, ",");
 			JSONObject entry = map.getJSONObject(i);
 			JSONArray source = entry.getJSONArray("source");
 			searchKey = getKeyFromSource(source, searchKey, false);
@@ -318,7 +352,7 @@ public class FieldsMap {
 
 	private static String getKeyFromSource(JSONArray source, String key, boolean strictSearch) {
 		for (int j = 0; j < source.length(); j++) {
-			key = addDelimiter(j, key, ",");
+			key = CategoryUtil.addDelimiter(j, key, ",");
 			JSONObject sourceItem = source.getJSONObject(j);
 			String field = sourceItem.getString("field");
 			String value = "";
@@ -341,13 +375,6 @@ public class FieldsMap {
 		key = key + enclosingChar + field.replace(" ", "_").replace("+", "_").replace(".", "_").replace("\"", "") + "_";
 		key = key + value.replace(" ", "_").replace("+", "_").replace(".", "_").replace("\"", "") + enclosingChar;
 		return key;
-	}
-
-	private static String addDelimiter(int index, String str, String delimiter) {
-		if (index > 0) {
-			str = str + delimiter;
-		}
-		return str;
 	}
 
 }
