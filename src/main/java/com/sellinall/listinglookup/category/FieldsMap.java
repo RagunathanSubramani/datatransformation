@@ -277,12 +277,16 @@ public class FieldsMap {
 		jsonRequest.put("sourceNicknameId", jsonRequest.getString("sourceNicknameId").split("-")[0]);
 		jsonRequest.put("targetNicknameId", jsonRequest.getString("targetNicknameId").split("-")[0]);
 		removeSiteSpecificFields(jsonRequest);
-		updateDB(jsonRequest, false);
+		if (jsonRequest.getJSONArray("map").length() > 0) {
+			updateDB(jsonRequest, false);
+		}
 	}
 
 	private static void persistDefaultData(JSONObject jsonRequest) {
 		jsonRequest.put("accountNumber", CategoryUtil.DEFAULT_ACCOUNT_NUMBER);
-		updateDB(jsonRequest, false);
+		if (jsonRequest.getJSONArray("map").length() > 0) {
+			updateDB(jsonRequest, false);
+		}
 	}
 
 	private static void removeSiteSpecificFields(JSONObject jsonRequest) {

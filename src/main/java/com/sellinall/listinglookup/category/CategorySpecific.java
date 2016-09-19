@@ -3,6 +3,7 @@ package com.sellinall.listinglookup.category;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.mongodb.BasicDBObject;
@@ -72,18 +73,46 @@ public class CategorySpecific {
 		BasicDBObject result = (BasicDBObject) collection.findAndModify(query, fields, null, false, update, true, true);
 		if (!jsonRequest.getString("accountNumber").equals(CategoryUtil.DEFAULT_ACCOUNT_NUMBER)) {
 			// add record specific to account, but general to country and site
-			query.put("nicknameId", channel);
-			jsonRequest.put("nicknameId", channel);
-			update = (BasicDBObject) JSON.parse(jsonRequest.toString());
-			collection.update(query, update, true, false);
+			persistAccountGenericData(jsonRequest, channel, collection, query);
 
 			// add default record
-			query.put("accountNumber", CategoryUtil.DEFAULT_ACCOUNT_NUMBER);
-			jsonRequest.put("accountNumber", CategoryUtil.DEFAULT_ACCOUNT_NUMBER);
+			persistDefaultData(jsonRequest, collection, query);
+		}
+		return result;
+	}
+
+	private static void persistDefaultData(JSONObject jsonRequest, DBCollection collection, BasicDBObject query) {
+		BasicDBObject update;
+		query.put("accountNumber", CategoryUtil.DEFAULT_ACCOUNT_NUMBER);
+		jsonRequest.put("accountNumber", CategoryUtil.DEFAULT_ACCOUNT_NUMBER);
+		if (jsonRequest.getJSONArray("values").length() > 0) {
 			update = (BasicDBObject) JSON.parse(jsonRequest.toString());
 			collection.update(query, update, true, false);
 		}
-		return result;
+	}
+
+	private static void persistAccountGenericData(JSONObject jsonRequest, String channel, DBCollection collection,
+			BasicDBObject query) {
+		BasicDBObject update;
+		query.put("nicknameId", channel);
+		jsonRequest.put("nicknameId", channel);
+		removeSiteSpecificFields(jsonRequest);
+		if (jsonRequest.getJSONArray("values").length() > 0) {
+			update = (BasicDBObject) JSON.parse(jsonRequest.toString());
+			collection.update(query, update, true, false);
+		}
+	}
+
+	private static void removeSiteSpecificFields(JSONObject jsonRequest) {
+		JSONArray values = jsonRequest.getJSONArray("values");
+		for (int i = 0; i < values.length(); i++) {
+			JSONObject value = values.getJSONObject(i);
+			String field = value.getString("field");
+			if (CategoryUtil.isFieldAccountAndSiteSpecific(jsonRequest.getString("nicknameId"), field)) {
+				values.remove(i);
+				i--;
+			}
+		}
 	}
 
 	private static DBCollection getCollection(String channel) {
