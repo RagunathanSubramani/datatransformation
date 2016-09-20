@@ -20,17 +20,20 @@ public class FieldsMap {
 
 		JSONArray standardFormatSource;
 		JSONObject jsonRequest = new JSONObject(request);
-		if (!Boolean.parseBoolean(standardFormat)) {
+		if (Boolean.parseBoolean(standardFormat)) {
+			standardFormatSource = jsonRequest.getJSONArray("source");
+		} else {
 			JSONObject source = jsonRequest.getJSONObject("source");
 			standardFormatSource = convertToStandardFormatSource(source);
-		} else {
-			standardFormatSource = jsonRequest.getJSONArray("source");
 		}
+		log.debug("standardFormatSource:" + standardFormatSource);
 
 		List<DBObject> results = readDB(jsonRequest, standardFormatSource);
-		if (results.isEmpty() && !jsonRequest.getString("accountNumber").equals(CategoryUtil.DEFAULT_ACCOUNT_NUMBER)) {
-			String sourceNicknameId = jsonRequest.getString("sourceNicknameId");
-			String targetNicknameId = jsonRequest.getString("targetNicknameId");
+		String targetNicknameId = jsonRequest.getString("targetNicknameId");
+		String accountNumber = jsonRequest.getString("accountNumber");
+		String targetCountryCode = jsonRequest.getString("targetCountryCode");
+		String sourceNicknameId = jsonRequest.getString("sourceNicknameId");
+		if (results.isEmpty() && !accountNumber.equals(CategoryUtil.DEFAULT_ACCOUNT_NUMBER)) {
 			if (sourceNicknameId.contains("-") || targetNicknameId.contains("-")) {
 				jsonRequest.put("sourceNicknameId", sourceNicknameId.split("-")[0]);
 				jsonRequest.put("targetNicknameId", targetNicknameId.split("-")[0]);
@@ -46,13 +49,74 @@ public class FieldsMap {
 		if (!results.isEmpty()) {
 			result = results.get(0);
 		}
+		log.debug("result:" + result);
 
 		if (Boolean.parseBoolean(standardFormat)) {
 			return result;
 		} else {
-			JSONObject siteFormatResult = convertToSiteFormat(result, jsonRequest.getJSONObject("source"));
-			return siteFormatResult;
+			JSONObject output = getSiteFormat(jsonRequest, targetNicknameId, accountNumber, targetCountryCode,
+					sourceNicknameId, result);
+			return output;
 		}
+	}
+
+	private static JSONObject getSiteFormat(JSONObject jsonRequest, String targetNicknameId, String accountNumber,
+			String targetCountryCode, String sourceNicknameId, DBObject result) {
+		String targetCategoryID = getTargetCategoryID(result, jsonRequest.getJSONObject("source"));
+		if (targetCategoryID == null && sourceNicknameId.split("-")[0].equals(targetNicknameId.split("-")[0])
+				&& jsonRequest.getJSONObject("source").has("categoryID")) {
+			targetCategoryID = jsonRequest.getJSONObject("source").getString("categoryID");
+		}
+		log.debug("targetCategoryID:" + targetCategoryID);
+		JSONObject siteFormatResult = convertToSiteFormat(result, jsonRequest.getJSONObject("source"));
+		log.debug("siteFormatResult:" + siteFormatResult);
+		if (targetCategoryID != null) {
+			JSONObject defaultValues = CategorySpecific.getSiteFormatValues(targetNicknameId, targetCategoryID,
+					targetCountryCode, accountNumber);
+			Set<String> keySet = defaultValues.keySet();
+			for (String key : keySet) {
+				if (!siteFormatResult.has(key)) {
+					siteFormatResult.put(key, defaultValues.get(key));
+				}
+			}
+		}
+		log.debug("siteFormatResult:" + siteFormatResult);
+		JSONObject output = new JSONObject(jsonRequest.getJSONObject("source").toString());
+		log.debug("output:" + output);
+		Set<String> keySet = siteFormatResult.keySet();
+		for (String key : keySet) {
+			JSONObject json = new JSONObject();
+			json.put(key, siteFormatResult.get(key));
+			log.debug("json:" + json);
+			mergeKeys(json, output);
+		}
+		return output;
+	}
+
+	@SuppressWarnings("unchecked")
+	private static String getTargetCategoryID(DBObject result, JSONObject sourceFromRequest) {
+		String categoryID = null;
+		if (result.containsField("map")) {
+			List<BasicDBObject> map = (List<BasicDBObject>) result.get("map");
+			for (BasicDBObject mapEntry : map) {
+				List<BasicDBObject> sourceList = (List<BasicDBObject>) mapEntry.get("source");
+				BasicDBObject target = (BasicDBObject) mapEntry.get("target");
+				if ("categoryID".equals(target.getString("field"))) {
+					if (target.containsField("value")) {
+						categoryID = target.getString("value");
+					} else {
+						// For the current use cases, only one object can be
+						// present in the array. Handle multiple objects use
+						// case in future as needed.
+						BasicDBObject source = sourceList.get(0);
+						categoryID = (String) getValueFromSource(source.getString("field"), sourceFromRequest);
+					}
+					break;
+				}
+
+			}
+		}
+		return categoryID;
 	}
 
 	private static List<DBObject> readDB(JSONObject jsonRequest, JSONArray standardFormatSource) {
@@ -90,7 +154,7 @@ public class FieldsMap {
 				if (!"itemSpecifics".equals(key)) {
 					JSONObject json = new JSONObject();
 					json.put("field", key);
-					json.put("value", getCSV(valueArray));
+					json.put("value", CategoryUtil.getCSVFromJSONArray(valueArray));
 					output.put(json);
 				} else {
 					for (int i = 0; i < valueArray.length(); i++) {
@@ -98,7 +162,7 @@ public class FieldsMap {
 						JSONArray names = valueArray.getJSONObject(i).getJSONArray("names");
 						JSONObject json = new JSONObject();
 						json.put("field", key + "." + title);
-						json.put("value", getCSV(names));
+						json.put("value", CategoryUtil.getCSVFromJSONArray(names));
 						output.put(json);
 					}
 				}
@@ -115,28 +179,52 @@ public class FieldsMap {
 
 	@SuppressWarnings("unchecked")
 	private static JSONObject convertToSiteFormat(DBObject result, JSONObject sourceFromRequest) {
-		JSONObject output = new JSONObject(sourceFromRequest.toString());
+		JSONObject output = new JSONObject();
 		if (result.containsField("map")) {
 			List<BasicDBObject> map = (List<BasicDBObject>) result.get("map");
 			for (BasicDBObject mapEntry : map) {
 				List<BasicDBObject> sourceList = (List<BasicDBObject>) mapEntry.get("source");
 				BasicDBObject target = (BasicDBObject) mapEntry.get("target");
+				String targetField = target.getString("field");
 				Object targetValue = null;
 				if (target.containsField("value")) {
-					targetValue = target.getString("value");
+					targetValue = target.get("value");
 				} else {
 					// For the current use cases, only one object can be present
-					// in
-					// the array. Handle multiple objects use case in future as
-					// needed.
+					// in the array. Handle multiple objects use case in future
+					// as needed.
 					BasicDBObject source = sourceList.get(0);
-					targetValue = getValueFromSource(source.getString("field"), sourceFromRequest);
+					String sourceField = source.getString("field");
+					// special handling for item specifics
+					if (sourceField.startsWith("itemSpecifics")) {
+						String itemSpecificTitle = sourceField.split("\\.")[1];
+						targetValue = getNamesFromItemSpecifics(sourceFromRequest, itemSpecificTitle);
+					} else {
+						targetValue = getValueFromSource(sourceField, sourceFromRequest);
+					}
 				}
 
 				if (targetValue != null) {
-					String targetField = target.getString("field");
-					JSONObject json = getJSONObjectFromDotNotation(targetField, targetValue);
-					mergeKeys(json, output);
+					// special handling for item specifics
+					if (targetField.startsWith("itemSpecifics")) {
+						JSONObject itemSpecificsSiteFormat = new JSONObject();
+						itemSpecificsSiteFormat.put("title", targetField.split("\\.")[1]);
+						// targetValue can either be CSV string or JSON array
+						if (targetValue instanceof String) {
+							targetValue = CategoryUtil.getJSONArrayFromCSV((String) targetValue);
+						}
+						itemSpecificsSiteFormat.put("names", targetValue);
+						JSONArray itemSpecifics = new JSONArray();
+						if (output.has("itemSpecifics")) {
+							itemSpecifics = output.getJSONArray("itemSpecifics");
+						}
+						itemSpecifics.put(itemSpecificsSiteFormat);
+						output.put("itemSpecifics", itemSpecifics);
+					} else {
+						JSONObject json = CategoryUtil.getJSONObjectFromDotNotation(targetField, targetValue);
+						String key = json.keys().next();
+						output.put(key, json.get(key));
+					}
 				}
 
 			}
@@ -144,11 +232,24 @@ public class FieldsMap {
 		return output;
 	}
 
+	private static JSONArray getNamesFromItemSpecifics(JSONObject sourceFromRequest, String itemSpecificTitle) {
+		if (sourceFromRequest.has("itemSpecifics")) {
+			JSONArray itemSpecifics = sourceFromRequest.getJSONArray("itemSpecifics");
+			for (int i = 0; i < itemSpecifics.length(); i++) {
+				if (itemSpecifics.getJSONObject(i).getString("title").equals(itemSpecificTitle)) {
+					return itemSpecifics.getJSONObject(i).getJSONArray("names");
+				}
+			}
+		}
+		return null;
+	}
+
 	// Merge is done only for nested json objects
 	private static void mergeKeys(JSONObject mergeFrom, JSONObject mergeTo) {
+		// mergeFrom has only one key
 		String key = mergeFrom.keys().next();
 		if (mergeTo.has(key)) {
-			if ((mergeFrom.get(key) instanceof JSONObject) && (mergeFrom.get(key) instanceof JSONObject)) {
+			if ((mergeFrom.get(key) instanceof JSONObject) && (mergeTo.get(key) instanceof JSONObject)) {
 				mergeKeys(mergeFrom.getJSONObject(key), mergeTo.getJSONObject(key));
 			} else {
 				mergeTo.put(key, mergeFrom.get(key));
@@ -167,31 +268,12 @@ public class FieldsMap {
 		}
 	}
 
-	private static JSONObject getJSONObjectFromDotNotation(String field, Object value) {
-		String[] fields = field.split("\\.", 2);
-		JSONObject result = new JSONObject();
-		if (fields.length == 2) {
-			result.put(fields[0], getJSONObjectFromDotNotation(fields[1], value));
-		} else {
-			result.put(fields[0], value);
-		}
-		return result;
-	}
-
-	private static String getCSV(JSONArray names) {
-		String str = "";
-		for (int i = 0; i < names.length(); i++) {
-			str = addDelimiter(i, str, ",");
-			str = str + names.get(i).toString();
-		}
-		return str;
-	}
-
 	public static BasicDBObject createMap(String request) {
 		JSONObject jsonRequest = new JSONObject(request);
 		BasicDBObject result = updateDB(jsonRequest, true);
 		if (!jsonRequest.getString("accountNumber").equals(CategoryUtil.DEFAULT_ACCOUNT_NUMBER)) {
 			persistAccountGenericData(jsonRequest);
+			persistDefaultData(jsonRequest);
 		}
 		return result;
 	}
@@ -200,7 +282,7 @@ public class FieldsMap {
 		String searchKey = "";
 		JSONArray map = jsonRequest.getJSONArray("map");
 		for (int i = 0; i < map.length(); i++) {
-			searchKey = addDelimiter(i, searchKey, ",");
+			searchKey = CategoryUtil.addDelimiter(i, searchKey, ",");
 			JSONObject entry = map.getJSONObject(i);
 			JSONArray source = entry.getJSONArray("source");
 			searchKey = getKeyFromSource(source, searchKey, false);
@@ -229,7 +311,16 @@ public class FieldsMap {
 		jsonRequest.put("sourceNicknameId", jsonRequest.getString("sourceNicknameId").split("-")[0]);
 		jsonRequest.put("targetNicknameId", jsonRequest.getString("targetNicknameId").split("-")[0]);
 		removeSiteSpecificFields(jsonRequest);
-		updateDB(jsonRequest, false);
+		if (jsonRequest.getJSONArray("map").length() > 0) {
+			updateDB(jsonRequest, false);
+		}
+	}
+
+	private static void persistDefaultData(JSONObject jsonRequest) {
+		jsonRequest.put("accountNumber", CategoryUtil.DEFAULT_ACCOUNT_NUMBER);
+		if (jsonRequest.getJSONArray("map").length() > 0) {
+			updateDB(jsonRequest, false);
+		}
 	}
 
 	private static void removeSiteSpecificFields(JSONObject jsonRequest) {
@@ -261,7 +352,7 @@ public class FieldsMap {
 
 	private static String getKeyFromSource(JSONArray source, String key, boolean strictSearch) {
 		for (int j = 0; j < source.length(); j++) {
-			key = addDelimiter(j, key, ",");
+			key = CategoryUtil.addDelimiter(j, key, ",");
 			JSONObject sourceItem = source.getJSONObject(j);
 			String field = sourceItem.getString("field");
 			String value = "";
@@ -284,13 +375,6 @@ public class FieldsMap {
 		key = key + enclosingChar + field.replace(" ", "_").replace("+", "_").replace(".", "_").replace("\"", "") + "_";
 		key = key + value.replace(" ", "_").replace("+", "_").replace(".", "_").replace("\"", "") + enclosingChar;
 		return key;
-	}
-
-	private static String addDelimiter(int index, String str, String delimiter) {
-		if (index > 0) {
-			str = str + delimiter;
-		}
-		return str;
 	}
 
 }
