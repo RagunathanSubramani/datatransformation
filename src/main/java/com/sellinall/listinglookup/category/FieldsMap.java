@@ -64,8 +64,8 @@ public class FieldsMap {
 			String targetCountryCode, String sourceNicknameId, DBObject result) {
 		String targetCategoryID = getTargetCategoryID(result, jsonRequest.getJSONObject("source"));
 		if (targetCategoryID == null && sourceNicknameId.split("-")[0].equals(targetNicknameId.split("-")[0])
-				&& jsonRequest.has("categoryID")) {
-			targetCategoryID = jsonRequest.getString("categoryID");
+				&& jsonRequest.getJSONObject("source").has("categoryID")) {
+			targetCategoryID = jsonRequest.getJSONObject("source").getString("categoryID");
 		}
 		log.debug("targetCategoryID:" + targetCategoryID);
 		JSONObject siteFormatResult = convertToSiteFormat(result, jsonRequest.getJSONObject("source"));
