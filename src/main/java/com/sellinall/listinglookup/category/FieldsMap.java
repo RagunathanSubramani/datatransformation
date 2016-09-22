@@ -352,14 +352,17 @@ public class FieldsMap {
 
 	private static String getKeyFromSource(JSONArray source, String key, boolean strictSearch) {
 		for (int j = 0; j < source.length(); j++) {
-			key = CategoryUtil.addDelimiter(j, key, ",");
 			JSONObject sourceItem = source.getJSONObject(j);
 			String field = sourceItem.getString("field");
-			String value = "";
-			if (sourceItem.has("value")) {
-				value = sourceItem.getString("value");
+			// don't include category name in key
+			if (!"categoryName".equals(field)) {
+				key = CategoryUtil.addDelimiter(j, key, ",");
+				String value = "";
+				if (sourceItem.has("value")) {
+					value = sourceItem.getString("value");
+				}
+				key = replacePunctuationMarks(key, field, value, strictSearch);
 			}
-			key = replacePunctuationMarks(key, field, value, strictSearch);
 		}
 		return key;
 	}
