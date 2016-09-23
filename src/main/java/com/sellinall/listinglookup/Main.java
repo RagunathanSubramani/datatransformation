@@ -107,7 +107,8 @@ public class Main {
 							"/services/categorySpecificValues"))) {
 				boolean isValidRequest = validate(request);
 				if (!isValidRequest) {
-					halt(401);
+					halt(401,"");
+					
 				}
 			}
 		});
