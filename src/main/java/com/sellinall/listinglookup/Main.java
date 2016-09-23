@@ -33,12 +33,12 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		port(Integer.valueOf(System.getenv("PORT")));
-
 		String webPort = System.getenv("PORT");
 		if (webPort == null || webPort.isEmpty()) {
 			webPort = "8083";
 		}
+		port(Integer.valueOf(webPort));
+
 
 		Config.context = new ClassPathXmlApplicationContext("ConfigProperties.xml");
 
