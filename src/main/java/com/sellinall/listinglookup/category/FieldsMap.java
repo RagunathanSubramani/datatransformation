@@ -90,6 +90,9 @@ public class FieldsMap {
 			log.debug("json:" + json);
 			mergeKeys(json, output);
 		}
+		if (result.containsField("targetCategoryText")) {
+			output.put("categoryName", result.get("targetCategoryText"));
+		}
 		return output;
 	}
 
