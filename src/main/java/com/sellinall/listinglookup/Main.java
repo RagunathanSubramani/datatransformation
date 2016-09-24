@@ -69,7 +69,11 @@ public class Main {
 				});
 
 		post("/services/fieldsMap/sourceChannel", (request, response) -> {
+			try{
 			return FieldsMap.postSourceChannelDetails(request.body(), request.queryParams("standardFormat"));
+			}catch (Exception e){
+				return "500";
+			}
 		});
 
 		get("/services/categorySpecificValues/:nicknameId/:categoryId", (request, response) -> {
