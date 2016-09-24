@@ -65,12 +65,17 @@ public class Main {
 				});
 
 		get("/services/ebay/category/categoryNamePath/:countryCode/:categoryId", (request, response) -> {
-			return CategoryLookup.getCategoryNamePath(request.params(":countryCode"), request.params(":categoryId"));
+			try{
+				return CategoryLookup.getCategoryNamePath(request.params(":countryCode"), request.params(":categoryId"));
+			}catch (Exception e){
+				response.status(500);
+				return "500";
+			}
 		});
 
 		get("/services/product/:searchParam",
 				(request, response) -> {
-					try{
+				try{
 					return ProductLookup.getMatchingProduct(request.params(":searchParam"),
 							request.queryParams("countryCode"));
 				}catch (Exception e){
@@ -82,7 +87,7 @@ public class Main {
 
 		post("/services/fieldsMap/sourceChannel", (request, response) -> {
 			try{
-			return FieldsMap.postSourceChannelDetails(request.body(), request.queryParams("standardFormat"));
+				return FieldsMap.postSourceChannelDetails(request.body(), request.queryParams("standardFormat"));
 			}catch (Exception e){
 				response.status(500);
 				return "500";
@@ -90,6 +95,7 @@ public class Main {
 		});
 
 		get("/services/categorySpecificValues/:nicknameId/:categoryId", (request, response) -> {
+			try{
 			if (Boolean.parseBoolean(request.queryParams("standardFormat"))) {
 				return CategorySpecific.getValues(request.params(":nicknameId"), request.params(":categoryId"),
 						request.queryParams("countryCode"), request.queryParams("accountNumber"));
@@ -98,15 +104,29 @@ public class Main {
 						request.params(":categoryId"), request.queryParams("countryCode"),
 						request.queryParams("accountNumber"));
 			}
+			}catch (Exception e){
+				response.status(500);
+				return "500";
+			}
 		});
 
 		put("/services/fieldsMap", (request, response) -> {
-			return FieldsMap.createMap(request.body());
+			try{
+				return FieldsMap.createMap(request.body());
+			}catch (Exception e){
+				response.status(500);
+				return "500";
+			}
 		});
 
 		put("/services/categorySpecificValues/:nicknameId/:categoryId", (request, response) -> {
-			return CategorySpecific.upsertValues(request.params(":nicknameId"), request.params(":categoryId"),
+			try{
+				return CategorySpecific.upsertValues(request.params(":nicknameId"), request.params(":categoryId"),
 					request.queryParams("countryCode"), request.queryParams("accountNumber"), request.body());
+			}catch (Exception e){
+				response.status(500);
+				return "500";
+			}
 		});
 
 		after((request, response) -> {
