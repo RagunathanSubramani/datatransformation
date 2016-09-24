@@ -107,7 +107,9 @@ public class Main {
 							"/services/categorySpecificValues"))) {
 				boolean isValidRequest = validate(request);
 				if (!isValidRequest) {
-					halt(401,"");
+					response.status(401);
+					setResponseHeaders(response);
+					halt(401,"401");
 					
 				}
 			}
