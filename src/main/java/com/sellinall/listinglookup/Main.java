@@ -44,6 +44,8 @@ public class Main {
 
 		get("/services/:channelName/category/:countryCode/:categoryId",
 				(request, response) -> {
+					try{
+
 					String channelName = request.params("channelName");
 					switch (channelName) {
 					case "ebay":
@@ -56,6 +58,10 @@ public class Main {
 						return com.sellinall.listinglookup.CategoryLookup.getCategorySpecifics(
 								request.params(":countryCode"), request.params(":categoryId"), channelName);
 					}
+					}catch (Exception e){
+						response.status(500);
+						return "500";
+					}
 				});
 
 		get("/services/ebay/category/categoryNamePath/:countryCode/:categoryId", (request, response) -> {
@@ -64,14 +70,21 @@ public class Main {
 
 		get("/services/product/:searchParam",
 				(request, response) -> {
+					try{
 					return ProductLookup.getMatchingProduct(request.params(":searchParam"),
 							request.queryParams("countryCode"));
+				}catch (Exception e){
+					response.status(500);
+					return "500";
+				}
+
 				});
 
 		post("/services/fieldsMap/sourceChannel", (request, response) -> {
 			try{
 			return FieldsMap.postSourceChannelDetails(request.body(), request.queryParams("standardFormat"));
 			}catch (Exception e){
+				response.status(500);
 				return "500";
 			}
 		});
