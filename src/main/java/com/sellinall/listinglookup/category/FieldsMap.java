@@ -91,7 +91,7 @@ public class FieldsMap {
 			JSONObject json = new JSONObject();
 			json.put(key, siteFormatResult.get(key));
 			log.debug("json:" + json);
-			mergeKeys(json, output);
+			CategoryUtil.mergeKeys(json, output);
 		}
 		if (result.containsField("targetCategoryText")) {
 			output.put("categoryName", result.get("targetCategoryText"));
@@ -248,21 +248,6 @@ public class FieldsMap {
 			}
 		}
 		return null;
-	}
-
-	// Merge is done only for nested json objects
-	private static void mergeKeys(JSONObject mergeFrom, JSONObject mergeTo) {
-		// mergeFrom has only one key
-		String key = mergeFrom.keys().next();
-		if (mergeTo.has(key)) {
-			if ((mergeFrom.get(key) instanceof JSONObject) && (mergeTo.get(key) instanceof JSONObject)) {
-				mergeKeys(mergeFrom.getJSONObject(key), mergeTo.getJSONObject(key));
-			} else {
-				mergeTo.put(key, mergeFrom.get(key));
-			}
-		} else {
-			mergeTo.put(key, mergeFrom.get(key));
-		}
 	}
 
 	private static Object getValueFromSource(String field, JSONObject sourceFromRequest) {

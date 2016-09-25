@@ -60,4 +60,19 @@ public class CategoryUtil {
 		}
 		return str;
 	}
+
+	// Merge is done only for nested json objects
+	public static void mergeKeys(JSONObject mergeFrom, JSONObject mergeTo) {
+		// mergeFrom has only one key
+		String key = mergeFrom.keys().next();
+		if (mergeTo.has(key)) {
+			if ((mergeFrom.get(key) instanceof JSONObject) && (mergeTo.get(key) instanceof JSONObject)) {
+				mergeKeys(mergeFrom.getJSONObject(key), mergeTo.getJSONObject(key));
+			} else {
+				mergeTo.put(key, mergeFrom.get(key));
+			}
+		} else {
+			mergeTo.put(key, mergeFrom.get(key));
+		}
+	}
 }
