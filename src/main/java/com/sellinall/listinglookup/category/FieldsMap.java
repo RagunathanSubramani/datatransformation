@@ -63,8 +63,8 @@ public class FieldsMap {
 	private static JSONObject getSiteFormat(JSONObject jsonRequest, String targetNicknameId, String accountNumber,
 			String targetCountryCode, String sourceNicknameId, DBObject result) {
 		String targetCategoryID = getTargetCategoryID(result, jsonRequest.getJSONObject("source"));
-		if (targetCategoryID == null && sourceNicknameId.split("-")[0].equals(targetNicknameId.split("-")[0])
-				&& jsonRequest.getJSONObject("source").has("categoryID")) {
+		boolean sameChannel = sourceNicknameId.split("-")[0].equals(targetNicknameId.split("-")[0]);
+		if (targetCategoryID == null && sameChannel && jsonRequest.getJSONObject("source").has("categoryID")) {
 			targetCategoryID = jsonRequest.getJSONObject("source").getString("categoryID");
 		}
 		log.debug("targetCategoryID:" + targetCategoryID);
@@ -81,7 +81,10 @@ public class FieldsMap {
 			}
 		}
 		log.debug("siteFormatResult:" + siteFormatResult);
-		JSONObject output = new JSONObject(jsonRequest.getJSONObject("source").toString());
+		JSONObject output = new JSONObject();
+		if (sameChannel) {
+			output = new JSONObject(jsonRequest.getJSONObject("source").toString());
+		}
 		log.debug("output:" + output);
 		Set<String> keySet = siteFormatResult.keySet();
 		for (String key : keySet) {
