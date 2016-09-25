@@ -33,17 +33,19 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		port(Integer.valueOf(System.getenv("PORT")));
-
 		String webPort = System.getenv("PORT");
 		if (webPort == null || webPort.isEmpty()) {
 			webPort = "8083";
 		}
+		port(Integer.valueOf(webPort));
+
 
 		Config.context = new ClassPathXmlApplicationContext("ConfigProperties.xml");
 
 		get("/services/:channelName/category/:countryCode/:categoryId",
 				(request, response) -> {
+					try{
+
 					String channelName = request.params("channelName");
 					switch (channelName) {
 					case "ebay":
@@ -56,23 +58,44 @@ public class Main {
 						return com.sellinall.listinglookup.CategoryLookup.getCategorySpecifics(
 								request.params(":countryCode"), request.params(":categoryId"), channelName);
 					}
+					}catch (Exception e){
+						response.status(500);
+						return "500";
+					}
 				});
 
 		get("/services/ebay/category/categoryNamePath/:countryCode/:categoryId", (request, response) -> {
-			return CategoryLookup.getCategoryNamePath(request.params(":countryCode"), request.params(":categoryId"));
+			try{
+				return CategoryLookup.getCategoryNamePath(request.params(":countryCode"), request.params(":categoryId"));
+			}catch (Exception e){
+				response.status(500);
+				return "500";
+			}
 		});
 
 		get("/services/product/:searchParam",
 				(request, response) -> {
+				try{
 					return ProductLookup.getMatchingProduct(request.params(":searchParam"),
 							request.queryParams("countryCode"));
+				}catch (Exception e){
+					response.status(500);
+					return "500";
+				}
+
 				});
 
 		post("/services/fieldsMap/sourceChannel", (request, response) -> {
-			return FieldsMap.postSourceChannelDetails(request.body(), request.queryParams("standardFormat"));
+			try{
+				return FieldsMap.postSourceChannelDetails(request.body(), request.queryParams("standardFormat"));
+			}catch (Exception e){
+				response.status(500);
+				return "500";
+			}
 		});
 
 		get("/services/categorySpecificValues/:nicknameId/:categoryId", (request, response) -> {
+			try{
 			if (Boolean.parseBoolean(request.queryParams("standardFormat"))) {
 				return CategorySpecific.getValues(request.params(":nicknameId"), request.params(":categoryId"),
 						request.queryParams("countryCode"), request.queryParams("accountNumber"));
@@ -81,15 +104,29 @@ public class Main {
 						request.params(":categoryId"), request.queryParams("countryCode"),
 						request.queryParams("accountNumber"));
 			}
+			}catch (Exception e){
+				response.status(500);
+				return "500";
+			}
 		});
 
 		put("/services/fieldsMap", (request, response) -> {
-			return FieldsMap.createMap(request.body());
+			try{
+				return FieldsMap.createMap(request.body());
+			}catch (Exception e){
+				response.status(500);
+				return "500";
+			}
 		});
 
 		put("/services/categorySpecificValues/:nicknameId/:categoryId", (request, response) -> {
-			return CategorySpecific.upsertValues(request.params(":nicknameId"), request.params(":categoryId"),
+			try{
+				return CategorySpecific.upsertValues(request.params(":nicknameId"), request.params(":categoryId"),
 					request.queryParams("countryCode"), request.queryParams("accountNumber"), request.body());
+			}catch (Exception e){
+				response.status(500);
+				return "500";
+			}
 		});
 
 		after((request, response) -> {
@@ -107,7 +144,10 @@ public class Main {
 							"/services/categorySpecificValues"))) {
 				boolean isValidRequest = validate(request);
 				if (!isValidRequest) {
-					halt(401);
+					response.status(401);
+					setResponseHeaders(response);
+					halt(401,"401");
+					
 				}
 			}
 		});

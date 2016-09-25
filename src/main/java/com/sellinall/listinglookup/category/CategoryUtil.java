@@ -15,7 +15,7 @@ public class CategoryUtil {
 	private static final Map<String, List<String>> accountAndSiteSpecificFieldsMap = Collections
 			.unmodifiableMap(new HashMap<String, List<String>>() {
 				{
-					put("eBay", Arrays.asList("storeFront.storeCategoryID"));
+					put("eBay", Arrays.asList("storeFront.storeCategoryID", "storeFront.storeCategory2ID"));
 					put("etsy", Arrays.asList("shopSectionId"));
 				}
 			});
