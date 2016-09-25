@@ -59,8 +59,7 @@ public class CategorySpecific {
 					output.put("itemSpecifics", itemSpecifics);
 				} else {
 					JSONObject json = CategoryUtil.getJSONObjectFromDotNotation(defaultField, defaultValue);
-					String key = json.keys().next();
-					output.put(key, json.get(key));
+					CategoryUtil.mergeKeys(json, output);
 				}
 			}
 		}
