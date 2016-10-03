@@ -64,7 +64,7 @@ public class CategoryLookup {
 				.getJSONObject("Body");
 		JSONArray attributes = body.getJSONArray("Attribute");
 		log.debug(attributes);
-		return new JSONArray();
+		return attributes;
 	}
 	
 	private static BasicDBObject getUserDetailsFromUser(String accountNumber, String nickNameId) {
