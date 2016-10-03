@@ -49,6 +49,10 @@
 		<property name="LookupCollectionHostName" value="${LookupCollectionHostName}" />
 		<property name="LookupCollectionPort" value="${LookupCollectionPort}" />
 		<property name="LookupCollectionDBName" value="${LookupCollectionDBName}" />
+		
+		<property name="UserCollectionHostName" value="${UserCollectionHostName}" />
+		<property name="UserCollectionPort" value="${UserCollectionPort}" />
+		<property name="UserCollectionDBName" value="${UserCollectionDBName}" />
 		<property name="SIAAuthServerURL" value="${SIAAuthServerURL}" />
 
 		<!-- snapdeal -->

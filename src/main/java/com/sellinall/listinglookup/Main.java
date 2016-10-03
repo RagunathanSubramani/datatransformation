@@ -51,9 +51,10 @@ public class Main {
 					case "ebay":
 						return com.sellinall.listinglookup.ebay.CategoryLookup.getCategorySpecifics(
 								request.params(":countryCode"), request.params(":categoryId"));
-					case "lazada":
+					case "lazada":					
 						return com.sellinall.listinglookup.rocket.CategoryLookup.getCategorySpecifics(
-								request.params(":countryCode"), request.params(":categoryId"));
+									request.params(":countryCode"), request.params(":categoryId"),
+									request.attribute("accountNumber").toString(), request.queryParams("nickNameId"));
 					default:
 						return com.sellinall.listinglookup.CategoryLookup.getCategorySpecifics(
 								request.params(":countryCode"), request.params(":categoryId"), channelName);
@@ -138,10 +139,10 @@ public class Main {
 				setResponseHeaders(response);
 				halt(200);
 			}
-			if ((request.requestMethod().equals("PUT"))
-					|| (request.requestMethod().equals("POST"))
-					|| (request.requestMethod().equals("GET") && request.pathInfo().startsWith(
-							"/services/categorySpecificValues"))) {
+			if ((request.requestMethod().equals("PUT")) || (request.requestMethod().equals("POST"))
+					|| (request.requestMethod().equals("GET")
+							&& (request.pathInfo().startsWith("/services/categorySpecificValues")
+									|| request.pathInfo().contains("lazada/category/")))) {
 				boolean isValidRequest = validate(request);
 				if (!isValidRequest) {
 					response.status(401);
