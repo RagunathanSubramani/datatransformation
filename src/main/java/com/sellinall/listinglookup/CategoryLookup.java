@@ -3,7 +3,6 @@ package com.sellinall.listinglookup;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
-import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 
 import com.mongodb.BasicDBList;

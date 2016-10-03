@@ -4,6 +4,7 @@ import static spark.Spark.after;
 import static spark.Spark.before;
 import static spark.Spark.get;
 import static spark.Spark.halt;
+import static spark.Spark.post;
 import static spark.Spark.put;
 import static spark.SparkBase.port;
 
@@ -18,7 +19,8 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import spark.Request;
 import spark.Response;
 
-import com.sellinall.listinglookup.category.CategoryMap;
+import com.sellinall.listinglookup.category.CategorySpecific;
+import com.sellinall.listinglookup.category.FieldsMap;
 import com.sellinall.listinglookup.config.Config;
 import com.sellinall.listinglookup.ebay.CategoryLookup;
 import com.sellinall.listinglookup.product.ProductLookup;
@@ -31,17 +33,19 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		port(Integer.valueOf(System.getenv("PORT")));
-
 		String webPort = System.getenv("PORT");
 		if (webPort == null || webPort.isEmpty()) {
 			webPort = "8083";
 		}
+		port(Integer.valueOf(webPort));
+
 
 		Config.context = new ClassPathXmlApplicationContext("ConfigProperties.xml");
 
 		get("/services/:channelName/category/:countryCode/:categoryId",
 				(request, response) -> {
+					try{
+
 					String channelName = request.params("channelName");
 					switch (channelName) {
 					case "ebay":
@@ -54,27 +58,75 @@ public class Main {
 						return com.sellinall.listinglookup.CategoryLookup.getCategorySpecifics(
 								request.params(":countryCode"), request.params(":categoryId"), channelName);
 					}
+					}catch (Exception e){
+						response.status(500);
+						return "500";
+					}
 				});
 
 		get("/services/ebay/category/categoryNamePath/:countryCode/:categoryId", (request, response) -> {
-			return CategoryLookup.getCategoryNamePath(request.params(":countryCode"), request.params(":categoryId"));
+			try{
+				return CategoryLookup.getCategoryNamePath(request.params(":countryCode"), request.params(":categoryId"));
+			}catch (Exception e){
+				response.status(500);
+				return "500";
+			}
 		});
 
 		get("/services/product/:searchParam",
 				(request, response) -> {
+				try{
 					return ProductLookup.getMatchingProduct(request.params(":searchParam"),
 							request.queryParams("countryCode"));
+				}catch (Exception e){
+					response.status(500);
+					return "500";
+				}
+
 				});
 
-		get("/services/categoryMap/:sourceChannel/:sourceCountryCode/:categoryId",
-				(request, response) -> {
-					return CategoryMap.getCategoryMap(request.params(":sourceChannel"),
-							request.params("sourceCountryCode"), request.params("categoryId"),
-							request.queryParams("targetChannel"), request.queryParams("targetCountryCode"));
-				});
+		post("/services/fieldsMap/sourceChannel", (request, response) -> {
+			try{
+				return FieldsMap.postSourceChannelDetails(request.body(), request.queryParams("standardFormat"));
+			}catch (Exception e){
+				response.status(500);
+				return "500";
+			}
+		});
 
-		put("/services/categoryMap", (request, response) -> {
-			return CategoryMap.createMap(request.headers("Mudra"), request.body());
+		get("/services/categorySpecificValues/:nicknameId/:categoryId", (request, response) -> {
+			try{
+			if (Boolean.parseBoolean(request.queryParams("standardFormat"))) {
+				return CategorySpecific.getValues(request.params(":nicknameId"), request.params(":categoryId"),
+						request.queryParams("countryCode"), request.queryParams("accountNumber"));
+			} else {
+				return CategorySpecific.getSiteFormatValues(request.params(":nicknameId"),
+						request.params(":categoryId"), request.queryParams("countryCode"),
+						request.queryParams("accountNumber"));
+			}
+			}catch (Exception e){
+				response.status(500);
+				return "500";
+			}
+		});
+
+		put("/services/fieldsMap", (request, response) -> {
+			try{
+				return FieldsMap.createMap(request.body());
+			}catch (Exception e){
+				response.status(500);
+				return "500";
+			}
+		});
+
+		put("/services/categorySpecificValues/:nicknameId/:categoryId", (request, response) -> {
+			try{
+				return CategorySpecific.upsertValues(request.params(":nicknameId"), request.params(":categoryId"),
+					request.queryParams("countryCode"), request.queryParams("accountNumber"), request.body());
+			}catch (Exception e){
+				response.status(500);
+				return "500";
+			}
 		});
 
 		after((request, response) -> {
@@ -86,10 +138,16 @@ public class Main {
 				setResponseHeaders(response);
 				halt(200);
 			}
-			if (request.requestMethod().equals("PUT")) {
+			if ((request.requestMethod().equals("PUT"))
+					|| (request.requestMethod().equals("POST"))
+					|| (request.requestMethod().equals("GET") && request.pathInfo().startsWith(
+							"/services/categorySpecificValues"))) {
 				boolean isValidRequest = validate(request);
 				if (!isValidRequest) {
-					halt(401);
+					response.status(401);
+					setResponseHeaders(response);
+					halt(401,"401");
+					
 				}
 			}
 		});
@@ -98,6 +156,11 @@ public class Main {
 
 	private static boolean validate(Request request) {
 		try {
+			String isSIAServer = request.headers("SIAServer");
+			if (isSIAServer != null && isSIAServer.equals("true")) {
+				return true;
+			}
+			String accountNumQueryParam = request.queryParams("accountNumber");
 			String mudraToken = request.headers("Mudra");
 			Map<String, String> header = new HashMap<String, String>();
 			header.put("authType", "facebook");
@@ -109,8 +172,11 @@ public class Main {
 			// TODO: map the response http code
 			if (response.getStatus() == HttpStatus.OK_200) {
 				JSONObject responseEntity = new JSONObject(response.getEntity(String.class));
-				String userId = responseEntity.getString("userId");
-				request.attribute("userId", userId);
+				String accountNumber = responseEntity.getString("userId");
+				request.attribute("accountNumber", accountNumber);
+				if (accountNumQueryParam != null && !accountNumQueryParam.equals(accountNumber)) {
+					return false;
+				}
 				return true;
 			}
 			return false;
