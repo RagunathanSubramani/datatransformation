@@ -16,6 +16,10 @@ public class Config {
 	private String LookupCollectionHostName;
 	private String LookupCollectionPort;
 	private String LookupCollectionDBName;
+	
+	private String UserCollectionHostName;
+	private String UserCollectionPort;
+	private String UserCollectionDBName;
 	private String SIAAuthServerURL;
 
 	private String shopcluesItemSpecificationUrl;
@@ -196,6 +200,30 @@ public class Config {
 
 	public void setSnapdealAuthToken(String snapdealAuthToken) {
 		this.snapdealAuthToken = snapdealAuthToken;
+	}
+
+	public String getUserCollectionHostName() {
+		return UserCollectionHostName;
+	}
+
+	public void setUserCollectionHostName(String userCollectionHostName) {
+		UserCollectionHostName = userCollectionHostName;
+	}
+
+	public String getUserCollectionPort() {
+		return UserCollectionPort;
+	}
+
+	public void setUserCollectionPort(String userCollectionPort) {
+		UserCollectionPort = userCollectionPort;
+	}
+
+	public String getUserCollectionDBName() {
+		return UserCollectionDBName;
+	}
+
+	public void setUserCollectionDBName(String userCollectionDBName) {
+		UserCollectionDBName = userCollectionDBName;
 	}
 
 	public static Config getConfig() {

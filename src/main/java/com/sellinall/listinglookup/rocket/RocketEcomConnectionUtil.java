@@ -6,7 +6,6 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,42 +23,21 @@ import com.sellinall.util.HttpsURLConnectionUtil;
 public class RocketEcomConnectionUtil {
 	static Logger log = Logger.getLogger(RocketEcomConnectionUtil.class.getName());
 
-	private static final Map<String, String> ScApiHost = Collections.unmodifiableMap(new HashMap<String, String>() {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		{
-			put("SG", "https://sellercenter-api.lazada.sg");
-			put("TH", "https://sellercenter-api.lazada.co.th");
-
-		}
-	});
 	private static final String HASH_ALGORITHM = "HmacSHA256";
 	private static final String CHAR_UTF_8 = "UTF-8";
 	private static final String CHAR_ASCII = "ASCII";
 
-	public static String getCategorySpecifics(String countryCode, String categoryId) {
+	public static String getCategorySpecifics(String countryCode, String categoryId, String userID, String apiKey,
+			String host) {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("Action", "GetCategoryAttributes");
 		params.put("PrimaryCategory", categoryId);
 
-		String scApiHost = getScApiHost(countryCode);
-		String apiKey = "3802dac6a310f90583ddabb0f0f446fb7692423b";
-		params.put("UserID", "integrate@sellinall.com");
-		if ("TH".equals(countryCode)) {
-			apiKey = "98a0090266075e3094674b08783a1e7ee063aff2";
-			params.put("UserID", "r.atchariya@gmail.com");
-		}
-		// provide XML as an empty string when not needed
+		String scApiHost = host;
+		params.put("UserID", userID);
 		final String out = getSellercenterApiResponse(params, scApiHost, apiKey, "", "GET");
 		log.debug(out);
 		return out;
-	}
-
-	public static String getScApiHost(String countryCode) {
-		return ScApiHost.get(countryCode);
 	}
 
 	/**
