@@ -1,6 +1,7 @@
 package com.sellinall.listinglookup.rocket;
 
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -14,14 +15,14 @@ public class CategoryLookup {
 	static Logger log = Logger.getLogger(CategoryLookup.class.getName());
 	private static final long thirtyDays = 30 * 24 * 60 * 60;
 
-	public static Object getCategorySpecifics(String countryCode, String categoryId) {
+	public static Object getCategorySpecifics(String countryCode, String categoryId,String accountNumber, String nickNameID) {
 
 		BasicDBObject lazadaAttributesDB = getCategoryAttributesFromDB(countryCode, categoryId);
 
 		if (lazadaAttributesDB != null) {
 			return lazadaAttributesDB;
 		}
-		JSONArray lazadaAttributes = getAttributesFromLazada(countryCode, categoryId);
+		JSONArray lazadaAttributes = getAttributesFromLazada(countryCode, categoryId, accountNumber, nickNameID);
 		return persistToDB(countryCode, categoryId, lazadaAttributes);
 	}
 
@@ -50,8 +51,11 @@ public class CategoryLookup {
 		return lookupData;
 	}
 
-	private static JSONArray getAttributesFromLazada(String countryCode, String categoryId) {
-		String categorySpecificsXML = RocketEcomConnectionUtil.getCategorySpecifics(countryCode, categoryId);
+	private static JSONArray getAttributesFromLazada(String countryCode, String categoryId, String accountNumber,
+			String nickNameId) {
+		BasicDBObject userChannel = getUserDetailsFromUser(accountNumber, nickNameId);
+		String categorySpecificsXML = RocketEcomConnectionUtil.getCategorySpecifics(countryCode, categoryId,
+				userChannel.getString("userID"), userChannel.getString("apikey"), userChannel.getString("hostURL"));
 
 		JSONObject categorySpecificsFromLazada = new JSONObject(categorySpecificsXML);
 		log.debug(categorySpecificsFromLazada);
@@ -59,44 +63,23 @@ public class CategoryLookup {
 				.getJSONObject("SuccessResponse")
 				.getJSONObject("Body");
 		JSONArray attributes = body.getJSONArray("Attribute");
-//		JSONArray NameRecommendation;
-//		if (Recommendations.has("NameRecommendation")) {
-//			// NameRecommendation can either be a json object (in case of
-//			// single element) or json array. Handle accordingly.
-//			if (Recommendations.get("NameRecommendation").getClass() == org.json.JSONArray.class) {
-//				NameRecommendation = new JSONArray(Recommendations.getJSONArray("NameRecommendation").toString());
-//			} else {
-//				JSONObject NameRecommendationElement = new JSONObject(Recommendations.getJSONObject(
-//						"NameRecommendation").toString());
-//				NameRecommendation = new JSONArray();
-//				NameRecommendation.put(NameRecommendationElement);
-//			}
-//			for (int i = 0; i < NameRecommendation.length(); i++) {
-//				JSONObject NameRecommendataionObj = NameRecommendation.getJSONObject(i);
-//				if (NameRecommendataionObj.has("ValueRecommendation")) {
-//					JSONArray ValueRecommendation = new JSONArray();
-//					if (NameRecommendataionObj.get("ValueRecommendation").getClass() == org.json.JSONArray.class) {
-//						ValueRecommendation = NameRecommendataionObj.getJSONArray("ValueRecommendation");
-//					} else {
-//						ValueRecommendation.put(NameRecommendataionObj.getJSONObject("ValueRecommendation"));
-//					}
-//					JSONArray valuesOfRecommendation = new JSONArray();
-//					for (int j = 0; j < ValueRecommendation.length(); j++) {
-//						valuesOfRecommendation.put(ValueRecommendation.getJSONObject(j).get("Value").toString());
-//					}
-//					NameRecommendataionObj.put("valuesOfRecommendation", valuesOfRecommendation);
-//					NameRecommendation.put(i, NameRecommendataionObj);
-//				}
-//			}
-//		} else {
-//			// create empty array when NameRecommendation is not present in
-//			// the response from lazada.
-//			NameRecommendation = new JSONArray();
-//		}
-//		JSONObject categorySpecifics = new JSONObject();
-//		categorySpecifics.put("NameRecommendation", NameRecommendation);
 		log.debug(attributes);
 		return attributes;
+	}
+	
+	private static BasicDBObject getUserDetailsFromUser(String accountNumber, String nickNameId) {
+		BasicDBObject elemMatch = new BasicDBObject();
+		String siteName = nickNameId.split("-")[0];
+		elemMatch.put("nickName.id", nickNameId);
+		BasicDBObject site = new BasicDBObject("$elemMatch", elemMatch);
+		BasicDBObject searchQuery = new BasicDBObject(siteName, site);
+		searchQuery.put("_id", new ObjectId(accountNumber));
+		BasicDBObject fields = new BasicDBObject("lazada.$", 1);
+		DBCollection table = DbUtilities.getUserDBCollection("user");
+		BasicDBObject user = (BasicDBObject) table.findOne(searchQuery, fields);
+		BasicDBList channelList = (BasicDBList) user.get(siteName);
+		//Here always return single object only 
+		return (BasicDBObject) channelList.get(0);
 	}
 
 
