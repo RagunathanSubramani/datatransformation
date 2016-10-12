@@ -116,7 +116,7 @@ public class EBayUtil {
 		org.codehaus.jettison.json.JSONObject payLoad = new org.codehaus.jettison.json.JSONObject();
 		payLoad.put("data", urlParameter);
 		return HttpURLConnectionUtil.doPostWithHeader(Config.getConfig().getEbayPostURL(), payLoad,
-				getConfig(configValue, siteID), "xml");
+				getConfig(configValue, siteID), "xml").getString("payload");
 	}
 
 	private static Map<String, String> getConfig(String apiCallName, String siteId) {

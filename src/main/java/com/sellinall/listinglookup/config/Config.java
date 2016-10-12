@@ -33,6 +33,15 @@ public class Config {
 	private String snapdealUrl;
 	private String snapdealClientId;
 	private String snapdealAuthToken;
+	private String Ragasiyam;
+
+	public String getRagasiyam() {
+		return Ragasiyam;
+	}
+
+	public void setRagasiyam(String ragasiyam) {
+		Ragasiyam = ragasiyam;
+	}
 
 	public String getGrant_type() {
 		return grant_type;

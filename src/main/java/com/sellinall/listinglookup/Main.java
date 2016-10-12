@@ -24,6 +24,7 @@ import com.sellinall.listinglookup.category.FieldsMap;
 import com.sellinall.listinglookup.config.Config;
 import com.sellinall.listinglookup.ebay.CategoryLookup;
 import com.sellinall.listinglookup.product.ProductLookup;
+import com.sellinall.util.AuthConstant;
 import com.sellinall.util.NewHttpURLConnectionUtil;
 import com.sun.jersey.api.client.ClientResponse;
 
@@ -41,6 +42,8 @@ public class Main {
 
 
 		Config.context = new ClassPathXmlApplicationContext("ConfigProperties.xml");
+		Config config=new Config();
+		config.setRagasiyam(System.getenv(AuthConstant.RAGASIYAM_KEY));
 
 		get("/services/:channelName/category/:countryCode/:categoryId",
 				(request, response) -> {
@@ -161,6 +164,13 @@ public class Main {
 			if (isSIAServer != null && isSIAServer.equals("true")) {
 				return true;
 			}
+
+			if (request.headers(AuthConstant.RAGASIYAM_KEY) != null && Config.getConfig().getRagasiyam() != null
+					&& checkValidUser(request.headers(AuthConstant.RAGASIYAM_KEY).split(","),
+							Config.getConfig().getRagasiyam().split(","))) {
+				return true;
+			}
+
 			String accountNumQueryParam = request.queryParams("accountNumber");
 			String mudraToken = request.headers("Mudra");
 			Map<String, String> header = new HashMap<String, String>();
@@ -197,6 +207,19 @@ public class Main {
 		response.header("Access-Control-Allow-Credentials", "true");
 		response.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD");
 		response.header("Access-Control-Max-Age", "1209600");
+	}
+
+	public static boolean checkValidUser(String ragasiyam[], String originalvalue[]) {
+		boolean flag = false;
+		for (int i = 0; i < ragasiyam.length; i++) {
+			for (int j = 0; j < originalvalue.length; j++) {
+				if (ragasiyam[i] != null && originalvalue[j] != null && ragasiyam[i].equals(originalvalue[j])) {
+					flag = true;
+					break;
+				}
+			}
+		}
+		return flag;
 	}
 
 }

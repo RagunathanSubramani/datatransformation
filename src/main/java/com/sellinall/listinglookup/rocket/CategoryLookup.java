@@ -59,10 +59,8 @@ public class CategoryLookup {
 
 		JSONObject categorySpecificsFromLazada = new JSONObject(categorySpecificsXML);
 		log.debug(categorySpecificsFromLazada);
-		JSONObject body = categorySpecificsFromLazada
-				.getJSONObject("SuccessResponse")
-				.getJSONObject("Body");
-		JSONArray attributes = body.getJSONArray("Attribute");
+		JSONObject successResponse = categorySpecificsFromLazada.getJSONObject("SuccessResponse");
+		JSONArray attributes = successResponse.getJSONArray("Body");
 		log.debug(attributes);
 		return attributes;
 	}
