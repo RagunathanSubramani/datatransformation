@@ -183,7 +183,7 @@ public class Main {
 			// TODO: map the response http code
 			if (response.getStatus() == HttpStatus.OK_200) {
 				JSONObject responseEntity = new JSONObject(response.getEntity(String.class));
-				String accountNumber = responseEntity.getString("userId");
+				String accountNumber = responseEntity.getString("accountNumber");
 				request.attribute("accountNumber", accountNumber);
 				if (accountNumQueryParam != null && !accountNumQueryParam.equals(accountNumber)) {
 					return false;
