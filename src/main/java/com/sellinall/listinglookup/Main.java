@@ -160,11 +160,6 @@ public class Main {
 
 	private static boolean validate(Request request) {
 		try {
-			String isSIAServer = request.headers("SIAServer");
-			if (isSIAServer != null && isSIAServer.equals("true")) {
-				return true;
-			}
-
 			if (request.headers(AuthConstant.RAGASIYAM_KEY) != null && Config.getConfig().getRagasiyam() != null
 					&& checkValidUser(request.headers(AuthConstant.RAGASIYAM_KEY).split(","),
 							Config.getConfig().getRagasiyam().split(","))) {
@@ -183,7 +178,7 @@ public class Main {
 			// TODO: map the response http code
 			if (response.getStatus() == HttpStatus.OK_200) {
 				JSONObject responseEntity = new JSONObject(response.getEntity(String.class));
-				String accountNumber = responseEntity.getString("userId");
+				String accountNumber = responseEntity.getString("accountNumber");
 				request.attribute("accountNumber", accountNumber);
 				if (accountNumQueryParam != null && !accountNumQueryParam.equals(accountNumber)) {
 					return false;

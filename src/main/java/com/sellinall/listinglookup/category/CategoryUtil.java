@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -63,16 +64,17 @@ public class CategoryUtil {
 
 	// Merge is done only for nested json objects
 	public static void mergeKeys(JSONObject mergeFrom, JSONObject mergeTo) {
-		// mergeFrom has only one key
-		String key = mergeFrom.keys().next();
-		if (mergeTo.has(key)) {
-			if ((mergeFrom.get(key) instanceof JSONObject) && (mergeTo.get(key) instanceof JSONObject)) {
-				mergeKeys(mergeFrom.getJSONObject(key), mergeTo.getJSONObject(key));
+		Set<String> keySet = mergeFrom.keySet();
+		for (String key : keySet) {
+			if (mergeTo.has(key)) {
+				if ((mergeFrom.get(key) instanceof JSONObject) && (mergeTo.get(key) instanceof JSONObject)) {
+					mergeKeys(mergeFrom.getJSONObject(key), mergeTo.getJSONObject(key));
+				} else {
+					mergeTo.put(key, mergeFrom.get(key));
+				}
 			} else {
 				mergeTo.put(key, mergeFrom.get(key));
 			}
-		} else {
-			mergeTo.put(key, mergeFrom.get(key));
 		}
 	}
 }
