@@ -160,11 +160,6 @@ public class Main {
 
 	private static boolean validate(Request request) {
 		try {
-			String isSIAServer = request.headers("SIAServer");
-			if (isSIAServer != null && isSIAServer.equals("true")) {
-				return true;
-			}
-
 			if (request.headers(AuthConstant.RAGASIYAM_KEY) != null && Config.getConfig().getRagasiyam() != null
 					&& checkValidUser(request.headers(AuthConstant.RAGASIYAM_KEY).split(","),
 							Config.getConfig().getRagasiyam().split(","))) {
