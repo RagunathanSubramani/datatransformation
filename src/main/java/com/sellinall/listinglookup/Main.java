@@ -41,9 +41,8 @@ public class Main {
 		port(Integer.valueOf(webPort));
 
 
-		Config.context = new ClassPathXmlApplicationContext("ConfigProperties.xml");
-		Config config=new Config();
-		config.setRagasiyam(System.getenv(AuthConstant.RAGASIYAM_KEY));
+		Config.context = new ClassPathXmlApplicationContext("ConfigProperties.xml");		
+		Config.getConfig().setRagasiyam(System.getenv(AuthConstant.RAGASIYAM_KEY));
 
 		get("/services/:channelName/category/:countryCode/:categoryId",
 				(request, response) -> {
