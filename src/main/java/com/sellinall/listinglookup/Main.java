@@ -31,6 +31,7 @@ import com.sun.jersey.api.client.ClientResponse;
 public class Main {
 
 	static Logger log = Logger.getLogger(Main.class.getName());
+	private static final String SERVERNAME = "listinglookup";
 
 	public static void main(String[] args) {
 
@@ -171,6 +172,9 @@ public class Main {
 			header.put("authType", "facebook");
 			org.codehaus.jettison.json.JSONObject payload = new JSONObject();
 			payload.put("mudra", mudraToken);
+			payload.put("method", request.requestMethod());
+			payload.put("path", request.pathInfo());
+			payload.put("serverName", SERVERNAME);
 			String url = Config.getConfig().getSIAAuthServerURL() + "/authToken";
 
 			ClientResponse response = NewHttpURLConnectionUtil.doPostWithHeader(url, payload, header, "json");
