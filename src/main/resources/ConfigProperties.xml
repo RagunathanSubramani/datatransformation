@@ -59,5 +59,18 @@
 		<property name="snapdealUrl" value="${snapdealUrl}" />
 		<property name="snapdealClientId" value="${snapdealClientId}" />
 		<property name="snapdealAuthToken" value="${snapdealAuthToken}" />
+		
+		<!-- lazada -->
+		<property name="lazadaSGDefaultAccount" value="${lazadaSGDefaultAccount}" />
+		<property name="lazadaIDDefaultAccount" value="${lazadaIDDefaultAccount}" />
+		<property name="lazadaMYDefaultAccount" value="${lazadaMYDefaultAccount}" />
+		<property name="lazadaPHDefaultAccount" value="${lazadaPHDefaultAccount}" />
+		<property name="lazadaTHDefaultAccount" value="${lazadaTHDefaultAccount}" />
+		
+		<property name="lazadaSGDefaultNickNameId" value="${lazadaSGDefaultNickNameId}" />
+		<property name="lazadaIDDefaultNickNameId" value="${lazadaIDDefaultNickNameId}" />
+		<property name="lazadaMYDefaultNickNameId" value="${lazadaMYDefaultNickNameId}" />
+		<property name="lazadaPHDefaultNickNameId" value="${lazadaPHDefaultNickNameId}" />
+		<property name="lazadaTHDefaultNickNameId" value="${lazadaTHDefaultNickNameId}" />
 	</bean>
 </beans>
