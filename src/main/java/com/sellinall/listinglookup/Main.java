@@ -61,10 +61,8 @@ public class Main {
 							accountNumber = request.attribute("accountNumber").toString();
 							nickNameId = request.queryParams("nickNameId");
 						}else{
-							// defaultAccountDetails = "accountNumber-nickNameId"
-							String defaultAccountDetails = Config.getLazadaAccountDetails(request.params(":countryCode"));
-							accountNumber = defaultAccountDetails.split("-")[0];
-							nickNameId = defaultAccountDetails.split("-")[1];
+							accountNumber = Config.getLazadaAccountDetails(request.params(":countryCode"));
+							nickNameId = Config.getLazadaNickNameID(request.params(":countryCode"));
 						}
 						return com.sellinall.listinglookup.rocket.CategoryLookup.getCategorySpecifics(
 									request.params(":countryCode"), request.params(":categoryId"), accountNumber,

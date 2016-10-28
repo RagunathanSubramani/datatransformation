@@ -61,10 +61,16 @@
 		<property name="snapdealAuthToken" value="${snapdealAuthToken}" />
 		
 		<!-- lazada -->
-		<property name="lazadaSGAccount" value="${lazadaSGAccount}" />
-		<property name="lazadaIDAccount" value="${lazadaIDAccount}" />
-		<property name="lazadaMYAccount" value="${lazadaMYAccount}" />
-		<property name="lazadaPHAccount" value="${lazadaPHAccount}" />
-		<property name="lazadaTHAccount" value="${lazadaTHAccount}" />
+		<property name="lazadaSGDefaultAccount" value="${lazadaSGDefaultAccount}" />
+		<property name="lazadaIDDefaultAccount" value="${lazadaIDDefaultAccount}" />
+		<property name="lazadaMYDefaultAccount" value="${lazadaMYDefaultAccount}" />
+		<property name="lazadaPHDefaultAccount" value="${lazadaPHDefaultAccount}" />
+		<property name="lazadaTHDefaultAccount" value="${lazadaTHDefaultAccount}" />
+		
+		<property name="lazadaSGDefaultNickNameId" value="${lazadaSGDefaultNickNameId}" />
+		<property name="lazadaIDDefaultNickNameId" value="${lazadaIDDefaultNickNameId}" />
+		<property name="lazadaMYDefaultNickNameId" value="${lazadaMYDefaultNickNameId}" />
+		<property name="lazadaPHDefaultNickNameId" value="${lazadaPHDefaultNickNameId}" />
+		<property name="lazadaTHDefaultNickNameId" value="${lazadaTHDefaultNickNameId}" />
 	</bean>
 </beans>

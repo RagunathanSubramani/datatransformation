@@ -35,11 +35,17 @@ public class Config {
 	private String snapdealAuthToken;
 	private String Ragasiyam;
 	
-	private String lazadaSGAccount;
-	private String lazadaIDAccount;
-	private String lazadaMYAccount;
-	private String lazadaPHAccount;
-	private String lazadaTHAccount;
+	private String lazadaSGDefaultAccount;
+	private String lazadaIDDefaultAccount;
+	private String lazadaMYDefaultAccount;
+	private String lazadaPHDefaultAccount;
+	private String lazadaTHDefaultAccount;
+	
+	private String lazadaSGDefaultNickNameId;
+	private String lazadaIDDefaultNickNameId;
+	private String lazadaMYDefaultNickNameId;
+	private String lazadaPHDefaultNickNameId;
+	private String lazadaTHDefaultNickNameId;
 
 	public String getRagasiyam() {
 		return Ragasiyam;
@@ -240,59 +246,116 @@ public class Config {
 	public void setUserCollectionDBName(String userCollectionDBName) {
 		UserCollectionDBName = userCollectionDBName;
 	}
-
-	public String getLazadaSGAccount() {
-		return lazadaSGAccount;
-	}
-
-	public void setLazadaSGAccount(String lazadaSGAccount) {
-		this.lazadaSGAccount = lazadaSGAccount;
-	}
-
-	public String getLazadaIDAccount() {
-		return lazadaIDAccount;
-	}
-
-	public void setLazadaIDAccount(String lazadaIDAccount) {
-		this.lazadaIDAccount = lazadaIDAccount;
-	}
-
-	public String getLazadaMYAccount() {
-		return lazadaMYAccount;
-	}
-
-	public void setLazadaMYAccount(String lazadaMYAccount) {
-		this.lazadaMYAccount = lazadaMYAccount;
-	}
-
-	public String getLazadaPHAccount() {
-		return lazadaPHAccount;
-	}
-
-	public void setLazadaPHAccount(String lazadaPHAccount) {
-		this.lazadaPHAccount = lazadaPHAccount;
-	}
-
-	public String getLazadaTHAccount() {
-		return lazadaTHAccount;
-	}
-
-	public void setLazadaTHAccount(String lazadaTHAccount) {
-		this.lazadaTHAccount = lazadaTHAccount;
-	}
 	
+	public String getLazadaSGDefaultAccount() {
+		return lazadaSGDefaultAccount;
+	}
+
+	public void setLazadaSGDefaultAccount(String lazadaSGDefaultAccount) {
+		this.lazadaSGDefaultAccount = lazadaSGDefaultAccount;
+	}
+
+	public String getLazadaIDDefaultAccount() {
+		return lazadaIDDefaultAccount;
+	}
+
+	public void setLazadaIDDefaultAccount(String lazadaIDDefaultAccount) {
+		this.lazadaIDDefaultAccount = lazadaIDDefaultAccount;
+	}
+
+	public String getLazadaMYDefaultAccount() {
+		return lazadaMYDefaultAccount;
+	}
+
+	public void setLazadaMYDefaultAccount(String lazadaMYDefaultAccount) {
+		this.lazadaMYDefaultAccount = lazadaMYDefaultAccount;
+	}
+
+	public String getLazadaPHDefaultAccount() {
+		return lazadaPHDefaultAccount;
+	}
+
+	public void setLazadaPHDefaultAccount(String lazadaPHDefaultAccount) {
+		this.lazadaPHDefaultAccount = lazadaPHDefaultAccount;
+	}
+
+	public String getLazadaTHDefaultAccount() {
+		return lazadaTHDefaultAccount;
+	}
+
+	public void setLazadaTHDefaultAccount(String lazadaTHDefaultAccount) {
+		this.lazadaTHDefaultAccount = lazadaTHDefaultAccount;
+	}
+
+	public String getLazadaSGDefaultNickNameId() {
+		return lazadaSGDefaultNickNameId;
+	}
+
+	public void setLazadaSGDefaultNickNameId(String lazadaSGDefaultNickNameId) {
+		this.lazadaSGDefaultNickNameId = lazadaSGDefaultNickNameId;
+	}
+
+	public String getLazadaIDDefaultNickNameId() {
+		return lazadaIDDefaultNickNameId;
+	}
+
+	public void setLazadaIDDefaultNickNameId(String lazadaIDDefaultNickNameId) {
+		this.lazadaIDDefaultNickNameId = lazadaIDDefaultNickNameId;
+	}
+
+	public String getLazadaMYDefaultNickNameId() {
+		return lazadaMYDefaultNickNameId;
+	}
+
+	public void setLazadaMYDefaultNickNameId(String lazadaMYDefaultNickNameId) {
+		this.lazadaMYDefaultNickNameId = lazadaMYDefaultNickNameId;
+	}
+
+	public String getLazadaPHDefaultNickNameId() {
+		return lazadaPHDefaultNickNameId;
+	}
+
+	public void setLazadaPHDefaultNickNameId(String lazadaPHDefaultNickNameId) {
+		this.lazadaPHDefaultNickNameId = lazadaPHDefaultNickNameId;
+	}
+
+	public String getLazadaTHDefaultNickNameId() {
+		return lazadaTHDefaultNickNameId;
+	}
+
+	public void setLazadaTHDefaultNickNameId(String lazadaTHDefaultNickNameId) {
+		this.lazadaTHDefaultNickNameId = lazadaTHDefaultNickNameId;
+	}
+
 	public static String getLazadaAccountDetails(String countryCode){
 		switch (countryCode) {
 		case "SG":
-			return Config.getConfig().getLazadaSGAccount();
+			return Config.getConfig().getLazadaSGDefaultAccount();
 		case "ID":
-			return Config.getConfig().getLazadaIDAccount();
+			return Config.getConfig().getLazadaIDDefaultAccount();
 		case "MY":
-			return Config.getConfig().getLazadaMYAccount();
+			return Config.getConfig().getLazadaMYDefaultAccount();
 		case "PH":
-			return Config.getConfig().getLazadaPHAccount();
+			return Config.getConfig().getLazadaPHDefaultAccount();
 		case "TH":
-			return Config.getConfig().getLazadaTHAccount();
+			return Config.getConfig().getLazadaTHDefaultAccount();
+		default:
+			return "";
+		} 
+	}
+	
+	public static String getLazadaNickNameID(String countryCode){
+		switch (countryCode) {
+		case "SG":
+			return Config.getConfig().getLazadaSGDefaultNickNameId();
+		case "ID":
+			return Config.getConfig().getLazadaIDDefaultNickNameId();
+		case "MY":
+			return Config.getConfig().getLazadaMYDefaultNickNameId();
+		case "PH":
+			return Config.getConfig().getLazadaPHDefaultNickNameId();
+		case "TH":
+			return Config.getConfig().getLazadaTHDefaultNickNameId();
 		default:
 			return "";
 		} 
