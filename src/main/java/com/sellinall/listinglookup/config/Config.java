@@ -34,6 +34,12 @@ public class Config {
 	private String snapdealClientId;
 	private String snapdealAuthToken;
 	private String Ragasiyam;
+	
+	private String lazadaSGAccount;
+	private String lazadaIDAccount;
+	private String lazadaMYAccount;
+	private String lazadaPHAccount;
+	private String lazadaTHAccount;
 
 	public String getRagasiyam() {
 		return Ragasiyam;
@@ -233,6 +239,63 @@ public class Config {
 
 	public void setUserCollectionDBName(String userCollectionDBName) {
 		UserCollectionDBName = userCollectionDBName;
+	}
+
+	public String getLazadaSGAccount() {
+		return lazadaSGAccount;
+	}
+
+	public void setLazadaSGAccount(String lazadaSGAccount) {
+		this.lazadaSGAccount = lazadaSGAccount;
+	}
+
+	public String getLazadaIDAccount() {
+		return lazadaIDAccount;
+	}
+
+	public void setLazadaIDAccount(String lazadaIDAccount) {
+		this.lazadaIDAccount = lazadaIDAccount;
+	}
+
+	public String getLazadaMYAccount() {
+		return lazadaMYAccount;
+	}
+
+	public void setLazadaMYAccount(String lazadaMYAccount) {
+		this.lazadaMYAccount = lazadaMYAccount;
+	}
+
+	public String getLazadaPHAccount() {
+		return lazadaPHAccount;
+	}
+
+	public void setLazadaPHAccount(String lazadaPHAccount) {
+		this.lazadaPHAccount = lazadaPHAccount;
+	}
+
+	public String getLazadaTHAccount() {
+		return lazadaTHAccount;
+	}
+
+	public void setLazadaTHAccount(String lazadaTHAccount) {
+		this.lazadaTHAccount = lazadaTHAccount;
+	}
+	
+	public static String getLazadaAccountDetails(String countryCode){
+		switch (countryCode) {
+		case "SG":
+			return Config.getConfig().getLazadaSGAccount();
+		case "ID":
+			return Config.getConfig().getLazadaIDAccount();
+		case "MY":
+			return Config.getConfig().getLazadaMYAccount();
+		case "PH":
+			return Config.getConfig().getLazadaPHAccount();
+		case "TH":
+			return Config.getConfig().getLazadaTHAccount();
+		default:
+			return "";
+		} 
 	}
 
 	public static Config getConfig() {

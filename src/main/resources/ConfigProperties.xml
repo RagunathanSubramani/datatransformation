@@ -59,5 +59,12 @@
 		<property name="snapdealUrl" value="${snapdealUrl}" />
 		<property name="snapdealClientId" value="${snapdealClientId}" />
 		<property name="snapdealAuthToken" value="${snapdealAuthToken}" />
+		
+		<!-- lazada -->
+		<property name="lazadaSGAccount" value="${lazadaSGAccount}" />
+		<property name="lazadaIDAccount" value="${lazadaIDAccount}" />
+		<property name="lazadaMYAccount" value="${lazadaMYAccount}" />
+		<property name="lazadaPHAccount" value="${lazadaPHAccount}" />
+		<property name="lazadaTHAccount" value="${lazadaTHAccount}" />
 	</bean>
 </beans>
