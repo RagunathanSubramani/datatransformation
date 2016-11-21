@@ -88,7 +88,7 @@ public class CategorySpecific {
 			persistAccountGenericData(jsonRequest, channel, collection, query);
 
 			// add default record
-			persistDefaultData(jsonRequest, collection, query);
+			//persistDefaultData(jsonRequest, collection, query);
 		}
 		return result;
 	}

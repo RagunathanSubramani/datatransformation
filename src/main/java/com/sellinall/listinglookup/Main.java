@@ -31,6 +31,7 @@ import com.sun.jersey.api.client.ClientResponse;
 public class Main {
 
 	static Logger log = Logger.getLogger(Main.class.getName());
+	private static final String SERVERNAME = "listinglookup";
 
 	public static void main(String[] args) {
 
@@ -54,9 +55,18 @@ public class Main {
 						return com.sellinall.listinglookup.ebay.CategoryLookup.getCategorySpecifics(
 								request.params(":countryCode"), request.params(":categoryId"));
 					case "lazada":					
+						String accountNumber = "";
+						String nickNameId = "";
+						if(request.attributes().contains("accountNumber")){							
+							accountNumber = request.attribute("accountNumber").toString();
+							nickNameId = request.queryParams("nickNameId");
+						}else{
+							accountNumber = Config.getLazadaAccountDetails(request.params(":countryCode"));
+							nickNameId = Config.getLazadaNickNameID(request.params(":countryCode"));
+						}
 						return com.sellinall.listinglookup.rocket.CategoryLookup.getCategorySpecifics(
-									request.params(":countryCode"), request.params(":categoryId"),
-									request.attribute("accountNumber").toString(), request.queryParams("nickNameId"));
+									request.params(":countryCode"), request.params(":categoryId"), accountNumber,
+									nickNameId);
 					default:
 						return com.sellinall.listinglookup.CategoryLookup.getCategorySpecifics(
 								request.params(":countryCode"), request.params(":categoryId"), channelName);
@@ -171,6 +181,9 @@ public class Main {
 			header.put("authType", "facebook");
 			org.codehaus.jettison.json.JSONObject payload = new JSONObject();
 			payload.put("mudra", mudraToken);
+			payload.put("method", request.requestMethod());
+			payload.put("path", request.pathInfo());
+			payload.put("serverName", SERVERNAME);
 			String url = Config.getConfig().getSIAAuthServerURL() + "/authToken";
 
 			ClientResponse response = NewHttpURLConnectionUtil.doPostWithHeader(url, payload, header, "json");
