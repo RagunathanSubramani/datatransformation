@@ -178,7 +178,7 @@ public class Main {
 			String accountNumQueryParam = request.queryParams("accountNumber");
 			String mudraToken = request.headers("Mudra");
 			Map<String, String> header = new HashMap<String, String>();
-			header.put("authType", "facebook");
+			header.put("authType", "sellInAll");
 			org.codehaus.jettison.json.JSONObject payload = new JSONObject();
 			payload.put("mudra", mudraToken);
 			payload.put("method", request.requestMethod());
