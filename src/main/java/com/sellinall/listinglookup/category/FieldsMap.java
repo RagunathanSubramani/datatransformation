@@ -79,6 +79,9 @@ public class FieldsMap {
 					siteFormatResult.put(key, defaultValues.get(key));
 				}
 			}
+			if (defaultValues.has("itemSpecifics")) {
+				processItemSpecificsValues(defaultValues.getJSONArray("itemSpecifics"), siteFormatResult);
+			}
 		}
 		log.debug("siteFormatResult:" + siteFormatResult);
 		JSONObject output = new JSONObject();
@@ -99,6 +102,23 @@ public class FieldsMap {
 		return output;
 	}
 
+	private static void processItemSpecificsValues(JSONArray itemSpecifics, JSONObject siteFormatResult) {
+		JSONArray mappedItemSpecifics = siteFormatResult.getJSONArray("itemSpecifics");
+		for (int i = 0; i < itemSpecifics.length(); i++) {
+			JSONObject itemSpecific = itemSpecifics.getJSONObject(i);
+			boolean isItemAlreadyInMappedSpecific = false;
+			for (int mappedSpecificIndex = 0; mappedSpecificIndex < mappedItemSpecifics
+					.length(); mappedSpecificIndex++) {
+				JSONObject mappedItemSpecific = mappedItemSpecifics.getJSONObject(mappedSpecificIndex);
+				if (itemSpecific.getString("title").equals(mappedItemSpecific.getString("title"))) {
+					isItemAlreadyInMappedSpecific = true;
+				}
+			}
+			if (!isItemAlreadyInMappedSpecific) {
+				mappedItemSpecifics.put(itemSpecific);
+			}
+		}
+	}
 	@SuppressWarnings("unchecked")
 	private static String getTargetCategoryID(DBObject result, JSONObject sourceFromRequest) {
 		String categoryID = null;
