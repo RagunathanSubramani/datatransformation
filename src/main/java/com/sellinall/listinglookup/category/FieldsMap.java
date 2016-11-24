@@ -112,6 +112,7 @@ public class FieldsMap {
 				JSONObject mappedItemSpecific = mappedItemSpecifics.getJSONObject(mappedSpecificIndex);
 				if (itemSpecific.getString("title").equals(mappedItemSpecific.getString("title"))) {
 					isItemAlreadyInMappedSpecific = true;
+					break;
 				}
 			}
 			if (!isItemAlreadyInMappedSpecific) {
