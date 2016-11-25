@@ -371,16 +371,17 @@ public class FieldsMap {
 			if (sourceItem.has("value")) {
 				value = sourceItem.getString("value");
 			}
-			if(field.contains("variantDetails")){
-				try{
-					JSONObject variantDeatails = new JSONObject(value);
-					key = replacePunctuationMarks(key, field+".title", variantDeatails.getString("title"), strictSearch);
+			if (field.contains("variantDetails")) {
+				try {
+					JSONObject variantDetails = new JSONObject(value);
+					key = replacePunctuationMarks(key, field + ".title", variantDetails.getString("title"),
+							strictSearch);
 					key = CategoryUtil.addDelimiter(j, key, ",");
-					key = replacePunctuationMarks(key, field+".name", variantDeatails.getString("name"), strictSearch);
-				}catch (Exception e) {
+					key = replacePunctuationMarks(key, field + ".name", variantDetails.getString("name"), strictSearch);
+				} catch (Exception e) {
 					key = replacePunctuationMarks(key, field, value, strictSearch);
 				}
-			}else{
+			} else {
 				key = replacePunctuationMarks(key, field, value, strictSearch);
 			}
 		}
