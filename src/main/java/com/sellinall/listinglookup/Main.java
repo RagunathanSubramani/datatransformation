@@ -73,6 +73,7 @@ public class Main {
 					}
 					}catch (Exception e){
 						response.status(500);
+						e.printStackTrace();
 						return "500";
 					}
 				});
@@ -81,6 +82,7 @@ public class Main {
 			try{
 				return CategoryLookup.getCategoryNamePath(request.params(":countryCode"), request.params(":categoryId"));
 			}catch (Exception e){
+				e.printStackTrace();
 				response.status(500);
 				return "500";
 			}
@@ -92,6 +94,7 @@ public class Main {
 					return ProductLookup.getMatchingProduct(request.params(":searchParam"),
 							request.queryParams("countryCode"));
 				}catch (Exception e){
+					e.printStackTrace();
 					response.status(500);
 					return "500";
 				}
@@ -102,6 +105,7 @@ public class Main {
 			try{
 				return FieldsMap.postSourceChannelDetails(request.body(), request.queryParams("standardFormat"));
 			}catch (Exception e){
+				e.printStackTrace();
 				response.status(500);
 				return "500";
 			}
@@ -118,6 +122,7 @@ public class Main {
 						request.queryParams("accountNumber"));
 			}
 			}catch (Exception e){
+				e.printStackTrace();
 				response.status(500);
 				return "500";
 			}
@@ -127,6 +132,7 @@ public class Main {
 			try{
 				return FieldsMap.createMap(request.body());
 			}catch (Exception e){
+				e.printStackTrace();
 				response.status(500);
 				return "500";
 			}
@@ -137,6 +143,7 @@ public class Main {
 				return CategorySpecific.upsertValues(request.params(":nicknameId"), request.params(":categoryId"),
 					request.queryParams("countryCode"), request.queryParams("accountNumber"), request.body());
 			}catch (Exception e){
+				e.printStackTrace();
 				response.status(500);
 				return "500";
 			}
