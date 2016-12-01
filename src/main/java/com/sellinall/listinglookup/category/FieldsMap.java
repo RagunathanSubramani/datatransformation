@@ -79,6 +79,9 @@ public class FieldsMap {
 					siteFormatResult.put(key, defaultValues.get(key));
 				}
 			}
+			if (defaultValues.has("itemSpecifics")) {
+				processItemSpecificsValues(defaultValues.getJSONArray("itemSpecifics"), siteFormatResult);
+			}
 		}
 		log.debug("siteFormatResult:" + siteFormatResult);
 		JSONObject output = new JSONObject();
@@ -99,6 +102,24 @@ public class FieldsMap {
 		return output;
 	}
 
+	private static void processItemSpecificsValues(JSONArray itemSpecifics, JSONObject siteFormatResult) {
+		JSONArray mappedItemSpecifics = siteFormatResult.getJSONArray("itemSpecifics");
+		for (int i = 0; i < itemSpecifics.length(); i++) {
+			JSONObject itemSpecific = itemSpecifics.getJSONObject(i);
+			boolean isItemAlreadyInMappedSpecific = false;
+			for (int mappedSpecificIndex = 0; mappedSpecificIndex < mappedItemSpecifics
+					.length(); mappedSpecificIndex++) {
+				JSONObject mappedItemSpecific = mappedItemSpecifics.getJSONObject(mappedSpecificIndex);
+				if (itemSpecific.getString("title").equals(mappedItemSpecific.getString("title"))) {
+					isItemAlreadyInMappedSpecific = true;
+					break;
+				}
+			}
+			if (!isItemAlreadyInMappedSpecific) {
+				mappedItemSpecifics.put(itemSpecific);
+			}
+		}
+	}
 	@SuppressWarnings("unchecked")
 	private static String getTargetCategoryID(DBObject result, JSONObject sourceFromRequest) {
 		String categoryID = null;
@@ -350,7 +371,19 @@ public class FieldsMap {
 			if (sourceItem.has("value")) {
 				value = sourceItem.getString("value");
 			}
-			key = replacePunctuationMarks(key, field, value, strictSearch);
+			if (field.contains("variantDetails")) {
+				try {
+					JSONObject variantDetails = new JSONObject(value);
+					key = replacePunctuationMarks(key, field + ".title", variantDetails.getString("title"),
+							strictSearch);
+					key = CategoryUtil.addDelimiter(j, key, ",");
+					key = replacePunctuationMarks(key, field + ".name", variantDetails.getString("name"), strictSearch);
+				} catch (Exception e) {
+					key = replacePunctuationMarks(key, field, value, strictSearch);
+				}
+			} else {
+				key = replacePunctuationMarks(key, field, value, strictSearch);
+			}
 		}
 		return key;
 	}
