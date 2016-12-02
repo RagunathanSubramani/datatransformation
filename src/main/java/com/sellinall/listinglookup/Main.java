@@ -57,8 +57,8 @@ public class Main {
 					case "lazada":					
 						String accountNumber = "";
 						String nickNameId = "";
-						if(request.attributes().contains("accountNumber")){							
-							accountNumber = request.attribute("accountNumber").toString();
+						if (request.headers().contains("accountnumber")) {						
+							accountNumber = request.headers("accountnumber").toString();
 							nickNameId = request.queryParams("nickNameId");
 						}else{
 							accountNumber = Config.getLazadaAccountDetails(request.params(":countryCode"));
