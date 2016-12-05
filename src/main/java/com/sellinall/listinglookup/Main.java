@@ -55,19 +55,9 @@ public class Main {
 						return com.sellinall.listinglookup.ebay.CategoryLookup.getCategorySpecifics(
 								request.params(":countryCode"), request.params(":categoryId"));
 					case "lazada":					
-						String accountNumber = "";
-						String nickNameId = "";
-						if (request.headers().contains("accountnumber") || request.attributes().contains("accountNumber")) {	
-							if(request.headers().contains("accountnumber")){
-								accountNumber = request.headers("accountnumber").toString();
-							}else {
-								accountNumber = request.attribute("accountnumber").toString();
-							}
-							nickNameId = request.queryParams("nickNameId");
-						}else{
-							accountNumber = Config.getLazadaAccountDetails(request.params(":countryCode"));
-							nickNameId = Config.getLazadaNickNameID(request.params(":countryCode"));
-						}
+						String accountNumber = Config.getLazadaAccountDetails(request.params(":countryCode"));
+						String nickNameId = Config.getLazadaNickNameID(request.params(":countryCode"));
+						
 						return com.sellinall.listinglookup.rocket.CategoryLookup.getCategorySpecifics(
 									request.params(":countryCode"), request.params(":categoryId"), accountNumber,
 									nickNameId);
