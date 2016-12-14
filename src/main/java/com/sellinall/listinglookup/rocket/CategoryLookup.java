@@ -73,7 +73,7 @@ public class CategoryLookup {
 		BasicDBObject searchQuery = new BasicDBObject(siteName, site);
 		searchQuery.put("_id", new ObjectId(accountNumber));
 		BasicDBObject fields = new BasicDBObject("lazada.$", 1);
-		DBCollection table = DbUtilities.getUserDBCollection("user");
+		DBCollection table = DbUtilities.getUserDBCollection("accounts");
 		BasicDBObject user = (BasicDBObject) table.findOne(searchQuery, fields);
 		BasicDBList channelList = (BasicDBList) user.get(siteName);
 		//Here always return single object only 
