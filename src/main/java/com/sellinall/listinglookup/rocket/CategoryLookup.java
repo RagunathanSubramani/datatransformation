@@ -18,7 +18,6 @@ public class CategoryLookup {
 	public static Object getCategorySpecifics(String countryCode, String categoryId,String accountNumber, String nickNameID) {
 
 		BasicDBObject lazadaAttributesDB = getCategoryAttributesFromDB(countryCode, categoryId);
-
 		if (lazadaAttributesDB != null) {
 			return lazadaAttributesDB;
 		}
@@ -95,6 +94,7 @@ public class CategoryLookup {
 		long expriyTime = (System.currentTimeMillis() / 1000L) + thirtyDays;
 		BasicDBObject updateData = new BasicDBObject();
 		updateData.put("expiryTime", expriyTime);
+		updateData.put("variants", JSON.parse(getLazadaVariants(lazadaAttributes).toString()));
 		updateData.put("attributes", JSON.parse(lazadaAttributes.toString()));
 
 		BasicDBObject setObject = new BasicDBObject("$set", updateData);
@@ -104,4 +104,16 @@ public class CategoryLookup {
 		return updateData;
 	}
 
+	private static JSONArray getLazadaVariants(JSONArray lazadaAttributes) {
+		JSONArray variations = new JSONArray();
+		for (int i = 0; i < lazadaAttributes.length(); i++) {
+			JSONObject filterFields = lazadaAttributes.getJSONObject(i);
+			if (filterFields.get("attributeType").equals("sku") && filterFields.get("mandatory").equals(1)
+					&& (filterFields.get("inputType").equals("singleSelect")
+							|| filterFields.get("inputType").equals("multiSelect"))) {
+				variations.put(filterFields.get("name"));
+			}
+		}
+		return variations;
+	}
 }
