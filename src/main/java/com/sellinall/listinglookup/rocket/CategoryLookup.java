@@ -97,7 +97,10 @@ public class CategoryLookup {
 		long expriyTime = (System.currentTimeMillis() / 1000L) + thirtyDays;
 		BasicDBObject updateData = new BasicDBObject();
 		updateData.put("expiryTime", expriyTime);
-		updateData.put("variants", JSON.parse(constructLazadaVariants(lazadaAttributes).toString()));
+		JSONArray variants = constructLazadaVariants(lazadaAttributes);
+		if (variants.length() != 0) {
+			updateData.put("variants", JSON.parse(variants.toString()));
+		}
 		updateData.put("attributes", JSON.parse(lazadaAttributes.toString()));
 		BasicDBObject setObject = new BasicDBObject("$set", updateData);
 		DBCollection table = DbUtilities.getLookupDBCollection("lazadaAttributeLookup");
