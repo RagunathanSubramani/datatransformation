@@ -43,6 +43,9 @@ public class CategoryLookup {
 			BasicDBObject attributesData = null;
 			if (currentTime < expiryTime) {
 				attributesData = new BasicDBObject();
+				if (lookupData.containsKey("variants")) {
+					attributesData.put("variants", lookupData.get("variants"));
+				}
 				attributesData.put("attributes", lookupData.get("attributes"));
 			}
 			return attributesData;
@@ -94,9 +97,8 @@ public class CategoryLookup {
 		long expriyTime = (System.currentTimeMillis() / 1000L) + thirtyDays;
 		BasicDBObject updateData = new BasicDBObject();
 		updateData.put("expiryTime", expriyTime);
-		updateData.put("variants", JSON.parse(getLazadaVariants(lazadaAttributes).toString()));
+		updateData.put("variants", JSON.parse(constructLazadaVariants(lazadaAttributes).toString()));
 		updateData.put("attributes", JSON.parse(lazadaAttributes.toString()));
-
 		BasicDBObject setObject = new BasicDBObject("$set", updateData);
 		DBCollection table = DbUtilities.getLookupDBCollection("lazadaAttributeLookup");
 		table.update(searchQuery, setObject, true, false);
@@ -104,7 +106,7 @@ public class CategoryLookup {
 		return updateData;
 	}
 
-	private static JSONArray getLazadaVariants(JSONArray lazadaAttributes) {
+	private static JSONArray constructLazadaVariants(JSONArray lazadaAttributes) {
 		JSONArray variations = new JSONArray();
 		for (int i = 0; i < lazadaAttributes.length(); i++) {
 			JSONObject filterFields = lazadaAttributes.getJSONObject(i);
