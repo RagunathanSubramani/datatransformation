@@ -113,7 +113,7 @@ public class CategoryLookup {
 		JSONArray variations = new JSONArray();
 		for (int i = 0; i < lazadaAttributes.length(); i++) {
 			JSONObject filterFields = lazadaAttributes.getJSONObject(i);
-			if (filterFields.get("attributeType").equals("sku") && filterFields.get("mandatory").equals(1)
+			if (filterFields.get("attributeType").equals("sku") && filterFields.get("isMandatory").equals(1)
 					&& (filterFields.get("inputType").equals("singleSelect")
 							|| filterFields.get("inputType").equals("multiSelect"))) {
 				variations.put(filterFields.get("name"));
