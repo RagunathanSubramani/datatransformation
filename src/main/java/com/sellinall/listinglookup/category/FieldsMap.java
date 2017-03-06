@@ -44,7 +44,6 @@ public class FieldsMap {
 				results = readDB(jsonRequest, standardFormatSource);
 			}
 		}
-
 		DBObject result = new BasicDBObject();
 		if (!results.isEmpty()) {
 			result = results.get(0);
@@ -276,6 +275,9 @@ public class FieldsMap {
 		if (fields.length == 2) {
 			return getValueFromSource(fields[1], sourceFromRequest);
 		} else {
+			if(fields[0].equals("warranty_type")){
+				return sourceFromRequest.get("warrantyType");
+			}
 			return sourceFromRequest.get(fields[0]);
 		}
 	}
