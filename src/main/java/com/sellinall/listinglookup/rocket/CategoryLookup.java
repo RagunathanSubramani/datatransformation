@@ -96,7 +96,7 @@ public class CategoryLookup {
 		long expriyTime = (System.currentTimeMillis() / 1000L) + thirtyDays;
 		BasicDBObject updateData = new BasicDBObject();
 		updateData.put("expiryTime", expriyTime);
-		JSONArray variants = constructLazadaValues(lazadaAttributes);
+		JSONArray variants = constructVariantsAndUpdateKeyValues(lazadaAttributes);
 		if (variants.length() != 0) {
 			updateData.put("variants", JSON.parse(variants.toString()));
 		}
@@ -108,7 +108,7 @@ public class CategoryLookup {
 		return updateData;
 	}
 
-	private static JSONArray constructLazadaValues(JSONArray lazadaAttributes) {
+	private static JSONArray constructVariantsAndUpdateKeyValues(JSONArray lazadaAttributes) {
 		JSONArray variations = new JSONArray();
 		for (int i = 0; i < lazadaAttributes.length(); i++) {
 			JSONObject filterFields = lazadaAttributes.getJSONObject(i);
