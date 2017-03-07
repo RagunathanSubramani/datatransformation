@@ -44,7 +44,6 @@ public class FieldsMap {
 				results = readDB(jsonRequest, standardFormatSource);
 			}
 		}
-
 		DBObject result = new BasicDBObject();
 		if (!results.isEmpty()) {
 			result = results.get(0);
@@ -276,7 +275,11 @@ public class FieldsMap {
 		if (fields.length == 2) {
 			return getValueFromSource(fields[1], sourceFromRequest);
 		} else {
-			return sourceFromRequest.get(fields[0]);
+			if (sourceFromRequest.has(fields[0])) {
+				return sourceFromRequest.get(fields[0]);
+			} else {
+				return null;
+			}
 		}
 	}
 
