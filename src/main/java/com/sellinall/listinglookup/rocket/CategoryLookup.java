@@ -58,7 +58,6 @@ public class CategoryLookup {
 		BasicDBObject userChannel = getUserDetailsFromUser(accountNumber, nickNameId);
 		String categorySpecificsXML = RocketEcomConnectionUtil.getCategorySpecifics(countryCode, categoryId,
 				userChannel.getString("userID"), userChannel.getString("apikey"), userChannel.getString("hostURL"));
-
 		JSONObject categorySpecificsFromLazada = new JSONObject(categorySpecificsXML);
 		log.debug(categorySpecificsFromLazada);
 		JSONObject successResponse = categorySpecificsFromLazada.getJSONObject("SuccessResponse");
@@ -97,7 +96,7 @@ public class CategoryLookup {
 		long expriyTime = (System.currentTimeMillis() / 1000L) + thirtyDays;
 		BasicDBObject updateData = new BasicDBObject();
 		updateData.put("expiryTime", expriyTime);
-		JSONArray variants = constructLazadaVariants(lazadaAttributes);
+		JSONArray variants = constructVariantsAndUpdateKeyValues(lazadaAttributes);
 		if (variants.length() != 0) {
 			updateData.put("variants", JSON.parse(variants.toString()));
 		}
@@ -109,7 +108,7 @@ public class CategoryLookup {
 		return updateData;
 	}
 
-	private static JSONArray constructLazadaVariants(JSONArray lazadaAttributes) {
+	private static JSONArray constructVariantsAndUpdateKeyValues(JSONArray lazadaAttributes) {
 		JSONArray variations = new JSONArray();
 		for (int i = 0; i < lazadaAttributes.length(); i++) {
 			JSONObject filterFields = lazadaAttributes.getJSONObject(i);
@@ -117,6 +116,9 @@ public class CategoryLookup {
 					&& (filterFields.get("inputType").equals("singleSelect")
 							|| filterFields.get("inputType").equals("multiSelect"))) {
 				variations.put(filterFields.get("name"));
+			}
+			if(filterFields.get("name").equals("warranty_type")){
+				filterFields.put("name", "warrantyType");
 			}
 		}
 		return variations;

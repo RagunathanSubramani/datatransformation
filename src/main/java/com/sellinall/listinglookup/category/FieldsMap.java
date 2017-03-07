@@ -44,7 +44,6 @@ public class FieldsMap {
 				results = readDB(jsonRequest, standardFormatSource);
 			}
 		}
-
 		DBObject result = new BasicDBObject();
 		if (!results.isEmpty()) {
 			result = results.get(0);
