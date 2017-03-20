@@ -292,7 +292,7 @@ public class FieldsMap {
 		}
 		if (!jsonRequest.getString("accountNumber").equals(CategoryUtil.DEFAULT_ACCOUNT_NUMBER)) {
 			persistAccountGenericData(jsonRequest);
-			// persistDefaultData(jsonRequest);
+			//persistDefaultData(jsonRequest);
 		}
 		return result;
 	}
