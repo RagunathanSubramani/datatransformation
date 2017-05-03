@@ -42,6 +42,13 @@
 		<property name="client_id" value="${client_id}" />
 		<property name="client_secret" value="${client_secret}" />
 		<property name="grant_type" value="${grant_type}" />
+		
+		<!-- Etsy -->
+	<property name="etsyUrl" value="${etsyUrl}" />
+	<property name="etsyUSDefaultAccount" value="${etsyUSDefaultAccount}" />
+	<property name="etsyUSDefaultNickNameId" value="${etsyUSDefaultNickNameId}" />
+	<property name="etsyConsumerKey" value="${etsyConsumerKey}" />
+	<property name="etsyConsumerSecret" value="${etsyConsumerSecret}" />
 
 		<!-- DB Values -->
 		<property name="DbUserName" value="${DbUserName}" />
