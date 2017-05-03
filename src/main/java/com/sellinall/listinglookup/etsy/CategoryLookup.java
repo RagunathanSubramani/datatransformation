@@ -32,8 +32,8 @@ public class CategoryLookup {
 		}
 		JSONObject categorySpecificsEtsy = getCategorySpecificsFromEtsy(countryCode, categoryId);
 		BasicDBObject persistData = new BasicDBObject();
-		if (categorySpecificsEtsy.length() != 0) {
-			persistData = persistToDB(countryCode, categoryId, categorySpecificsEtsy);
+		if (categorySpecificsEtsy.length() != 0 && categorySpecificsEtsy.getInt("httpCode") == 200) {
+			persistData = persistToDB(countryCode, categoryId, categorySpecificsEtsy.getJSONObject("payload"));
 		}
 		return persistData;
 	}
