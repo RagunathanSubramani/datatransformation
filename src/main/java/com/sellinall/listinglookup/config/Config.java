@@ -34,6 +34,7 @@ public class Config {
 	private String snapdealClientId;
 	private String snapdealAuthToken;
 	private String Ragasiyam;
+	private String etsyUrl;
 	
 	private String lazadaSGDefaultAccount;
 	private String lazadaIDDefaultAccount;
@@ -46,6 +47,11 @@ public class Config {
 	private String lazadaMYDefaultNickNameId;
 	private String lazadaPHDefaultNickNameId;
 	private String lazadaTHDefaultNickNameId;
+	
+	private String etsyUSDefaultAccount;
+	private String etsyUSDefaultNickNameId;
+	private String etsyConsumerKey;
+	private String etsyConsumerSecret;
 
 	public String getRagasiyam() {
 		return Ragasiyam;
@@ -149,6 +155,14 @@ public class Config {
 
 	public void setEbayOpenApiURL(String ebayOpenApiURL) {
 		EbayOpenApiURL = ebayOpenApiURL;
+	}
+
+	public String getEtsyUrl() {
+		return etsyUrl;
+	}
+
+	public void setEtsyUrl(String etsyUrl) {
+		this.etsyUrl = etsyUrl;
 	}
 
 	public String getDbUserName() {
@@ -327,6 +341,39 @@ public class Config {
 		this.lazadaTHDefaultNickNameId = lazadaTHDefaultNickNameId;
 	}
 
+	
+	public String getEtsyUSDefaultAccount() {
+		return etsyUSDefaultAccount;
+	}
+
+	public void setEtsyUSDefaultAccount(String etsyUSDefaultAccount) {
+		this.etsyUSDefaultAccount = etsyUSDefaultAccount;
+	}
+
+	public String getEtsyUSDefaultNickNameId() {
+		return etsyUSDefaultNickNameId;
+	}
+
+	public void setEtsyUSDefaultNickNameId(String etsyUSDefaultNickNameId) {
+		this.etsyUSDefaultNickNameId = etsyUSDefaultNickNameId;
+	}
+
+	public String getEtsyConsumerKey() {
+		return etsyConsumerKey;
+	}
+
+	public void setEtsyConsumerKey(String etsyConsumerKey) {
+		this.etsyConsumerKey = etsyConsumerKey;
+	}
+
+	public String getEtsyConsumerSecret() {
+		return etsyConsumerSecret;
+	}
+
+	public void setEtsyConsumerSecret(String etsyConsumerSecret) {
+		this.etsyConsumerSecret = etsyConsumerSecret;
+	}
+
 	public static String getLazadaAccountDetails(String countryCode){
 		switch (countryCode) {
 		case "SG":
@@ -359,6 +406,24 @@ public class Config {
 		default:
 			return "";
 		} 
+	}
+
+	public static String getEtsyAccountDetails(String countryCode) {
+		switch (countryCode) {
+		case "US":
+			return Config.getConfig().getEtsyUSDefaultAccount();
+		default:
+			return "";
+		}
+	}
+
+	public static String getEtsyNickNameID(String countryCode) {
+		switch (countryCode) {
+		case "US":
+			return Config.getConfig().getEtsyUSDefaultNickNameId();
+		default:
+			return "";
+		}
 	}
 
 	public static Config getConfig() {
