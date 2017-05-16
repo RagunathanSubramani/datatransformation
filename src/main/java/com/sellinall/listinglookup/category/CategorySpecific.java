@@ -83,6 +83,10 @@ public class CategorySpecific {
 		jsonRequest.put("countryCode", countryCode);
 		BasicDBObject update = (BasicDBObject) JSON.parse(jsonRequest.toString());
 		BasicDBObject result = (BasicDBObject) collection.findAndModify(query, fields, null, false, update, true, true);
+		if (channel.equals("kartrocket")) {
+			// for kartrocket selfMapping no need to store country based mapping
+			return result;
+		}
 		if (!jsonRequest.getString("accountNumber").equals(CategoryUtil.DEFAULT_ACCOUNT_NUMBER)) {
 			// add record specific to account, but general to country and site
 			persistAccountGenericData(jsonRequest, channel, collection, query);

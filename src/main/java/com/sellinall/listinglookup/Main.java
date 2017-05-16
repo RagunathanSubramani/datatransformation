@@ -61,8 +61,11 @@ public class Main {
 						return com.sellinall.listinglookup.rocket.CategoryLookup.getCategorySpecifics(
 									request.params(":countryCode"), request.params(":categoryId"), accountNumber,
 									nickNameId);
-					default:
-						return com.sellinall.listinglookup.CategoryLookup.getCategorySpecifics(
+						case "etsy":
+							return com.sellinall.listinglookup.etsy.CategoryLookup.getCategorySpecifics(
+									request.params(":countryCode"), request.params(":categoryId"));
+						default:
+							return com.sellinall.listinglookup.CategoryLookup.getCategorySpecifics(
 								request.params(":countryCode"), request.params(":categoryId"), channelName);
 					}
 					}catch (Exception e){

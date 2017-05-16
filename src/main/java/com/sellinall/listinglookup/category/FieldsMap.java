@@ -286,6 +286,10 @@ public class FieldsMap {
 	public static BasicDBObject createMap(String request) {
 		JSONObject jsonRequest = new JSONObject(request);
 		BasicDBObject result = updateDB(jsonRequest, true);
+		if (jsonRequest.getString("sourceNicknameId").split("-")[0].equals("kartrocket")
+				|| jsonRequest.getString("targetNicknameId").split("-")[0].equals("kartrocket")) {
+			return result;
+		}
 		if (!jsonRequest.getString("accountNumber").equals(CategoryUtil.DEFAULT_ACCOUNT_NUMBER)) {
 			persistAccountGenericData(jsonRequest);
 			//persistDefaultData(jsonRequest);
