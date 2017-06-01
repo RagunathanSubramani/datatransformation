@@ -58,7 +58,7 @@ public class Main {
 						String accountNumber = Config.getLazadaAccountDetails(request.params(":countryCode"));
 						String nickNameId = Config.getLazadaNickNameID(request.params(":countryCode"));
 						
-						return com.sellinall.listinglookup.rocket.CategoryLookup.getCategorySpecifics(
+						return com.sellinall.listinglookup.lazada.CategoryLookup.getCategorySpecifics(
 									request.params(":countryCode"), request.params(":categoryId"), accountNumber,
 									nickNameId);
 						case "etsy":
@@ -67,6 +67,29 @@ public class Main {
 						default:
 							return com.sellinall.listinglookup.CategoryLookup.getCategorySpecifics(
 								request.params(":countryCode"), request.params(":categoryId"), channelName);
+					}
+					}catch (Exception e){
+						response.status(500);
+						e.printStackTrace();
+						return "500";
+					}
+				});
+		
+		get("/services/:channelName/buildcategory/:countryCode",
+				(request, response) -> {
+					try{
+
+					String channelName = request.params("channelName");
+					switch (channelName) {
+					case "lazada":					
+						String accountNumber = Config.getLazadaAccountDetails(request.params(":countryCode"));
+						String nickNameId = Config.getLazadaNickNameID(request.params(":countryCode"));
+							return com.sellinall.listinglookup.lazada.BuildCategory.buildNewCategiryList(accountNumber,
+									nickNameId);
+						case "qoo10":
+							return com.sellinall.listinglookup.qoo10.BuildCategory.buildNewCategiryList(request.params(":countryCode"));
+						default:
+							return "";
 					}
 					}catch (Exception e){
 						response.status(500);

@@ -1,4 +1,4 @@
-package com.sellinall.listinglookup.rocket;
+package com.sellinall.listinglookup.lazada;
 
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -56,6 +56,7 @@ public class CategoryLookup {
 	private static JSONArray getAttributesFromLazada(String countryCode, String categoryId, String accountNumber,
 			String nickNameId) {
 		BasicDBObject userChannel = getUserDetailsFromUser(accountNumber, nickNameId);
+		System.out.println(userChannel);
 		String categorySpecificsXML = RocketEcomConnectionUtil.getCategorySpecifics(countryCode, categoryId,
 				userChannel.getString("userID"), userChannel.getString("apikey"), userChannel.getString("hostURL"));
 		JSONObject categorySpecificsFromLazada = new JSONObject(categorySpecificsXML);
@@ -66,7 +67,7 @@ public class CategoryLookup {
 		return attributes;
 	}
 	
-	private static BasicDBObject getUserDetailsFromUser(String accountNumber, String nickNameId) {
+	public static BasicDBObject getUserDetailsFromUser(String accountNumber, String nickNameId) {
 		BasicDBObject elemMatch = new BasicDBObject();
 		String siteName = nickNameId.split("-")[0];
 		elemMatch.put("nickName.id", nickNameId);
