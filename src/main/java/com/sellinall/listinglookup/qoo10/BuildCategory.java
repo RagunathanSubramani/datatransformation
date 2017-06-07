@@ -22,28 +22,28 @@ public class BuildCategory {
 		org.json.JSONObject serviceResponse = serviceResponseJSON
 				.getJSONObject("StdCustomResultOfListOfCommonCategoryInfo");
 		org.json.JSONObject serviceResponse1 = serviceResponse.getJSONObject("ResultObject");
-		return parseAndPrintFile((JSONArray)serviceResponse1.get("CommonCategoryInfo"));
+		return parseAndPrintFile((JSONArray) serviceResponse1.get("CommonCategoryInfo"));
 	}
 
 	private static String parseAndPrintFile(JSONArray jsonArray) {
-		String category="";
+		String category = "";
 		for (int i = 0; i < jsonArray.length(); i++) {
 			JSONObject json = jsonArray.getJSONObject(i);
 			String categoryFullName = (String) json.get("CATE_L_NM") + "/" + (String) json.get("CATE_M_NM") + "/"
 					+ (String) json.get("CATE_S_NM");
-			String categoryId = ""+ json.get("CATE_S_CD");
-			category +="\"" + categoryFullName + " ## " + categoryId + "\",";
+			String categoryId = "" + json.get("CATE_S_CD");
+			category += "\"" + categoryFullName + " ## " + categoryId + "\",";
 		}
-		if(category.isEmpty()){
+		if (category.isEmpty()) {
 			return category;
 		}
 		return "[" + category.substring(0, category.length() - 1) + "]";
 	}
-	
-	private static String getAPIUrl(String countryCode){
+
+	private static String getAPIUrl(String countryCode) {
 		switch (countryCode) {
 		case "SG":
-			return "http://www.qoo10.sg";	
+			return "http://www.qoo10.sg";
 		case "MY":
 			return "https://www.qoo10.my";
 		case "HK":

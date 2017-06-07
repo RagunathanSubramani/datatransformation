@@ -75,28 +75,28 @@ public class Main {
 					}
 				});
 		
-		get("/services/:channelName/buildcategory/:countryCode",
-				(request, response) -> {
-					try{
+		get("/services/:channelName/category/:countryCode", (request, response) -> {
+			try {
 
-					String channelName = request.params("channelName");
-					switch (channelName) {
-					case "lazada":					
-						String accountNumber = Config.getLazadaAccountDetails(request.params(":countryCode"));
-						String nickNameId = Config.getLazadaNickNameID(request.params(":countryCode"));
-							return com.sellinall.listinglookup.lazada.BuildCategory.buildNewCategiryList(accountNumber,
-									nickNameId);
-						case "qoo10":
-							return com.sellinall.listinglookup.qoo10.BuildCategory.buildNewCategiryList(request.params(":countryCode"));
-						default:
-							return "";
-					}
-					}catch (Exception e){
-						response.status(500);
-						e.printStackTrace();
-						return "500";
-					}
-				});
+				String channelName = request.params("channelName");
+				switch (channelName) {
+				case "lazada":
+					String accountNumber = Config.getLazadaAccountDetails(request.params(":countryCode"));
+					String nickNameId = Config.getLazadaNickNameID(request.params(":countryCode"));
+					return com.sellinall.listinglookup.lazada.BuildCategory.buildNewCategiryList(accountNumber,
+							nickNameId);
+				case "qoo10":
+					return com.sellinall.listinglookup.qoo10.BuildCategory
+							.buildNewCategiryList(request.params(":countryCode"));
+				default:
+					return "";
+				}
+			} catch (Exception e) {
+				response.status(500);
+				e.printStackTrace();
+				return "500";
+			}
+		});
 
 		get("/services/ebay/category/categoryNamePath/:countryCode/:categoryId", (request, response) -> {
 			try{
