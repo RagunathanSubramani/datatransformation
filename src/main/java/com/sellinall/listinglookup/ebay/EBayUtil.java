@@ -11,7 +11,7 @@ import com.sellinall.util.HttpURLConnectionUtil;
 
 public class EBayUtil {
 	static Logger log = Logger.getLogger(EBayUtil.class.getName());
-
+	private static String eBayToken = "AgAAAA**AQAAAA**aAAAAA**L2ZaUw**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6wFk4GhC5eBpgidj6x9nY+seQ**1GkCAA**AAMAAA**B4yBM9s30VyWeK4bgDxdveY9i/cYkcY1COXnnodbDa4Xljztk5PYUwUDAf21vmCP6Q4/hY5dPv8zZJWPuqoZIB6u4f9ndYz1+Lq+AtEn32FI/EwuLIvcKT7v4vVv7XiplIrFm/NJLO7LM0UeXiDiIL51WHOaUJNwdxgGfdocN/ZID5sFPpviFXyPfTpr6eJgBqaOEoIVf6c5fBKDOm2UmahYnzGlwySm2UXie5ut7UBjimi2psVZptwwUtwtCi7cDQ9IbdmO3bkMlSQEF1vYrj72oNB7HkYb1pO3uhJZjlRra6gN2ADh366FwoDyrjp0kO7FKezWTX+FRF8L0afkTKKTYMECQJ4p/i5hAJGN3pMkvApa55YWuRnExuwBfipiTNeIjAyFuLf8+1AdEZiQiIWgEOpKHP6c6IN8/OfVyT6jls1aEsDsHl7Gxs6V3NeB5FTBsRduuEH6/i1Hr+7yQuAuy4rCl9SzSGeZpXh9ept/tVhFR4hxYakzzhTQEw/DAz/SUDIqtsyRF2cYFwVKjPMcfPg3NwlSfR23Rpbr7jeXDWvryaP028hOLMvMcAnhXTQqX0GakV5svwUIRTNaTF4MhkJLx/quethIZYaunvo7Pyem2o6ExBZwA1PgxkeORB56RfZwK8jTnm2Le0CPsHaILDfyHDleNxkkfcVW2AsC0LTYgfHxQFzH39RyWc9zOl1zbPiVezRQVVSXUpgOJCI1kS37Ma5RwFUyzOFCAINPesIW2DAsHHxWD2Y0/DlJ";
 	private static final Map<String, String> siteIdMap = Collections.unmodifiableMap(new HashMap<String, String>() {
 		/**
 		 * 
@@ -45,6 +45,50 @@ public class EBayUtil {
 		return siteIdMap.get(countryCode);
 	}
 
+	public static String getParentCategory(String siteId) {
+		StringBuffer sb = new StringBuffer();
+		sb.append("<?xml version='1.0' encoding='utf-8'?>");
+		sb.append("<GetCategoriesRequest xmlns='urn:ebay:apis:eBLBaseComponents'>");
+		sb.append("<RequesterCredentials>");
+		sb.append("<eBayAuthToken>" + eBayToken + "</eBayAuthToken>");
+		sb.append("</RequesterCredentials>");
+		// sb.append("<CategoryParent>550</CategoryParent>");
+		sb.append("<DetailLevel>ReturnAll</DetailLevel>");
+		sb.append("<LevelLimit>1</LevelLimit> ");
+		sb.append("</GetCategoriesRequest>");
+		String urlParameters = sb.toString();
+		String response = new String();
+		try {
+			response = getResponse(urlParameters, "GetCategories", siteId);
+		} catch (Exception e) {
+
+		}
+		return response;
+	}
+
+	// Method used to get XML From Ebay
+	public static String getChildCategory(String id, String siteId) {
+		StringBuffer sb = new StringBuffer();
+		sb.append("<?xml version='1.0' encoding='utf-8'?>");
+		sb.append("<GetCategoriesRequest xmlns='urn:ebay:apis:eBLBaseComponents'>");
+		sb.append("<RequesterCredentials>");
+		sb.append("<eBayAuthToken>" + eBayToken + "</eBayAuthToken>");
+		sb.append("</RequesterCredentials>");
+		sb.append("<CategoryParent>" + id + "</CategoryParent>");
+		sb.append("<DetailLevel>ReturnAll</DetailLevel>");
+		sb.append("<LevelLimit>9</LevelLimit> ");
+		sb.append("</GetCategoriesRequest>");
+		String urlParameters = sb.toString();
+		String response = new String();
+		try {
+			System.out.println(sb.toString());
+			response = getResponse(urlParameters, "GetCategories", siteId);
+		} catch (Exception e) {
+
+		}
+		return response;
+	}
+
 	public static String getCategorySpecifics(String countryCode, String categoryId) {
 		String siteId = getSiteId(countryCode);
 		StringBuffer sb = new StringBuffer();
@@ -71,7 +115,7 @@ public class EBayUtil {
 		}
 		return response;
 	}
-	
+
 	public static String getCategoryFeatures(String countryCode, String categoryId) {
 		String siteId = getSiteId(countryCode);
 		StringBuffer sb = new StringBuffer();
@@ -115,8 +159,9 @@ public class EBayUtil {
 	private static String getResponse(String urlParameter, String configValue, String siteID) throws Exception {
 		org.codehaus.jettison.json.JSONObject payLoad = new org.codehaus.jettison.json.JSONObject();
 		payLoad.put("data", urlParameter);
-		return HttpURLConnectionUtil.doPostWithHeader(Config.getConfig().getEbayPostURL(), payLoad,
-				getConfig(configValue, siteID), "xml").getString("payload");
+		return HttpURLConnectionUtil
+				.doPostWithHeader(Config.getConfig().getEbayPostURL(), payLoad, getConfig(configValue, siteID), "xml")
+				.getString("payload");
 	}
 
 	private static Map<String, String> getConfig(String apiCallName, String siteId) {
