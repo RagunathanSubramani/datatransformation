@@ -88,6 +88,9 @@ public class Main {
 				case "qoo10":
 					return com.sellinall.listinglookup.qoo10.BuildCategory
 							.buildNewCategiryList(request.params(":countryCode"));
+				case "eBay":
+					return com.sellinall.listinglookup.ebay.BuildCategory
+							.buildNewCategiryList(request.params(":countryCode"));
 				default:
 					return "";
 				}
