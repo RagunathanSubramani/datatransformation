@@ -91,6 +91,9 @@ public class Main {
 				case "eBay":
 					return com.sellinall.listinglookup.ebay.BuildCategory
 							.buildNewCategiryList(request.params(":countryCode"));
+				case "etsy":
+					return com.sellinall.listinglookup.etsy.BuildCategory
+							.buildNewCategoryList(request.params(":countryCode"));
 				default:
 					return "";
 				}
