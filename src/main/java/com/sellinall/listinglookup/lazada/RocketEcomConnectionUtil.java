@@ -1,4 +1,4 @@
-package com.sellinall.listinglookup.rocket;
+package com.sellinall.listinglookup.lazada;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
