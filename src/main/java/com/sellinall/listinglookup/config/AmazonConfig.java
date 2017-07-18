@@ -48,21 +48,21 @@ public class AmazonConfig {
 	 * @return the associateTag
 	 */
 	public static String getProductAdvertisingAPIAssociateTag() {
-		return "sellinall-20";
+		return "i10a3-20";
 	}
 
 	/**
 	 * @return the AWSAccessKeyId
 	 */
 	public static String getProductAdvertisingAPIAWSAccessKeyId() {
-		return "AKIAJPRBK37MZJNPI4YQ";
+		return "AKIAJKJ2YHR7CP7PANAA";
 	}
 
 	/**
 	 * @return the AWSSecretKey
 	 */
 	public static String getProductAdvertisingAPIAWSSecretKey() {
-		return "HqMs1h3dJqkepc+PYZvbHixPGlN860WbKKFWo3c+";
+		return "FufJjkiTonzRvfYV2CYP6yQZerR61IDV0Jpspzfh";
 	}
 
 }
