@@ -141,12 +141,14 @@ public class AmazonProductLookup {
 	}
 
 	private static HashSet<String> extractImageSet(JSONObject amazonItems) {
-		Object imageSetArrayObject = amazonItems.getJSONObject("ImageSets").get("ImageSet");
-		JSONArray imageSetArray = makeArray(imageSetArrayObject);
 		HashSet<String> extractedImages = new HashSet<String>();
-		for (int i = 0; i < imageSetArray.length(); i++) {
-			JSONObject imageSet = (JSONObject) imageSetArray.get(i);
-			extractedImages.add(imageSet.getJSONObject("LargeImage").getString("URL"));
+		if (amazonItems.has("ImageSets")) {
+			Object imageSetArrayObject = amazonItems.getJSONObject("ImageSets").get("ImageSet");
+			JSONArray imageSetArray = makeArray(imageSetArrayObject);
+			for (int i = 0; i < imageSetArray.length(); i++) {
+				JSONObject imageSet = (JSONObject) imageSetArray.get(i);
+				extractedImages.add(imageSet.getJSONObject("LargeImage").getString("URL"));
+			}
 		}
 		return extractedImages;
 	}
