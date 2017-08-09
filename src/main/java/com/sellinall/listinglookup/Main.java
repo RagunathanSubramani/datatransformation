@@ -104,9 +104,22 @@ public class Main {
 			}
 		});
 
-		get("/services/ebay/category/categoryNamePath/:countryCode/:categoryId", (request, response) -> {
+		get("/services/:channelName/category/categoryNamePath/:countryCode/:categoryId", (request, response) -> {
 			try{
-				return CategoryLookup.getCategoryNamePath(request.params(":countryCode"), request.params(":categoryId"));
+				String channelName = request.params("channelName");
+				switch (channelName) {
+				case "eBay":
+					return CategoryLookup.getCategoryNamePath(request.params(":countryCode"),
+							request.params(":categoryId"));
+				case "qoo10":
+					return CategoryNameLookup.getCategoryNameFromSIA(request.params(":countryCode"),
+							request.params(":categoryId"), request.params(":channelName"));
+				case "lazada":
+					return CategoryNameLookup.getCategoryNameFromSIA(request.params(":countryCode"),
+							request.params(":categoryId"), request.params(":channelName"));
+				default:
+					return "";
+				}
 			}catch (Exception e){
 				e.printStackTrace();
 				response.status(500);
