@@ -44,6 +44,10 @@ public class CategoryLookup {
 			categorySpecificsDB = persistToDB(countryCode, categoryId, categoryNamePath, categorySpecificsEbay, categoryFeaturesEbay);
 			categoryNamePath = categorySpecificsDB.getString("categoryNamePath");
 		}
+		if (!categoryNamePath.isEmpty()) {
+			categoryNamePath = categoryNamePath.replaceAll(":", "/");
+			categoryNamePath = categoryNamePath + " ## " + categoryId;
+		}
 		JSONObject response = new JSONObject();
 		response.put("categoryNamePath", categoryNamePath);
 		return response;

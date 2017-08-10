@@ -52,6 +52,7 @@ public class Config {
 	private String etsyUSDefaultNickNameId;
 	private String etsyConsumerKey;
 	private String etsyConsumerSecret;
+	private String SIACategoryNameUrl;
 
 	public String getRagasiyam() {
 		return Ragasiyam;
@@ -428,6 +429,14 @@ public class Config {
 
 	public static Config getConfig() {
 		return (Config) context.getBean("Config");
+	}
+
+	public String getSIACategoryNameUrl() {
+		return SIACategoryNameUrl;
+	}
+
+	public void setSIACategoryNameUrl(String sIACategoryNameUrl) {
+		SIACategoryNameUrl = sIACategoryNameUrl;
 	}
 
 }

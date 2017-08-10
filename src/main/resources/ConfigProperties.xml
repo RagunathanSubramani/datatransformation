@@ -62,6 +62,9 @@
 		<property name="UserCollectionDBName" value="${UserCollectionDBName}" />
 		<property name="SIAAuthServerURL" value="${SIAAuthServerURL}" />
 
+		<!-- Admin -->
+		<property name="SIACategoryNameUrl" value="${SIACategoryNameUrl}" />
+
 		<!-- snapdeal -->
 		<property name="snapdealUrl" value="${snapdealUrl}" />
 		<property name="snapdealClientId" value="${snapdealClientId}" />
