@@ -12,8 +12,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.eclipse.jetty.http.HttpStatus;
+import org.json.JSONArray;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import spark.Request;
@@ -25,6 +27,7 @@ import com.sellinall.listinglookup.config.Config;
 import com.sellinall.listinglookup.ebay.CategoryLookup;
 import com.sellinall.listinglookup.product.ProductLookup;
 import com.sellinall.util.AuthConstant;
+import com.sellinall.util.HttpURLConnectionUtil;
 import com.sellinall.util.NewHttpURLConnectionUtil;
 import com.sun.jersey.api.client.ClientResponse;
 
@@ -76,32 +79,17 @@ public class Main {
 				});
 		
 		get("/services/:channelName/category/:countryCode", (request, response) -> {
-			try {
-
-				String channelName = request.params("channelName");
-				switch (channelName) {
-				case "lazada":
-					String accountNumber = Config.getLazadaAccountDetails(request.params(":countryCode"));
-					String nickNameId = Config.getLazadaNickNameID(request.params(":countryCode"));
-					return com.sellinall.listinglookup.lazada.BuildCategory.buildNewCategiryList(accountNumber,
-							nickNameId);
-				case "qoo10":
-					return com.sellinall.listinglookup.qoo10.BuildCategory
-							.buildNewCategiryList(request.params(":countryCode"));
-				case "eBay":
-					return com.sellinall.listinglookup.ebay.BuildCategory
-							.buildNewCategiryList(request.params(":countryCode"));
-				case "etsy":
-					return com.sellinall.listinglookup.etsy.BuildCategory
-							.buildNewCategoryList(request.params(":countryCode"));
-				default:
-					return "";
+			String categoryName = request.params("channelName");
+			String countryCode = request.params("countryCode");
+			String callbackUrl = request.queryParams("callbackUrl");
+			new Thread(() -> {
+				try {
+					refreshCategory(categoryName, countryCode, callbackUrl);
+				} catch (JSONException e) {
+					e.printStackTrace();
 				}
-			} catch (Exception e) {
-				response.status(500);
-				e.printStackTrace();
-				return "500";
-			}
+			}).start();
+			return "Processing";
 		});
 
 		get("/services/:channelName/category/categoryNamePath/:countryCode/:categoryId", (request, response) -> {
@@ -273,6 +261,41 @@ public class Main {
 			}
 		}
 		return flag;
+	}
+	
+	private static void refreshCategory(String channelName, String countryCode, String callbackUrl) throws JSONException {
+		String newCategory = "";
+		try {
+			switch (channelName) {
+			case "lazada":
+				String accountNumber = Config.getLazadaAccountDetails(countryCode);
+				String nickNameId = Config.getLazadaNickNameID(countryCode);
+				newCategory = com.sellinall.listinglookup.lazada.BuildCategory.buildNewCategiryList(accountNumber,
+						nickNameId);
+				break;
+			case "qoo10":
+				newCategory = com.sellinall.listinglookup.qoo10.BuildCategory.buildNewCategiryList(countryCode);
+				break;
+			case "eBay":
+				newCategory = com.sellinall.listinglookup.ebay.BuildCategory.buildNewCategiryList(countryCode)
+						.toString();
+				break;
+			case "etsy":
+				newCategory = com.sellinall.listinglookup.etsy.BuildCategory.buildNewCategoryList(countryCode)
+						.toString();
+				break;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (!newCategory.isEmpty()) {
+			Map<String, String> header = new HashMap<String, String>();
+			header.put("Content-Type", "application/json");
+			header.put(AuthConstant.RAGASIYAM_KEY, Config.getConfig().getRagasiyam());
+			JSONObject payload = new JSONObject();
+			payload.put("data", new JSONArray(newCategory));			
+			HttpURLConnectionUtil.doPostWithHeader(callbackUrl, payload, header, "json");
+		}
 	}
 
 }
