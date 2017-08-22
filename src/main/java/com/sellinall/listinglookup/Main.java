@@ -31,6 +31,7 @@ import com.sellinall.util.HttpURLConnectionUtil;
 import com.sellinall.util.NewHttpURLConnectionUtil;
 import com.sun.jersey.api.client.ClientResponse;
 
+
 public class Main {
 
 	static Logger log = Logger.getLogger(Main.class.getName());
@@ -93,22 +94,27 @@ public class Main {
 		});
 
 		get("/services/:channelName/category/categoryNamePath/:countryCode/:categoryId", (request, response) -> {
-			try{
+			try {
 				String channelName = request.params("channelName");
+				String accountNumber = request.headers("accountNumber");
 				switch (channelName) {
 				case "eBay":
 					return CategoryLookup.getCategoryNamePath(request.params(":countryCode"),
 							request.params(":categoryId"));
 				case "qoo10":
 					return CategoryNameLookup.getCategoryNameFromSIA(request.params(":countryCode"),
-							request.params(":categoryId"), request.params(":channelName"));
+							request.params(":categoryId"), request.params(":channelName"), null, null);
 				case "lazada":
 					return CategoryNameLookup.getCategoryNameFromSIA(request.params(":countryCode"),
-							request.params(":categoryId"), request.params(":channelName"));
+							request.params(":categoryId"), request.params(":channelName"), null, null);
+				case "shopify":
+					return CategoryNameLookup.getCategoryNameFromSIA(request.params(":countryCode"),
+							request.params(":categoryId"), request.params(":channelName"),
+							request.queryParams("nicknameID"), accountNumber);
 				default:
 					return "";
 				}
-			}catch (Exception e){
+			} catch (Exception e) {
 				e.printStackTrace();
 				response.status(500);
 				return "500";
