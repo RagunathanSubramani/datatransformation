@@ -12,10 +12,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.eclipse.jetty.http.HttpStatus;
-import org.json.JSONArray;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import spark.Request;
