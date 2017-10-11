@@ -8,6 +8,7 @@ import static spark.Spark.post;
 import static spark.Spark.put;
 import static spark.SparkBase.port;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -87,6 +88,8 @@ public class Main {
 				try {
 					refreshCategory(categoryName, countryCode, callbackUrl);
 				} catch (JSONException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}).start();
@@ -269,7 +272,8 @@ public class Main {
 		return flag;
 	}
 	
-	private static void refreshCategory(String channelName, String countryCode, String callbackUrl) throws JSONException {
+	private static void refreshCategory(String channelName, String countryCode, String callbackUrl)
+			throws JSONException, IOException {
 		String newCategory = "";
 		try {
 			switch (channelName) {
@@ -299,7 +303,7 @@ public class Main {
 			header.put("Content-Type", "application/json");
 			header.put(AuthConstant.RAGASIYAM_KEY, Config.getConfig().getRagasiyam());
 			JSONObject payload = new JSONObject();
-			payload.put("data", new JSONArray(newCategory));			
+			payload.put("data", new JSONArray(newCategory));
 			HttpURLConnectionUtil.doPostWithHeader(callbackUrl, payload, header, "json");
 		}
 	}

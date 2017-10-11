@@ -1,5 +1,6 @@
 package com.sellinall.listinglookup.ebay;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -148,7 +149,7 @@ public class EBayUtil {
 		return response;
 	}
 
-	public static String getCategoryInfo(String countryCode, String categoryId) {
+	public static String getCategoryInfo(String countryCode, String categoryId) throws IOException {
 		String siteId = getSiteId(countryCode);
 		String url = Config.getConfig().getEbayOpenApiURL() + "/Shopping?callname=GetCategoryInfo";
 		url = url + "&appid=" + Config.getConfig().getEbayAppName();
