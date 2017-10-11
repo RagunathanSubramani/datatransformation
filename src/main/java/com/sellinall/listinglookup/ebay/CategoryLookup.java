@@ -1,5 +1,7 @@
 package com.sellinall.listinglookup.ebay;
 
+import java.io.IOException;
+
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,7 +20,7 @@ public class CategoryLookup {
 
 	private static final long thirtyDays = 30 * 24 * 60 * 60;
 
-	public static Object getCategorySpecifics(String countryCode, String categoryId) {
+	public static Object getCategorySpecifics(String countryCode, String categoryId) throws IOException {
 
 		BasicDBObject categorySpecificsDB = getCategorySpecificsFromDB(countryCode, categoryId);
 
@@ -31,7 +33,7 @@ public class CategoryLookup {
 		return persistToDB(countryCode, categoryId, categoryNamePath, categorySpecificsEbay, categoryFeaturesEbay);
 	}
 
-	public static Object getCategoryNamePath(String countryCode, String categoryId) {
+	public static Object getCategoryNamePath(String countryCode, String categoryId) throws IOException {
 
 		BasicDBObject categorySpecificsDB = getCategorySpecificsFromDB(countryCode, categoryId);
 		String categoryNamePath = "";
@@ -142,7 +144,7 @@ public class CategoryLookup {
 		return categoryFeatures;
 	}
 
-	private static String getCategoryNamePathFromEbay(String countryCode, String categoryId) {
+	private static String getCategoryNamePathFromEbay(String countryCode, String categoryId) throws IOException {
 		try {
 			String categoryInfo = EBayUtil.getCategoryInfo(countryCode, categoryId);
 			JSONObject categoryInfoJson = XML.toJSONObject(categoryInfo);

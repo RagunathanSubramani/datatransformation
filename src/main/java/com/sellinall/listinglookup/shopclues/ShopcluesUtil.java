@@ -52,7 +52,7 @@ public class ShopcluesUtil {
 		return new JSONArray(out.toString());
 	}
 
-	private static String getAccessToken() throws JSONException {
+	private static String getAccessToken() throws JSONException, IOException {
 		String url = Config.getConfig().getShopcluesAuthUrl();
 		Map<String, String> mapHeader = new HashMap<String, String>();
 		mapHeader.put("Content-Type", "application/json");
