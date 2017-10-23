@@ -10,6 +10,7 @@ public class Config {
 	private String EbayDevName;
 	private String EbayCertName;
 	private String EbayOpenApiURL;
+	private String EbayToken;
 
 	private String DbUserName;
 	private String DbPassword;
@@ -156,6 +157,14 @@ public class Config {
 
 	public void setEbayOpenApiURL(String ebayOpenApiURL) {
 		EbayOpenApiURL = ebayOpenApiURL;
+	}
+
+	public String getEbayToken() {
+		return EbayToken;
+	}
+
+	public void setEbayToken(String ebayToken) {
+		EbayToken = ebayToken;
 	}
 
 	public String getEtsyUrl() {

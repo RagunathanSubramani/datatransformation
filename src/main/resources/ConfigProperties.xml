@@ -33,6 +33,7 @@
 		<property name="EbayDevName" value="${EbayDevName}" />
 		<property name="EbayCertName" value="${EbayCertName}" />
 		<property name="EbayOpenApiURL" value="${EbayOpenApiURL}" />
+		<property name="EbayToken" value="${EbayToken}" />
 
 		<!--Shopclues value -->
 		<property name="shopcluesItemSpecificationUrl" value="${shopcluesItemSpecificationUrl}" />
