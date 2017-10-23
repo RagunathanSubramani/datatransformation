@@ -12,7 +12,7 @@ import com.sellinall.util.HttpURLConnectionUtil;
 
 public class EBayUtil {
 	static Logger log = Logger.getLogger(EBayUtil.class.getName());
-	private static String eBayToken = "AgAAAA**AQAAAA**aAAAAA**L2ZaUw**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6wFk4GhC5eBpgidj6x9nY+seQ**1GkCAA**AAMAAA**B4yBM9s30VyWeK4bgDxdveY9i/cYkcY1COXnnodbDa4Xljztk5PYUwUDAf21vmCP6Q4/hY5dPv8zZJWPuqoZIB6u4f9ndYz1+Lq+AtEn32FI/EwuLIvcKT7v4vVv7XiplIrFm/NJLO7LM0UeXiDiIL51WHOaUJNwdxgGfdocN/ZID5sFPpviFXyPfTpr6eJgBqaOEoIVf6c5fBKDOm2UmahYnzGlwySm2UXie5ut7UBjimi2psVZptwwUtwtCi7cDQ9IbdmO3bkMlSQEF1vYrj72oNB7HkYb1pO3uhJZjlRra6gN2ADh366FwoDyrjp0kO7FKezWTX+FRF8L0afkTKKTYMECQJ4p/i5hAJGN3pMkvApa55YWuRnExuwBfipiTNeIjAyFuLf8+1AdEZiQiIWgEOpKHP6c6IN8/OfVyT6jls1aEsDsHl7Gxs6V3NeB5FTBsRduuEH6/i1Hr+7yQuAuy4rCl9SzSGeZpXh9ept/tVhFR4hxYakzzhTQEw/DAz/SUDIqtsyRF2cYFwVKjPMcfPg3NwlSfR23Rpbr7jeXDWvryaP028hOLMvMcAnhXTQqX0GakV5svwUIRTNaTF4MhkJLx/quethIZYaunvo7Pyem2o6ExBZwA1PgxkeORB56RfZwK8jTnm2Le0CPsHaILDfyHDleNxkkfcVW2AsC0LTYgfHxQFzH39RyWc9zOl1zbPiVezRQVVSXUpgOJCI1kS37Ma5RwFUyzOFCAINPesIW2DAsHHxWD2Y0/DlJ";
+	private static String eBayToken = "AgAAAA**AQAAAA**aAAAAA**CVedWQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AAl4GlCpiHpASdj6x9nY+seQ**PzMCAA**AAMAAA**RYCpuWLvAo4KybMRoLvh7a4LAx6y3z5OyJzRgZqRRMoJ/vackPytXNR+j8e0wGlOC3/MXcByMJExILgKR7dZpKTknUB67t4LjnY3GaHOx4nqncp4fDkGSg7q3WXsyxf6XigtAywhcl/GKStQO28OlaWV7IfcqKe5qYVImHnYfmCadS3Wv03XPmPFqsw6slIPydq8+phhiDbbiuiL7IcEeqIHVdEtspC4Q9MxPfzf98ePYvErPj78m1Y0ieP0R+FqvqlLUZMyWViSfxIWizS1nbu9zvY8C7xw7AOvwSFd6OnqEodKKdAkNS06jgvlDgRS4aFSU1KQkwFyEnJcbzf6/qObPScuWHGKJf8N6vbkUY9GJO2Vn1ahOaaHfAcMrfqSoEB/mVN5mkl2DgScL3kjNlFbRCsrc+RWlGsJmz/YMXJ3Vp5UUqiu363h0t21di5GW9aide83XWUOO+vtghQzIgleDtXdJsqglBf/Ek8dNWrdXydCA9X8+G6OBniG2FigY9TzsH+gVvQewLmp6xorQ7wkliNk6i6hiXVYjTWYXOxRf/9z4DN9XSFfIeddmL9XaL1sGMYoeC6059fmJpQAKBaLwsrGX7PPdE+qbBLbvr/sr2bqGnKanyLcUBA6t/NtMO7IMSy81OBc6H5jh8y4NisS2HXQr5qE2lBuo7jOb6itzmXpKzhc3JLpG9ytK7K8UcjlDbi10Fp/DHQjKgVQQDL3HUTJ0M3ViQS2bDDiSlTLkBSsm1yVo60ol+SZcRz/";
 	private static final Map<String, String> siteIdMap = Collections.unmodifiableMap(new HashMap<String, String>() {
 		/**
 		 * 
@@ -93,7 +93,6 @@ public class EBayUtil {
 	public static String getCategorySpecifics(String countryCode, String categoryId) {
 		String siteId = getSiteId(countryCode);
 		StringBuffer sb = new StringBuffer();
-		String eBayToken = "AgAAAA**AQAAAA**aAAAAA**0dUgVg**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AAkIqnC5WFpQ+dj6x9nY+seQ**PzMCAA**AAMAAA**Sh28/BPrA6/M0EzHrHzfImVuxFok6Fu1yzjSYRUI5gD1nD7H6Zzyqzha6sqZgOJ1CExD6UxkPiogIn8JKCoSqTVXNdYPzadTJPg5Sbmc+99clUy2dEAg1xYBnPQNC3+NvP5WuqcxcXnRGdJeemKP21rI67s0v1gIvOu8Ng7kOqzB/vKKZFrvUZfmkkjc0gPWJNXz4BdJOoP6vlZPxibMXKUJ+FRx1qoQmi3qwlv1wfzVjf6AyuE5jTfJ4sJF7ORE4+AN4kooEZbq4DPSEjBd1MIyp7jvLWvWItW1C+exlkUI6UxKT9XAVs5oxITX9x0sOLO0uodPYfvtA6poevd8TJqPa95v6D73tefDHuPbZSAnCnvF1K6FfAhcQ8gsDnE/6kiIXXCqjfoD1xfxGJE4XsQafFFQmbaRAZI4PbPjcrFYZlPlUuyyR3OdGtqnGY++uqJRU2rPNK5h4FDnOrRqCFZd+r6zDe8Bn9jmeizS8hSzdy5WxvxTnZNCneImItsDOOdmz8RdvNjOaeC4Y3jfxPvXYhU1mw9nAxjTff79h9CcEp6/D/12EJt+54HbvqO7YZ3K7UhS2rPn+K1IXpSmFxu1HRUn1ugxZalozkeiHGgeeGo1Kl3AY/NWbKiu1/POKQbDW3v7yzjMUaWDN5vzR1T6poF7MJSpcdErOVIoMWHulpVP00fHhvxDm2ZnPDLTqI8MN43KtzY6/mITCHvwgQDG8fwvF2wsfsiVOpSkLHnvn9p+luKXp8xk6OVzIuid";
 		sb.append("<?xml version='1.0' encoding='utf-8'?>");
 		sb.append("<GetCategorySpecificsRequest xmlns='urn:ebay:apis:eBLBaseComponents'>");
 		sb.append("<CategorySpecific>");
@@ -120,7 +119,6 @@ public class EBayUtil {
 	public static String getCategoryFeatures(String countryCode, String categoryId) {
 		String siteId = getSiteId(countryCode);
 		StringBuffer sb = new StringBuffer();
-		String eBayToken = "AgAAAA**AQAAAA**aAAAAA**0dUgVg**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AAkIqnC5WFpQ+dj6x9nY+seQ**PzMCAA**AAMAAA**Sh28/BPrA6/M0EzHrHzfImVuxFok6Fu1yzjSYRUI5gD1nD7H6Zzyqzha6sqZgOJ1CExD6UxkPiogIn8JKCoSqTVXNdYPzadTJPg5Sbmc+99clUy2dEAg1xYBnPQNC3+NvP5WuqcxcXnRGdJeemKP21rI67s0v1gIvOu8Ng7kOqzB/vKKZFrvUZfmkkjc0gPWJNXz4BdJOoP6vlZPxibMXKUJ+FRx1qoQmi3qwlv1wfzVjf6AyuE5jTfJ4sJF7ORE4+AN4kooEZbq4DPSEjBd1MIyp7jvLWvWItW1C+exlkUI6UxKT9XAVs5oxITX9x0sOLO0uodPYfvtA6poevd8TJqPa95v6D73tefDHuPbZSAnCnvF1K6FfAhcQ8gsDnE/6kiIXXCqjfoD1xfxGJE4XsQafFFQmbaRAZI4PbPjcrFYZlPlUuyyR3OdGtqnGY++uqJRU2rPNK5h4FDnOrRqCFZd+r6zDe8Bn9jmeizS8hSzdy5WxvxTnZNCneImItsDOOdmz8RdvNjOaeC4Y3jfxPvXYhU1mw9nAxjTff79h9CcEp6/D/12EJt+54HbvqO7YZ3K7UhS2rPn+K1IXpSmFxu1HRUn1ugxZalozkeiHGgeeGo1Kl3AY/NWbKiu1/POKQbDW3v7yzjMUaWDN5vzR1T6poF7MJSpcdErOVIoMWHulpVP00fHhvxDm2ZnPDLTqI8MN43KtzY6/mITCHvwgQDG8fwvF2wsfsiVOpSkLHnvn9p+luKXp8xk6OVzIuid";
 		sb.append("<?xml version='1.0' encoding='utf-8'?>");
 		sb.append("<GetCategoryFeaturesRequest xmlns='urn:ebay:apis:eBLBaseComponents'>");
 		sb.append("<DetailLevel>ReturnAll</DetailLevel>");
