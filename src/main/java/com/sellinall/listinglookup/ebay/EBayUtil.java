@@ -12,7 +12,7 @@ import com.sellinall.util.HttpURLConnectionUtil;
 
 public class EBayUtil {
 	static Logger log = Logger.getLogger(EBayUtil.class.getName());
-	private static String eBayToken = "AgAAAA**AQAAAA**aAAAAA**CVedWQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AAl4GlCpiHpASdj6x9nY+seQ**PzMCAA**AAMAAA**RYCpuWLvAo4KybMRoLvh7a4LAx6y3z5OyJzRgZqRRMoJ/vackPytXNR+j8e0wGlOC3/MXcByMJExILgKR7dZpKTknUB67t4LjnY3GaHOx4nqncp4fDkGSg7q3WXsyxf6XigtAywhcl/GKStQO28OlaWV7IfcqKe5qYVImHnYfmCadS3Wv03XPmPFqsw6slIPydq8+phhiDbbiuiL7IcEeqIHVdEtspC4Q9MxPfzf98ePYvErPj78m1Y0ieP0R+FqvqlLUZMyWViSfxIWizS1nbu9zvY8C7xw7AOvwSFd6OnqEodKKdAkNS06jgvlDgRS4aFSU1KQkwFyEnJcbzf6/qObPScuWHGKJf8N6vbkUY9GJO2Vn1ahOaaHfAcMrfqSoEB/mVN5mkl2DgScL3kjNlFbRCsrc+RWlGsJmz/YMXJ3Vp5UUqiu363h0t21di5GW9aide83XWUOO+vtghQzIgleDtXdJsqglBf/Ek8dNWrdXydCA9X8+G6OBniG2FigY9TzsH+gVvQewLmp6xorQ7wkliNk6i6hiXVYjTWYXOxRf/9z4DN9XSFfIeddmL9XaL1sGMYoeC6059fmJpQAKBaLwsrGX7PPdE+qbBLbvr/sr2bqGnKanyLcUBA6t/NtMO7IMSy81OBc6H5jh8y4NisS2HXQr5qE2lBuo7jOb6itzmXpKzhc3JLpG9ytK7K8UcjlDbi10Fp/DHQjKgVQQDL3HUTJ0M3ViQS2bDDiSlTLkBSsm1yVo60ol+SZcRz/";
+
 	private static final Map<String, String> siteIdMap = Collections.unmodifiableMap(new HashMap<String, String>() {
 		/**
 		 * 
@@ -51,7 +51,7 @@ public class EBayUtil {
 		sb.append("<?xml version='1.0' encoding='utf-8'?>");
 		sb.append("<GetCategoriesRequest xmlns='urn:ebay:apis:eBLBaseComponents'>");
 		sb.append("<RequesterCredentials>");
-		sb.append("<eBayAuthToken>" + eBayToken + "</eBayAuthToken>");
+		sb.append("<eBayAuthToken>" + Config.getConfig().getEbayToken() + "</eBayAuthToken>");
 		sb.append("</RequesterCredentials>");
 		// sb.append("<CategoryParent>550</CategoryParent>");
 		sb.append("<DetailLevel>ReturnAll</DetailLevel>");
@@ -73,7 +73,7 @@ public class EBayUtil {
 		sb.append("<?xml version='1.0' encoding='utf-8'?>");
 		sb.append("<GetCategoriesRequest xmlns='urn:ebay:apis:eBLBaseComponents'>");
 		sb.append("<RequesterCredentials>");
-		sb.append("<eBayAuthToken>" + eBayToken + "</eBayAuthToken>");
+		sb.append("<eBayAuthToken>" + Config.getConfig().getEbayToken() + "</eBayAuthToken>");
 		sb.append("</RequesterCredentials>");
 		sb.append("<CategoryParent>" + id + "</CategoryParent>");
 		sb.append("<DetailLevel>ReturnAll</DetailLevel>");
@@ -99,7 +99,7 @@ public class EBayUtil {
 		sb.append("<CategoryID>" + categoryId + "</CategoryID>");
 		sb.append("</CategorySpecific>");
 		sb.append("<RequesterCredentials>");
-		sb.append("<eBayAuthToken>" + eBayToken + "</eBayAuthToken>");
+		sb.append("<eBayAuthToken>" + Config.getConfig().getEbayToken() + "</eBayAuthToken>");
 		sb.append("</RequesterCredentials>");
 		sb.append("<ErrorLanguage>en_US</ErrorLanguage>");
 		sb.append("<WarningLevel>High</WarningLevel>");
@@ -130,7 +130,7 @@ public class EBayUtil {
 		sb.append("<FeatureID>ItemSpecificsEnabled</FeatureID>");
 		sb.append("<FeatureID>UPCEnabled</FeatureID>");
 		sb.append("<RequesterCredentials>");
-		sb.append("<eBayAuthToken>" + eBayToken + "</eBayAuthToken>");
+		sb.append("<eBayAuthToken>" + Config.getConfig().getEbayToken() + "</eBayAuthToken>");
 		sb.append("</RequesterCredentials>");
 		sb.append("<ErrorLanguage>en_US</ErrorLanguage>");
 		sb.append("<WarningLevel>High</WarningLevel>");
