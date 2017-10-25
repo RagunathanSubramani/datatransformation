@@ -19,9 +19,6 @@ import org.codehaus.jettison.json.JSONObject;
 import org.eclipse.jetty.http.HttpStatus;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import spark.Request;
-import spark.Response;
-
 import com.sellinall.listinglookup.category.CategorySpecific;
 import com.sellinall.listinglookup.category.FieldsMap;
 import com.sellinall.listinglookup.config.Config;
@@ -29,8 +26,9 @@ import com.sellinall.listinglookup.ebay.CategoryLookup;
 import com.sellinall.listinglookup.product.ProductLookup;
 import com.sellinall.util.AuthConstant;
 import com.sellinall.util.HttpURLConnectionUtil;
-import com.sellinall.util.NewHttpURLConnectionUtil;
-import com.sun.jersey.api.client.ClientResponse;
+
+import spark.Request;
+import spark.Response;
 
 
 public class Main {
@@ -228,11 +226,10 @@ public class Main {
 			payload.put("path", request.pathInfo());
 			payload.put("serverName", SERVERNAME);
 			String url = Config.getConfig().getSIAAuthServerURL() + "/authToken";
-
-			ClientResponse response = NewHttpURLConnectionUtil.doPostWithHeader(url, payload, header, "json");
+			JSONObject response = HttpURLConnectionUtil.doPostWithHeader(url, payload, header, "json");
 			// TODO: map the response http code
-			if (response.getStatus() == HttpStatus.OK_200) {
-				JSONObject responseEntity = new JSONObject(response.getEntity(String.class));
+			if (response.getInt("httpCode") == HttpStatus.OK_200) {
+				JSONObject responseEntity = new JSONObject(response.getString("payload"));
 				String accountNumber = responseEntity.getString("accountNumber");
 				request.attribute("accountNumber", accountNumber);
 				if (accountNumQueryParam != null && !accountNumQueryParam.equals(accountNumber)) {
