@@ -1,9 +1,7 @@
 package com.sellinall.listinglookup.amazon;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 
 import org.json.JSONArray;
@@ -101,7 +99,7 @@ public class AmazonProductLookup {
 			for (int j = 0; j < jsonvariantionArray.length(); j++) {
 				JSONObject variationAttribute = (JSONObject) jsonvariantionArray.get(j);
 				String variantName = variationAttribute.getString("Name");
-				String variantValue = variationAttribute.getString("Value");
+				String variantValue = variationAttribute.get("Value").toString();
 
 				// This is for child
 				JSONObject childVariantDetail = new JSONObject();
