@@ -10,9 +10,10 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
+import org.codehaus.jettison.json.JSONObject;
 
 import com.sellinall.listinglookup.config.AmazonConfig;
-import com.sellinall.util.HttpURLConnectionUtil;
+import com.sellinall.util.HttpsURLConnectionUtil;
 
 public class AmazonUtil {
 	static Logger log = Logger.getLogger(AmazonUtil.class.getName());
@@ -32,8 +33,12 @@ public class AmazonUtil {
 		countryCode = (countryCode == null) ? "US" : countryCode;
 		String queryString = urlEncodeUTF8(getQueryStringwihtURL(searchParamTypeType, searchParamType, countryCode));
 		log.debug(AmazonConfig.getProductAdvertisingAPIEndPoint(countryCode) + "/onca/xml?" + queryString);
-		return HttpURLConnectionUtil.doGet(AmazonConfig.getProductAdvertisingAPIEndPoint(countryCode) + "/onca/xml?"
-				+ queryString);
+		JSONObject response = HttpsURLConnectionUtil.doGet(AmazonConfig.getProductAdvertisingAPIEndPoint(countryCode) + "/onca/xml?"
+				+ queryString, null);
+		if (response.has("payload")) {
+			return response.getString("payload");
+		}
+		return "";
 	}
 
 	private static String urlEncodeUTF8(String s) {

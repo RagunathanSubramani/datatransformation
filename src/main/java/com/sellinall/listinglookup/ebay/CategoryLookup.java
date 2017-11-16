@@ -3,8 +3,8 @@ package com.sellinall.listinglookup.ebay;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
+import org.codehaus.jettison.json.JSONException;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
 
