@@ -23,7 +23,7 @@ import org.codehaus.jettison.json.JSONObject;
 import com.mongodb.BasicDBObject;
 import com.sellinall.listinglookup.CategoryLookup;
 import com.sellinall.listinglookup.config.Config;
-import com.sellinall.util.HttpURLConnectionUtil;
+import com.sellinall.util.HttpsURLConnectionUtil;
 
 import freemarker.template.TemplateException;
 import oauth.signpost.OAuthConsumer;
@@ -55,7 +55,7 @@ public class EtsyUtil {
 		String consumerSecret = Config.getConfig().getEtsyConsumerSecret();
 		String oauthToken = postHelper.getString("oauthToken");
 		String oauthTokenSecret = postHelper.getString("oauthTokenSecret");
-		return HttpURLConnectionUtil.doGetWithOauth(url, consumerKey, consumerSecret, null, oauthToken,
+		return HttpsURLConnectionUtil.doGetWithOauth(url, consumerKey, consumerSecret, null, oauthToken,
 				oauthTokenSecret);
 	}
 

@@ -6,9 +6,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 
 import com.sellinall.listinglookup.config.Config;
-import com.sellinall.util.HttpURLConnectionUtil;
+import com.sellinall.util.HttpsURLConnectionUtil;
 
 public class EBayUtil {
 	static Logger log = Logger.getLogger(EBayUtil.class.getName());
@@ -147,20 +149,25 @@ public class EBayUtil {
 		return response;
 	}
 
-	public static String getCategoryInfo(String countryCode, String categoryId) throws IOException {
+	public static String getCategoryInfo(String countryCode, String categoryId) throws IOException, JSONException {
 		String siteId = getSiteId(countryCode);
 		String url = Config.getConfig().getEbayOpenApiURL() + "/Shopping?callname=GetCategoryInfo";
 		url = url + "&appid=" + Config.getConfig().getEbayAppName();
 		url = url + "&version=677&siteid=" + siteId + "&CategoryID=" + categoryId;
-		return HttpURLConnectionUtil.doGet(url);
+		JSONObject response = HttpsURLConnectionUtil.doGet(url, null);
+		if (response.has("payload")) {
+			return response.getString("payload");
+		}
+		return "";
 	}
 
-	private static String getResponse(String urlParameter, String configValue, String siteID) throws Exception {
-		org.codehaus.jettison.json.JSONObject payLoad = new org.codehaus.jettison.json.JSONObject();
-		payLoad.put("data", urlParameter);
-		return HttpURLConnectionUtil
-				.doPostWithHeader(Config.getConfig().getEbayPostURL(), payLoad, getConfig(configValue, siteID), "xml")
-				.getString("payload");
+	private static String getResponse(String payLoad, String configValue, String siteID) throws Exception {
+		JSONObject response = HttpsURLConnectionUtil
+				.doPost(Config.getConfig().getEbayPostURL(), payLoad, getConfig(configValue, siteID));
+		if (response.has("payload")) {
+			return response.getString("payload");
+		}
+		return "";
 	}
 
 	private static Map<String, String> getConfig(String apiCallName, String siteId) {
@@ -172,7 +179,7 @@ public class EBayUtil {
 		customConfigurationMap.put("X-EBAY-API-CERT-NAME", Config.getConfig().getEbayCertName());
 		customConfigurationMap.put("X-EBAY-API-SITEID", siteId);
 		customConfigurationMap.put("X-EBAY-API-CALL-NAME", apiCallName);
-		customConfigurationMap.put("Content-Type", "text/xml");
+		customConfigurationMap.put("Content-Type", "application/atom+xml");
 
 		return customConfigurationMap;
 	}

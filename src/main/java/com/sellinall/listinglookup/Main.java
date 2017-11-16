@@ -25,7 +25,7 @@ import com.sellinall.listinglookup.config.Config;
 import com.sellinall.listinglookup.ebay.CategoryLookup;
 import com.sellinall.listinglookup.product.ProductLookup;
 import com.sellinall.util.AuthConstant;
-import com.sellinall.util.HttpURLConnectionUtil;
+import com.sellinall.util.HttpsURLConnectionUtil;
 
 import spark.Request;
 import spark.Response;
@@ -220,13 +220,14 @@ public class Main {
 			String mudraToken = request.headers("Mudra");
 			Map<String, String> header = new HashMap<String, String>();
 			header.put("authType", "SELLinALL");
+			header.put("Content-type", "application/json");
 			org.codehaus.jettison.json.JSONObject payload = new JSONObject();
 			payload.put("mudra", mudraToken);
 			payload.put("method", request.requestMethod());
 			payload.put("path", request.pathInfo());
 			payload.put("serverName", SERVERNAME);
 			String url = Config.getConfig().getSIAAuthServerURL() + "/authToken";
-			JSONObject response = HttpURLConnectionUtil.doPostWithHeader(url, payload, header, "json");
+			JSONObject response = HttpsURLConnectionUtil.doPost(url, payload.toString(), header);
 			// TODO: map the response http code
 			if (response.getInt("httpCode") == HttpStatus.OK_200) {
 				JSONObject responseEntity = new JSONObject(response.getString("payload"));
@@ -301,7 +302,7 @@ public class Main {
 			header.put(AuthConstant.RAGASIYAM_KEY, Config.getConfig().getRagasiyam());
 			JSONObject payload = new JSONObject();
 			payload.put("data", new JSONArray(newCategory));
-			HttpURLConnectionUtil.doPostWithHeader(callbackUrl, payload, header, "json");
+			HttpsURLConnectionUtil.doPost(callbackUrl, payload.toString(), header);
 		}
 	}
 
