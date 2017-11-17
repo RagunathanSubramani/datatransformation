@@ -75,9 +75,9 @@ public class RocketEcomConnectionUtil {
 			config.put("charset", CHAR_UTF_8);
 			Thread.sleep(1000);
 			if (method.equals("GET")) {
-				response = HttpsURLConnectionUtil.doGet(request, null);
+				response = HttpsURLConnectionUtil.doGet(request, config);
 			} else if (method.equals("POST")) {
-				response = HttpsURLConnectionUtil.doPost(request, xml, null);
+				response = HttpsURLConnectionUtil.doPost(request, xml, config);
 			}
 			if (response.has("payload")) {
 				output = response.getString("payload");

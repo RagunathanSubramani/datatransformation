@@ -149,14 +149,19 @@ public class EBayUtil {
 		return response;
 	}
 
-	public static String getCategoryInfo(String countryCode, String categoryId) throws IOException, JSONException {
+	public static String getCategoryInfo(String countryCode, String categoryId) throws IOException {
 		String siteId = getSiteId(countryCode);
 		String url = Config.getConfig().getEbayOpenApiURL() + "/Shopping?callname=GetCategoryInfo";
 		url = url + "&appid=" + Config.getConfig().getEbayAppName();
 		url = url + "&version=677&siteid=" + siteId + "&CategoryID=" + categoryId;
-		JSONObject response = HttpsURLConnectionUtil.doGet(url, null);
-		if (response.has("payload")) {
-			return response.getString("payload");
+		JSONObject response = new JSONObject();
+		try {
+			response = HttpsURLConnectionUtil.doGet(url, null);
+			if (response.has("payload") && response.getInt("httpCode") == 200) {
+				return response.getString("payload");
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
 		}
 		return "";
 	}
