@@ -3,8 +3,8 @@ package com.sellinall.listinglookup.ebay;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
-import org.codehaus.jettison.json.JSONException;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
 
@@ -153,7 +153,6 @@ public class CategoryLookup {
 					.getJSONObject("CategoryArray").getJSONObject("Category").getString("CategoryNamePath");
 			return categoryNamePath;
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			log.error("returned empty category path name because of exception");
 			return "";
