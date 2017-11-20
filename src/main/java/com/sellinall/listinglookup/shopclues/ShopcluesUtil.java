@@ -56,8 +56,8 @@ public class ShopcluesUtil {
 		String url = Config.getConfig().getShopcluesAuthUrl();
 		Map<String, String> mapHeader = new HashMap<String, String>();
 		mapHeader.put("Content-Type", "application/json");
-		String responseString = HttpsURLConnectionUtil.doPost(url, getPayLoadForAuthtoken(), mapHeader);
-		return parseResponse(responseString);
+		JSONObject responseString = HttpsURLConnectionUtil.doPost(url, getPayLoadForAuthtoken().toString(), mapHeader);
+		return parseResponse(responseString.getString("payload"));
 	}
 
 	private static JSONObject getPayLoadForAuthtoken() throws JSONException {

@@ -11,7 +11,7 @@ import org.codehaus.jettison.json.JSONObject;
 
 import com.sellinall.listinglookup.CategoryLookup;
 import com.sellinall.listinglookup.config.Config;
-import com.sellinall.util.HttpURLConnectionUtil;
+import com.sellinall.util.HttpsURLConnectionUtil;
 
 import freemarker.template.TemplateException;
 
@@ -38,8 +38,12 @@ public class SnapdealUtil {
 		headers.put("X-Auth-Token", Config.getConfig().getSnapdealAuthToken());
 		headers.put("ClientId", Config.getConfig().getSnapdealClientId());
 
-		JSONObject response = new JSONObject(HttpURLConnectionUtil.doGetWithHeader(url, headers));
-		log.debug("response:" + response);
-		return response.getJSONObject("payload");
+		JSONObject returnPayload = HttpsURLConnectionUtil.doGet(url, headers);
+		log.debug("response:" + returnPayload);
+		JSONObject response = new JSONObject();
+		if (returnPayload.has("payload")) {
+			response = new JSONObject(returnPayload.getString("payload"));
+		}
+		return response;
 	}
 }

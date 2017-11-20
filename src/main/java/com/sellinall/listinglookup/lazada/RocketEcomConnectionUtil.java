@@ -58,6 +58,7 @@ public class RocketEcomConnectionUtil {
 			String xml, String method) {
 		String queryString = "";
 		String output = "";
+		JSONObject response = new JSONObject();
 		params.put("Timestamp", getCurrentTimestamp());
 		params.put("Version", "1.0");
 		params.put("Format", "JSON");
@@ -74,12 +75,13 @@ public class RocketEcomConnectionUtil {
 			config.put("charset", CHAR_UTF_8);
 			Thread.sleep(1000);
 			if (method.equals("GET")) {
-				JSONObject response = HttpsURLConnectionUtil.doGet(request);
-				output = response.getString("payload");
+				response = HttpsURLConnectionUtil.doGet(request, config);
 			} else if (method.equals("POST")) {
-				output = HttpsURLConnectionUtil.doPostWithXML(request, xml);
+				response = HttpsURLConnectionUtil.doPost(request, xml, config);
 			}
-
+			if (response.has("payload")) {
+				output = response.getString("payload");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

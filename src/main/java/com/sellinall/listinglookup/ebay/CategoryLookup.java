@@ -153,7 +153,6 @@ public class CategoryLookup {
 					.getJSONObject("CategoryArray").getJSONObject("Category").getString("CategoryNamePath");
 			return categoryNamePath;
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			log.error("returned empty category path name because of exception");
 			return "";
