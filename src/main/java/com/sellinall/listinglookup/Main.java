@@ -67,6 +67,9 @@ public class Main {
 						case "etsy":
 							return com.sellinall.listinglookup.etsy.CategoryLookup.getCategorySpecifics(
 									request.params(":countryCode"), request.params(":categoryId"));
+						case "shopee":
+							return com.sellinall.listinglookup.shopee.CategoryLookup.getCategorySpecifics(
+									request.params(":countryCode"), request.params(":categoryId"));
 						default:
 							return com.sellinall.listinglookup.CategoryLookup.getCategorySpecifics(
 								request.params(":countryCode"), request.params(":categoryId"), channelName);
