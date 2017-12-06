@@ -50,6 +50,9 @@
 	<property name="etsyUSDefaultNickNameId" value="${etsyUSDefaultNickNameId}" />
 	<property name="etsyConsumerKey" value="${etsyConsumerKey}" />
 	<property name="etsyConsumerSecret" value="${etsyConsumerSecret}" />
+	
+	<!-- Shopee -->
+	<property name="shopeeUrl" value="${shopeeUrl}" />
 
 		<!-- DB Values -->
 		<property name="DbUserName" value="${DbUserName}" />
@@ -83,5 +86,22 @@
 		<property name="lazadaMYDefaultNickNameId" value="${lazadaMYDefaultNickNameId}" />
 		<property name="lazadaPHDefaultNickNameId" value="${lazadaPHDefaultNickNameId}" />
 		<property name="lazadaTHDefaultNickNameId" value="${lazadaTHDefaultNickNameId}" />
+		
+		<!-- shopee -->
+		<property name="shopeeSGDefaultAccount" value="${shopeeSGDefaultAccount}" />
+		<property name="shopeeTWDefaultAccount" value="${shopeeTWDefaultAccount}" />
+		<property name="shopeeIDDefaultAccount" value="${shopeeIDDefaultAccount}" />
+		<property name="shopeeMYDefaultAccount" value="${shopeeMYDefaultAccount}" />
+		<property name="shopeePHDefaultAccount" value="${shopeePHDefaultAccount}" />
+		<property name="shopeeTHDefaultAccount" value="${shopeeTHDefaultAccount}" />
+		<property name="shopeeVNDefaultAccount" value="${shopeeVNDefaultAccount}" />
+		
+		<property name="shopeeSGDefaultNickNameId" value="${shopeeSGDefaultNickNameId}" />
+		<property name="shopeeTWDefaultNickNameId" value="${shopeeTWDefaultNickNameId}" />
+		<property name="shopeeIDDefaultNickNameId" value="${shopeeIDDefaultNickNameId}" />
+		<property name="shopeeMYDefaultNickNameId" value="${shopeeMYDefaultNickNameId}" />
+		<property name="shopeePHDefaultNickNameId" value="${shopeePHDefaultNickNameId}" />
+		<property name="shopeeTHDefaultNickNameId" value="${shopeeTHDefaultNickNameId}" />
+		<property name="shopeeVNDefaultNickNameId" value="${shopeeVNDefaultNickNameId}" />
 	</bean>
 </beans>

@@ -36,6 +36,7 @@ public class Config {
 	private String snapdealAuthToken;
 	private String Ragasiyam;
 	private String etsyUrl;
+	private String shopeeUrl;
 	
 	private String lazadaSGDefaultAccount;
 	private String lazadaIDDefaultAccount;
@@ -48,6 +49,22 @@ public class Config {
 	private String lazadaMYDefaultNickNameId;
 	private String lazadaPHDefaultNickNameId;
 	private String lazadaTHDefaultNickNameId;
+	
+	private String shopeeSGDefaultAccount;
+	private String shopeeTWDefaultAccount;
+	private String shopeeIDDefaultAccount;
+	private String shopeeMYDefaultAccount;
+	private String shopeePHDefaultAccount;
+	private String shopeeTHDefaultAccount;
+	private String shopeeVNDefaultAccount;
+	
+	private String shopeeSGDefaultNickNameId;
+	private String shopeeTWDefaultNickNameId;
+	private String shopeeIDDefaultNickNameId;
+	private String shopeeMYDefaultNickNameId;
+	private String shopeePHDefaultNickNameId;
+	private String shopeeTHDefaultNickNameId;
+	private String shopeeVNDefaultNickNameId;
 	
 	private String etsyUSDefaultAccount;
 	private String etsyUSDefaultNickNameId;
@@ -351,7 +368,126 @@ public class Config {
 		this.lazadaTHDefaultNickNameId = lazadaTHDefaultNickNameId;
 	}
 
-	
+	public String getShopeeUrl() {
+		return shopeeUrl;
+	}
+
+	public void setShopeeUrl(String shopeeUrl) {
+		this.shopeeUrl = shopeeUrl;
+	}
+
+	public String getShopeeSGDefaultAccount() {
+		return shopeeSGDefaultAccount;
+	}
+
+	public void setShopeeSGDefaultAccount(String shopeeSGDefaultAccount) {
+		this.shopeeSGDefaultAccount = shopeeSGDefaultAccount;
+	}
+
+	public String getShopeeTWDefaultAccount() {
+		return shopeeTWDefaultAccount;
+	}
+
+	public void setShopeeTWDefaultAccount(String shopeeTWDefaultAccount) {
+		this.shopeeTWDefaultAccount = shopeeTWDefaultAccount;
+	}
+
+	public String getShopeeIDDefaultAccount() {
+		return shopeeIDDefaultAccount;
+	}
+
+	public void setShopeeIDDefaultAccount(String shopeeIDDefaultAccount) {
+		this.shopeeIDDefaultAccount = shopeeIDDefaultAccount;
+	}
+
+	public String getShopeeMYDefaultAccount() {
+		return shopeeMYDefaultAccount;
+	}
+
+	public void setShopeeMYDefaultAccount(String shopeeMYDefaultAccount) {
+		this.shopeeMYDefaultAccount = shopeeMYDefaultAccount;
+	}
+
+	public String getShopeePHDefaultAccount() {
+		return shopeePHDefaultAccount;
+	}
+
+	public void setShopeePHDefaultAccount(String shopeePHDefaultAccount) {
+		this.shopeePHDefaultAccount = shopeePHDefaultAccount;
+	}
+
+	public String getShopeeTHDefaultAccount() {
+		return shopeeTHDefaultAccount;
+	}
+
+	public void setShopeeTHDefaultAccount(String shopeeTHDefaultAccount) {
+		this.shopeeTHDefaultAccount = shopeeTHDefaultAccount;
+	}
+
+	public String getShopeeVNDefaultAccount() {
+		return shopeeVNDefaultAccount;
+	}
+
+	public void setShopeeVNDefaultAccount(String shopeeVNDefaultAccount) {
+		this.shopeeVNDefaultAccount = shopeeVNDefaultAccount;
+	}
+
+	public String getShopeeSGDefaultNickNameId() {
+		return shopeeSGDefaultNickNameId;
+	}
+
+	public void setShopeeSGDefaultNickNameId(String shopeeSGDefaultNickNameId) {
+		this.shopeeSGDefaultNickNameId = shopeeSGDefaultNickNameId;
+	}
+
+	public String getShopeeTWDefaultNickNameId() {
+		return shopeeTWDefaultNickNameId;
+	}
+
+	public void setShopeeTWDefaultNickNameId(String shopeeTWDefaultNickNameId) {
+		this.shopeeTWDefaultNickNameId = shopeeTWDefaultNickNameId;
+	}
+
+	public String getShopeeIDDefaultNickNameId() {
+		return shopeeIDDefaultNickNameId;
+	}
+
+	public void setShopeeIDDefaultNickNameId(String shopeeIDDefaultNickNameId) {
+		this.shopeeIDDefaultNickNameId = shopeeIDDefaultNickNameId;
+	}
+
+	public String getShopeeMYDefaultNickNameId() {
+		return shopeeMYDefaultNickNameId;
+	}
+
+	public void setShopeeMYDefaultNickNameId(String shopeeMYDefaultNickNameId) {
+		this.shopeeMYDefaultNickNameId = shopeeMYDefaultNickNameId;
+	}
+
+	public String getShopeePHDefaultNickNameId() {
+		return shopeePHDefaultNickNameId;
+	}
+
+	public void setShopeePHDefaultNickNameId(String shopeePHDefaultNickNameId) {
+		this.shopeePHDefaultNickNameId = shopeePHDefaultNickNameId;
+	}
+
+	public String getShopeeTHDefaultNickNameId() {
+		return shopeeTHDefaultNickNameId;
+	}
+
+	public void setShopeeTHDefaultNickNameId(String shopeeTHDefaultNickNameId) {
+		this.shopeeTHDefaultNickNameId = shopeeTHDefaultNickNameId;
+	}
+
+	public String getShopeeVNDefaultNickNameId() {
+		return shopeeVNDefaultNickNameId;
+	}
+
+	public void setShopeeVNDefaultNickNameId(String shopeeVNDefaultNickNameId) {
+		this.shopeeVNDefaultNickNameId = shopeeVNDefaultNickNameId;
+	}
+
 	public String getEtsyUSDefaultAccount() {
 		return etsyUSDefaultAccount;
 	}
@@ -413,6 +549,48 @@ public class Config {
 			return Config.getConfig().getLazadaPHDefaultNickNameId();
 		case "TH":
 			return Config.getConfig().getLazadaTHDefaultNickNameId();
+		default:
+			return "";
+		} 
+	}
+	
+	public static String getShopeeAccountDetails(String countryCode){
+		switch (countryCode) {
+		case "SG":
+			return Config.getConfig().getShopeeSGDefaultAccount();
+		case "TW":
+			return Config.getConfig().getShopeeTWDefaultAccount();
+		case "ID":
+			return Config.getConfig().getShopeeIDDefaultAccount();
+		case "MY":
+			return Config.getConfig().getShopeeMYDefaultAccount();
+		case "PH":
+			return Config.getConfig().getShopeePHDefaultAccount();
+		case "TH":
+			return Config.getConfig().getShopeeTHDefaultAccount();
+		case "VN":
+			return Config.getConfig().getShopeeVNDefaultAccount();
+		default:
+			return "";
+		} 
+	}
+	
+	public static String getShopeeNickNameID(String countryCode){
+		switch (countryCode) {
+		case "SG":
+			return Config.getConfig().getShopeeSGDefaultNickNameId();
+		case "TW":
+			return Config.getConfig().getShopeeSGDefaultNickNameId();
+		case "ID":
+			return Config.getConfig().getShopeeIDDefaultNickNameId();
+		case "MY":
+			return Config.getConfig().getShopeeMYDefaultNickNameId();
+		case "PH":
+			return Config.getConfig().getShopeePHDefaultNickNameId();
+		case "TH":
+			return Config.getConfig().getShopeeTHDefaultNickNameId();
+		case "VN":
+			return Config.getConfig().getShopeeSGDefaultNickNameId();
 		default:
 			return "";
 		} 
