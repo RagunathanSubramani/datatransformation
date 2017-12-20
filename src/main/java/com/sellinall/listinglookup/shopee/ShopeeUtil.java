@@ -44,6 +44,18 @@ public class ShopeeUtil {
 		return HttpsURLConnectionUtil.doPost(url, payload.toString(), headers);
 	}
 
+	public static JSONObject getCategoryList(BasicDBObject credential) throws JSONException, IOException {
+		String url = Config.getConfig().getShopeeUrl() + "item/categories/get";
+		JSONObject payload = new JSONObject();
+		payload.put("partner_id", credential.getLong("partnerID"));
+		payload.put("shopid", credential.getLong("shopID"));
+		payload.put("timestamp", System.currentTimeMillis() / 1000);
+		Map<String, String> headers = new HashMap<String, String>();
+		headers.put("Content-Type", "application/json");
+		headers.put("Authorization", getSignature(credential.getString("credentialKey"), url, payload.toString()));
+		return new JSONObject(HttpsURLConnectionUtil.doPost(url, payload.toString(), headers).getString("payload"));
+	}
+
 	public static String getSignature(String credentialKey, String url, String payload) {
 		String baseString = url + "|" + payload;
 		return hmacDigest(credentialKey, baseString, "HmacSHA256");

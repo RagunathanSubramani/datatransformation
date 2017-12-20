@@ -77,7 +77,7 @@ public class CategoryLookup {
 		return categorySpecifics;
 	}
 
-	private static BasicDBObject getAccountDetails(String accountNumber, String nickNameId) {
+	public static BasicDBObject getAccountDetails(String accountNumber, String nickNameId) {
 		BasicDBObject elemMatch = new BasicDBObject();
 		String siteName = nickNameId.split("-")[0];
 		elemMatch.put("nickName.id", nickNameId);
