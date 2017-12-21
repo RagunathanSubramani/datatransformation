@@ -13,6 +13,7 @@ public class BuildCategory {
 	static JSONArray parsedCategorylist = new JSONArray();
 
 	public static Object buildNewCategoryList(String countryCode) throws JSONException, IOException {
+		parsedCategorylist = new JSONArray();
 		JSONObject categoryList = getCategorySpecificsFromShopee(countryCode);
 		if (categoryList.has("categories")) {
 			JSONArray categories = categoryList.getJSONArray("categories");
