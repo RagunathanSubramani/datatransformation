@@ -295,6 +295,10 @@ public class Main {
 				newCategory = com.sellinall.listinglookup.etsy.BuildCategory.buildNewCategoryList(countryCode)
 						.toString();
 				break;
+			case "shopee":
+				newCategory = com.sellinall.listinglookup.shopee.BuildCategory.buildNewCategoryList(countryCode)
+						.toString();
+				break;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
