@@ -254,7 +254,7 @@ public class Main {
 		response.header("Connection", "keep-alive");
 		response.header("keep-alive", "timeout=5, max=100");
 		response.header("Access-Control-Allow-Headers",
-				"origin, content-type, accept, authorization, Mudra, keep-alive, Connection");
+				"origin, content-type, accept, authorization, Mudra, keep-alive, Connection, username");
 		response.header("Access-Control-Allow-Credentials", "true");
 		response.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD");
 		response.header("Access-Control-Max-Age", "1209600");
