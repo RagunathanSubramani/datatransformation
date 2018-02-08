@@ -72,8 +72,9 @@ public class CategoryLookup {
 		String siteName = nickNameId.split("-")[0];
 		elemMatch.put("nickName.id", nickNameId);
 		BasicDBObject site = new BasicDBObject("$elemMatch", elemMatch);
-		BasicDBObject searchQuery = new BasicDBObject(siteName, site);
+		BasicDBObject searchQuery = new BasicDBObject();
 		searchQuery.put("_id", new ObjectId(accountNumber));
+		searchQuery.put(siteName, site);
 		BasicDBObject fields = new BasicDBObject("lazada.$", 1);
 		DBCollection table = DbUtilities.getUserDBCollection("accounts");
 		BasicDBObject user = (BasicDBObject) table.findOne(searchQuery, fields);
