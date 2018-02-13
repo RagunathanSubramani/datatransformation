@@ -361,11 +361,11 @@ public class FieldsMap {
 
 	private static BasicDBObject getQueryObject(JSONObject jsonRequest) {
 		BasicDBObject query = new BasicDBObject();
+		query.put("accountNumber", jsonRequest.getString("accountNumber"));
 		query.put("sourceNicknameId", jsonRequest.getString("sourceNicknameId"));
 		query.put("sourceCountryCode", jsonRequest.getString("sourceCountryCode"));
 		query.put("targetNicknameId", jsonRequest.getString("targetNicknameId"));
 		query.put("targetCountryCode", jsonRequest.getString("targetCountryCode"));
-		query.put("accountNumber", jsonRequest.getString("accountNumber"));
 		return query;
 	}
 
