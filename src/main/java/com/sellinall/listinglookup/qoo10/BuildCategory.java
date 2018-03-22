@@ -17,7 +17,6 @@ public class BuildCategory {
 		String action = "GMKT.INC.Front.OpenApiService/CommonInfoAPIService.api/GetCatagoryListAll";
 		String out = Qoo10ConnectionUtil.getQoo10ApiResponse(params, ScApiHost, action, apiKey, userId, password,
 				method);
-		System.out.println(out);
 		org.json.JSONObject serviceResponseJSON = XML.toJSONObject(out);
 		org.json.JSONObject serviceResponse = serviceResponseJSON
 				.getJSONObject("StdCustomResultOfListOfCommonCategoryInfo");
@@ -43,7 +42,7 @@ public class BuildCategory {
 	private static String getAPIUrl(String countryCode) {
 		switch (countryCode) {
 		case "SG":
-			return "http://www.qoo10.sg";
+			return "http://api.qoo10.sg";
 		case "MY":
 			return "https://www.qoo10.my";
 		case "HK":
