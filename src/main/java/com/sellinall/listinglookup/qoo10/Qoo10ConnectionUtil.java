@@ -19,10 +19,7 @@ public class Qoo10ConnectionUtil {
 			Map<String, String> config = new HashMap<String, String>();
 			config.put("Content-Type", "application/x-www-form-urlencoded");
 			params = params + "key="
-					+ "S5bnbfynQvNi9I_g_1_oNLnmU9qgVI2GKgxrr0Zq6vX_g_2_PGphDsYvj30zDqt_g_1_6GV9awp1TYJc6dDKOCikNtR2ytVenzuD1blsaaUL_g_2_D2Jwhc4ucVsMNrVtmCNHc7_g_2_LglYxxi_g_2_";
-
-			config.put("Content-Length", "" + params.length());
-			config.put("Content-Type", "application/x-www-form-urlencoded");
+					+ "S5bnbfynQvNi9I_g_1_oNLnmU9qgVI2GKgxrr0Zq6vX_g_2_PGphDsYvj30zDk8e7fbgU8YZ5eCS4z8ILWoQPpZf8UcJXXw_g_2_SwMVIt4rytvHnBKkFOwzhXnjP6ao4kE_g_1_5S9UIe4K";
 			JSONObject response = HttpsURLConnectionUtil.doPost(requestURL, params, config);
 			if (response.getString("httpCode").equals("500")) {
 				System.out.println("Error 500 " + response.getString("payload"));
