@@ -42,19 +42,19 @@ public class BuildCategory {
 	private static String getAPIUrl(String countryCode) {
 		switch (countryCode) {
 		case "SG":
-			return "http://api.qoo10.sg";
+			return "https://api.qoo10.sg";
 		case "MY":
-			return "https://www.qoo10.my";
+			return "https://api.qoo10.my";
 		case "HK":
-			return "http://www.qoo10.hk";
+			return "https://api.qoo10.hk";
 		case "ID":
-			return "http://api.qoo10.co.id";
+			return "https://api.qoo10.co.id";
 		case "JP":
-			return "http://www.qoo10.jp";
+			return "https://api.qoo10.jp";
 		case "CN":
-			return "https://www.qoo10.cn";
+			return "https://api.qoo10.cn";
 		case "US":
-			return "https://www.qoo10.com";
+			return "https://api.qoo10.com";
 		default:
 			return "";
 		}
