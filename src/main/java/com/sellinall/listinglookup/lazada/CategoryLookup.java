@@ -1,5 +1,9 @@
 package com.sellinall.listinglookup.lazada;
 
+import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.json.JSONArray;
@@ -9,13 +13,14 @@ import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.util.JSON;
+import com.sellinall.listinglookup.config.Config;
 import com.sellinall.listinglookup.database.DbUtilities;
 
 public class CategoryLookup {
 	static Logger log = Logger.getLogger(CategoryLookup.class.getName());
 	private static final long thirtyDays = 30 * 24 * 60 * 60;
 
-	public static Object getCategorySpecifics(String countryCode, String categoryId,String accountNumber, String nickNameID) {
+	public static Object getCategorySpecifics(String countryCode, String categoryId,String accountNumber, String nickNameID) throws KeyManagementException, NoSuchAlgorithmException, IOException {
 
 		BasicDBObject lazadaAttributesDB = getCategoryAttributesFromDB(countryCode, categoryId);
 		if (lazadaAttributesDB != null) {
@@ -54,15 +59,25 @@ public class CategoryLookup {
 	}
 
 	private static JSONArray getAttributesFromLazada(String countryCode, String categoryId, String accountNumber,
-			String nickNameId) {
+			String nickNameId) throws KeyManagementException, NoSuchAlgorithmException, IOException {
+		boolean useNewApi = Config.getConfig().getUseNewLazadaApi();
+		JSONArray attributes = new JSONArray();
+		String categorySpecifics = "";
 		BasicDBObject userChannel = getUserDetailsFromUser(accountNumber, nickNameId);
-		System.out.println(userChannel);
-		String categorySpecificsXML = RocketEcomConnectionUtil.getCategorySpecifics(countryCode, categoryId,
-				userChannel.getString("userID"), userChannel.getString("apikey"), userChannel.getString("hostURL"));
-		JSONObject categorySpecificsFromLazada = new JSONObject(categorySpecificsXML);
-		log.debug(categorySpecificsFromLazada);
-		JSONObject successResponse = categorySpecificsFromLazada.getJSONObject("SuccessResponse");
-		JSONArray attributes = successResponse.getJSONArray("Body");
+		if(useNewApi) {
+			String hostUrl = Config.getLazadaAPIUrl(userChannel.getString("countryCode"));
+			categorySpecifics = RocketEcomConnectionUtil.getCategorySpecificsFromNewApi(categoryId, hostUrl);
+			JSONObject categorySpecificsFromLazada = new JSONObject(categorySpecifics);
+			log.debug(categorySpecificsFromLazada);
+			attributes = categorySpecificsFromLazada.getJSONArray("data");
+		} else {
+			String categorySpecificsXML = RocketEcomConnectionUtil.getCategorySpecifics(countryCode, categoryId,
+					userChannel.getString("userID"), userChannel.getString("apikey"), userChannel.getString("hostURL"));
+			JSONObject categorySpecificsFromLazada = new JSONObject(categorySpecificsXML);
+			log.debug(categorySpecificsFromLazada);
+			JSONObject successResponse = categorySpecificsFromLazada.getJSONObject("SuccessResponse");
+			attributes = successResponse.getJSONArray("Body");
+		}
 		log.debug(attributes);
 		return attributes;
 	}
@@ -112,10 +127,22 @@ public class CategoryLookup {
 
 	private static JSONArray constructVariantsAndUpdateKeyValues(JSONArray lazadaAttributes) {
 		JSONArray variations = new JSONArray();
+		String attributeType = "";
+		String inputType = "";
 		for (int i = 0; i < lazadaAttributes.length(); i++) {
 			JSONObject filterFields = lazadaAttributes.getJSONObject(i);
-			if (filterFields.get("attributeType").equals("sku") && (filterFields.get("inputType").equals("singleSelect")
-					|| filterFields.get("inputType").equals("multiSelect"))) {
+			if(filterFields.has("attribute_type")) {
+				attributeType = filterFields.getString("attribute_type");
+			} else if(filterFields.has("attributeType")) {
+				attributeType = filterFields.getString("attributeType");
+			}
+			if(filterFields.has("input_type")) {
+				inputType = filterFields.getString("input_type");
+			} else if(filterFields.has("inputType")) {
+				inputType = filterFields.getString("inputType");
+			}
+			if (attributeType.equals("sku") && (inputType.equals("singleSelect")
+					|| inputType.equals("multiSelect") || inputType.equals("multiEnumInput"))) {
 				variations.put(filterFields.get("name"));
 			}
 			if(filterFields.get("name").equals("warranty_type")){
