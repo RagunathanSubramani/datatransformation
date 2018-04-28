@@ -71,9 +71,11 @@ public class CategoryLookup {
 		String accountNumber = Config.getConfig().getShopeeAccountDetails(countryCode);
 		String nickNameId = Config.getConfig().getShopeeNickNameID(countryCode);
 		BasicDBObject accountInformation = getAccountDetails(accountNumber, nickNameId);
+		log.info("accountInformation:"+accountInformation);
 		if (accountInformation != null) {
 			categorySpecifics = ShopeeUtil.getCategorySpecifics(accountInformation, countryCode, categoryId);
 		}
+		log.info("response:"+categorySpecifics);
 		return categorySpecifics;
 	}
 
