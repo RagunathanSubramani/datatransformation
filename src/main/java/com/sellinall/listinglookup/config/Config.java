@@ -37,6 +37,7 @@ public class Config {
 	private String Ragasiyam;
 	private String etsyUrl;
 	private String shopeeUrl;
+	private String lazadaURL;
 	
 	private String lazadaSGDefaultAccount;
 	private String lazadaIDDefaultAccount;
@@ -713,6 +714,14 @@ public class Config {
 
 	public void setSIACategoryNameUrl(String sIACategoryNameUrl) {
 		SIACategoryNameUrl = sIACategoryNameUrl;
+	}
+
+	public String getLazadaURL() {
+		return lazadaURL;
+	}
+
+	public void setLazadaURL(String lazadaURL) {
+		this.lazadaURL = lazadaURL;
 	}
 
 }
