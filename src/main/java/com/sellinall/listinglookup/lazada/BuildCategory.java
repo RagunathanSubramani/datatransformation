@@ -20,11 +20,11 @@ public class BuildCategory {
 			throws IOException, JSONException {
 		totalString = "";
 		Map<String, String> header = new HashMap<String, String>();
-		header.put(AuthConstant.RAGASIYAM_KEY, "Chidambaram");
+		header.put(AuthConstant.RAGASIYAM_KEY, Config.getConfig().getRagasiyam());
 		header.put("accountNumber", accountNumber);
 		header.put("Content-Type", "application/json");
 		JSONObject serviceResponse = HttpsURLConnectionUtil
-				.doGet(Config.getConfig().getLazadaURL() + "/documents/categories?nickNameID="+nickNameID, header);
+				.doGet(Config.getConfig().getLazadaURL() + "/categories?nickNameID="+nickNameID, header);
 		if (serviceResponse.getInt("httpCode") == HttpStatus.OK_200) {
 			JSONObject response = new JSONObject(serviceResponse.getString("payload"));
 			if (response.has("SuccessResponse")) {
