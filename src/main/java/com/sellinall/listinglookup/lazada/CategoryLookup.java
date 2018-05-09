@@ -3,11 +3,14 @@ package com.sellinall.listinglookup.lazada;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.bson.types.ObjectId;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
+import org.eclipse.jetty.http.HttpStatus;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
@@ -15,19 +18,37 @@ import com.mongodb.DBCollection;
 import com.mongodb.util.JSON;
 import com.sellinall.listinglookup.config.Config;
 import com.sellinall.listinglookup.database.DbUtilities;
+import com.sellinall.util.AuthConstant;
+import com.sellinall.util.HttpsURLConnectionUtil;
 
 public class CategoryLookup {
 	static Logger log = Logger.getLogger(CategoryLookup.class.getName());
 	private static final long thirtyDays = 30 * 24 * 60 * 60;
 
-	public static Object getCategorySpecifics(String countryCode, String categoryId,String accountNumber, String nickNameID) throws KeyManagementException, NoSuchAlgorithmException, IOException {
+	public static Object getCategorySpecifics(String countryCode, String categoryId, String accountNumber,
+			String nickNameID) throws KeyManagementException, NoSuchAlgorithmException, IOException, JSONException {
 
 		BasicDBObject lazadaAttributesDB = getCategoryAttributesFromDB(countryCode, categoryId);
 		if (lazadaAttributesDB != null) {
 			return lazadaAttributesDB;
 		}
-		JSONArray lazadaAttributes = getAttributesFromLazada(countryCode, categoryId, accountNumber, nickNameID);
-		return persistToDB(countryCode, categoryId, lazadaAttributes);
+		Map<String, String> header = new HashMap<String, String>();
+		header.put(AuthConstant.RAGASIYAM_KEY, Config.getConfig().getRagasiyam());
+		header.put("accountNumber", accountNumber);
+		header.put("Content-Type", "application/json");
+		JSONObject serviceResponse = HttpsURLConnectionUtil.doGet(Config.getConfig().getLazadaURL()
+				+ "/category/" + categoryId + "/attributes?nickNameID=" + nickNameID, header);
+		JSONArray attributes = new JSONArray();
+		if (serviceResponse.getInt("httpCode") == HttpStatus.OK_200) {
+			JSONObject response = new JSONObject(serviceResponse.getString("payload"));
+			if (response.has("SuccessResponse")) {
+				JSONObject successResponse = (JSONObject) response.get("SuccessResponse");
+				attributes = successResponse.getJSONArray("Body");
+			} else if (response.has("code") && response.getString("code").equals("0")) {
+				attributes = response.getJSONArray("data");
+			}
+		}
+		return persistToDB(countryCode, categoryId, attributes);
 	}
 
 	private static BasicDBObject getCategoryAttributesFromDB(String countryCode, String categoryId) {
@@ -58,49 +79,8 @@ public class CategoryLookup {
 		return lookupData;
 	}
 
-	private static JSONArray getAttributesFromLazada(String countryCode, String categoryId, String accountNumber,
-			String nickNameId) throws KeyManagementException, NoSuchAlgorithmException, IOException {
-		boolean useNewApi = Config.getConfig().getUseNewLazadaApi();
-		JSONArray attributes = new JSONArray();
-		String categorySpecifics = "";
-		BasicDBObject userChannel = getUserDetailsFromUser(accountNumber, nickNameId);
-		if(useNewApi) {
-			String hostUrl = Config.getLazadaAPIUrl(userChannel.getString("countryCode"));
-			categorySpecifics = RocketEcomConnectionUtil.getCategorySpecificsFromNewApi(categoryId, hostUrl);
-			JSONObject categorySpecificsFromLazada = new JSONObject(categorySpecifics);
-			log.debug(categorySpecificsFromLazada);
-			attributes = categorySpecificsFromLazada.getJSONArray("data");
-		} else {
-			String categorySpecificsXML = RocketEcomConnectionUtil.getCategorySpecifics(countryCode, categoryId,
-					userChannel.getString("userID"), userChannel.getString("apikey"), userChannel.getString("hostURL"));
-			JSONObject categorySpecificsFromLazada = new JSONObject(categorySpecificsXML);
-			log.debug(categorySpecificsFromLazada);
-			JSONObject successResponse = categorySpecificsFromLazada.getJSONObject("SuccessResponse");
-			attributes = successResponse.getJSONArray("Body");
-		}
-		log.debug(attributes);
-		return attributes;
-	}
-	
-	public static BasicDBObject getUserDetailsFromUser(String accountNumber, String nickNameId) {
-		BasicDBObject elemMatch = new BasicDBObject();
-		String siteName = nickNameId.split("-")[0];
-		elemMatch.put("nickName.id", nickNameId);
-		BasicDBObject site = new BasicDBObject("$elemMatch", elemMatch);
-		BasicDBObject searchQuery = new BasicDBObject();
-		searchQuery.put("_id", new ObjectId(accountNumber));
-		searchQuery.put(siteName, site);
-		BasicDBObject fields = new BasicDBObject("lazada.$", 1);
-		DBCollection table = DbUtilities.getUserDBCollection("accounts");
-		BasicDBObject user = (BasicDBObject) table.findOne(searchQuery, fields);
-		BasicDBList channelList = (BasicDBList) user.get(siteName);
-		//Here always return single object only 
-		return (BasicDBObject) channelList.get(0);
-	}
-
-
-
-	private static BasicDBObject persistToDB(String countryCode, String categoryId, JSONArray lazadaAttributes) {
+	private static BasicDBObject persistToDB(String countryCode, String categoryId, JSONArray lazadaAttributes)
+			throws JSONException {
 		BasicDBObject filterField1 = new BasicDBObject("countryCode", countryCode);
 		BasicDBObject filterField2 = new BasicDBObject("categoryId", categoryId);
 		BasicDBList and = new BasicDBList();
@@ -125,27 +105,27 @@ public class CategoryLookup {
 		return updateData;
 	}
 
-	private static JSONArray constructVariantsAndUpdateKeyValues(JSONArray lazadaAttributes) {
+	private static JSONArray constructVariantsAndUpdateKeyValues(JSONArray lazadaAttributes) throws JSONException {
 		JSONArray variations = new JSONArray();
 		String attributeType = "";
 		String inputType = "";
 		for (int i = 0; i < lazadaAttributes.length(); i++) {
 			JSONObject filterFields = lazadaAttributes.getJSONObject(i);
-			if(filterFields.has("attribute_type")) {
+			if (filterFields.has("attribute_type")) {
 				attributeType = filterFields.getString("attribute_type");
-			} else if(filterFields.has("attributeType")) {
+			} else if (filterFields.has("attributeType")) {
 				attributeType = filterFields.getString("attributeType");
 			}
-			if(filterFields.has("input_type")) {
+			if (filterFields.has("input_type")) {
 				inputType = filterFields.getString("input_type");
-			} else if(filterFields.has("inputType")) {
+			} else if (filterFields.has("inputType")) {
 				inputType = filterFields.getString("inputType");
 			}
-			if (attributeType.equals("sku") && (inputType.equals("singleSelect")
-					|| inputType.equals("multiSelect") || inputType.equals("multiEnumInput"))) {
+			if (attributeType.equals("sku") && (inputType.equals("singleSelect") || inputType.equals("multiSelect")
+					|| inputType.equals("multiEnumInput"))) {
 				variations.put(filterFields.get("name"));
 			}
-			if(filterFields.get("name").equals("warranty_type")){
+			if (filterFields.get("name").equals("warranty_type")) {
 				filterFields.put("name", "warrantyType");
 			}
 		}

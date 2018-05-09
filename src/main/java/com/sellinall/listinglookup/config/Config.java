@@ -37,6 +37,7 @@ public class Config {
 	private String Ragasiyam;
 	private String etsyUrl;
 	private String shopeeUrl;
+	private String lazadaURL;
 	
 	private String lazadaSGDefaultAccount;
 	private String lazadaIDDefaultAccount;
@@ -71,80 +72,6 @@ public class Config {
 	private String etsyConsumerKey;
 	private String etsyConsumerSecret;
 	private String SIACategoryNameUrl;
-
-	private String lazadaClientID;
-	private String lazadaClientSecret;
-	private boolean useNewLazadaApi;
-
-	private String lazadaAPIUrlForSG;
-	private String lazadaAPIUrlForMY;
-	private String lazadaAPIUrlForPH;
-	private String lazadaAPIUrlForTH;
-	private String lazadaAPIUrlForID;
-
-	public String getLazadaAPIUrlForSG() {
-		return lazadaAPIUrlForSG;
-	}
-
-	public void setLazadaAPIUrlForSG(String lazadaAPIUrlForSG) {
-		this.lazadaAPIUrlForSG = lazadaAPIUrlForSG;
-	}
-
-	public String getLazadaAPIUrlForMY() {
-		return lazadaAPIUrlForMY;
-	}
-
-	public void setLazadaAPIUrlForMY(String lazadaAPIUrlForMY) {
-		this.lazadaAPIUrlForMY = lazadaAPIUrlForMY;
-	}
-
-	public String getLazadaAPIUrlForPH() {
-		return lazadaAPIUrlForPH;
-	}
-
-	public void setLazadaAPIUrlForPH(String lazadaAPIUrlForPH) {
-		this.lazadaAPIUrlForPH = lazadaAPIUrlForPH;
-	}
-
-	public String getLazadaAPIUrlForTH() {
-		return lazadaAPIUrlForTH;
-	}
-
-	public void setLazadaAPIUrlForTH(String lazadaAPIUrlForTH) {
-		this.lazadaAPIUrlForTH = lazadaAPIUrlForTH;
-	}
-
-	public String getLazadaAPIUrlForID() {
-		return lazadaAPIUrlForID;
-	}
-
-	public void setLazadaAPIUrlForID(String lazadaAPIUrlForID) {
-		this.lazadaAPIUrlForID = lazadaAPIUrlForID;
-	}
-
-	public boolean getUseNewLazadaApi() {
-		return useNewLazadaApi;
-	}
-
-	public void setUseNewLazadaApi(boolean useNewLazadaApi) {
-		this.useNewLazadaApi = useNewLazadaApi;
-	}
-
-	public String getLazadaClientID() {
-		return lazadaClientID;
-	}
-
-	public void setLazadaClientID(String lazadaClientID) {
-		this.lazadaClientID = lazadaClientID;
-	}
-
-	public String getLazadaClientSecret() {
-		return lazadaClientSecret;
-	}
-
-	public void setLazadaClientSecret(String lazadaClientSecret) {
-		this.lazadaClientSecret = lazadaClientSecret;
-	}
 
 	public String getRagasiyam() {
 		return Ragasiyam;
@@ -628,20 +555,6 @@ public class Config {
 		} 
 	}
 
-	public static String getLazadaAPIUrl(String countryCode) {
-		if (countryCode.equals("SG")) {
-			return Config.getConfig().getLazadaAPIUrlForSG();
-		} else if (countryCode.equals("MY")) {
-			return Config.getConfig().getLazadaAPIUrlForMY();
-		} else if (countryCode.equals("ID")) {
-			return Config.getConfig().getLazadaAPIUrlForID();
-		} else if (countryCode.equals("PH")) {
-			return Config.getConfig().getLazadaAPIUrlForPH();
-		} else if (countryCode.equals("TH")) {
-			return Config.getConfig().getLazadaAPIUrlForTH();
-		}
-		return "";
-	}
 
 	public static String getShopeeAccountDetails(String countryCode){
 		switch (countryCode) {
@@ -713,6 +626,14 @@ public class Config {
 
 	public void setSIACategoryNameUrl(String sIACategoryNameUrl) {
 		SIACategoryNameUrl = sIACategoryNameUrl;
+	}
+
+	public String getLazadaURL() {
+		return lazadaURL;
+	}
+
+	public void setLazadaURL(String lazadaURL) {
+		this.lazadaURL = lazadaURL;
 	}
 
 }

@@ -73,6 +73,7 @@
 		<property name="snapdealUrl" value="${snapdealUrl}" />
 		<property name="snapdealClientId" value="${snapdealClientId}" />
 		<property name="snapdealAuthToken" value="${snapdealAuthToken}" />
+		<property name="lazadaURL" value="${lazadaURL}" />
 		
 		<!-- lazada -->
 		<property name="lazadaSGDefaultAccount" value="${lazadaSGDefaultAccount}" />
@@ -86,16 +87,6 @@
 		<property name="lazadaMYDefaultNickNameId" value="${lazadaMYDefaultNickNameId}" />
 		<property name="lazadaPHDefaultNickNameId" value="${lazadaPHDefaultNickNameId}" />
 		<property name="lazadaTHDefaultNickNameId" value="${lazadaTHDefaultNickNameId}" />
-
-		<property name="lazadaClientID" value="${lazadaClientID}" />
-		<property name="lazadaClientSecret" value="${lazadaClientSecret}" />
-		<property name="useNewLazadaApi" value="${useNewLazadaApi}" />
-
-		<property name="lazadaAPIUrlForSG" value="${lazadaAPIUrlForSG}" />
-		<property name="lazadaAPIUrlForMY" value="${lazadaAPIUrlForMY}" />
-		<property name="lazadaAPIUrlForPH" value="${lazadaAPIUrlForPH}" />
-		<property name="lazadaAPIUrlForTH" value="${lazadaAPIUrlForTH}" />
-		<property name="lazadaAPIUrlForID" value="${lazadaAPIUrlForID}" />
 		
 		<!-- shopee -->
 		<property name="shopeeSGDefaultAccount" value="${shopeeSGDefaultAccount}" />
