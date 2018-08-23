@@ -104,5 +104,7 @@
 		<property name="shopeePHDefaultNickNameId" value="${shopeePHDefaultNickNameId}" />
 		<property name="shopeeTHDefaultNickNameId" value="${shopeeTHDefaultNickNameId}" />
 		<property name="shopeeVNDefaultNickNameId" value="${shopeeVNDefaultNickNameId}" />
+		<property name="shopeeClientID" value="${shopeeClientID}" />
+		<property name="shopeeClientSecret" value="${shopeeClientSecret}" />
 	</bean>
 </beans>

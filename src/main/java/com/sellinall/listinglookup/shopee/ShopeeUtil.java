@@ -34,13 +34,13 @@ public class ShopeeUtil {
 			throws JSONException, IOException, TemplateException {
 		String url = Config.getConfig().getShopeeUrl() + "item/attributes/get";
 		JSONObject payload = new JSONObject();
-		payload.put("partner_id", credential.getLong("partnerID"));
+		payload.put("partner_id", Config.getConfig().getShopeeClientID());
 		payload.put("shopid", credential.getLong("shopID"));
 		payload.put("timestamp", System.currentTimeMillis() / 1000);
 		payload.put("category_id", Integer.parseInt(categoryId));
 		Map<String, String> headers = new HashMap<String, String>();
 		headers.put("Content-Type", "application/json");
-		headers.put("Authorization", getSignature(credential.getString("credentialKey"), url, payload.toString()));
+		headers.put("Authorization", getSignature(Config.getConfig().getShopeeClientSecret(), url, payload.toString()));
 		return HttpsURLConnectionUtil.doPost(url, payload.toString(), headers);
 	}
 

@@ -67,6 +67,9 @@ public class Config {
 	private String shopeeTHDefaultNickNameId;
 	private String shopeeVNDefaultNickNameId;
 	
+	private long shopeeClientID;
+	private String shopeeClientSecret;
+
 	private String etsyUSDefaultAccount;
 	private String etsyUSDefaultNickNameId;
 	private String etsyConsumerKey;
@@ -375,6 +378,22 @@ public class Config {
 
 	public void setShopeeUrl(String shopeeUrl) {
 		this.shopeeUrl = shopeeUrl;
+	}
+
+	public long getShopeeClientID() {
+		return shopeeClientID;
+	}
+
+	public void setShopeeClientID(long shopeeClientID) {
+		this.shopeeClientID = shopeeClientID;
+	}
+
+	public String getShopeeClientSecret() {
+		return shopeeClientSecret;
+	}
+
+	public void setShopeeClientSecret(String shopeeClientSecret) {
+		this.shopeeClientSecret = shopeeClientSecret;
 	}
 
 	public String getShopeeSGDefaultAccount() {
