@@ -70,6 +70,9 @@ public class Main {
 						case "shopee":
 							return com.sellinall.listinglookup.shopee.CategoryLookup.getCategorySpecifics(
 									request.params(":countryCode"), request.params(":categoryId"));
+						case "elevenStreet":
+							return com.sellinall.listinglookup.elevenStreet.CategoryLookup.getCategorySpecifics(
+									request.params(":countryCode"), request.params(":categoryId"));
 						default:
 							return com.sellinall.listinglookup.CategoryLookup.getCategorySpecifics(
 								request.params(":countryCode"), request.params(":categoryId"), channelName);
