@@ -38,6 +38,7 @@ public class Config {
 	private String etsyUrl;
 	private String shopeeUrl;
 	private String lazadaURL;
+	private String elevenStreetUrl;
 	
 	private String lazadaSGDefaultAccount;
 	private String lazadaIDDefaultAccount;
@@ -75,6 +76,9 @@ public class Config {
 	private String etsyConsumerKey;
 	private String etsyConsumerSecret;
 	private String SIACategoryNameUrl;
+
+	private String elevenStreetMYDefaultAccount;
+	private String elevenStreetMYDefaultNickNameId;
 
 	public String getRagasiyam() {
 		return Ragasiyam;
@@ -617,6 +621,24 @@ public class Config {
 		} 
 	}
 
+	public static String getElevenStreetAccountDetails(String countryCode){
+		switch (countryCode) {
+		case "MY":
+			return Config.getConfig().getElevenStreetMYDefaultAccount();
+		default:
+			return "";
+		}
+	}
+
+	public static String getElevenStreetNickNameID(String countryCode){
+		switch (countryCode) {
+		case "MY":
+			return Config.getConfig().getElevenStreetMYDefaultNickNameId();
+		default:
+			return "";
+		}
+	}
+
 	public static String getEtsyAccountDetails(String countryCode) {
 		switch (countryCode) {
 		case "US":
@@ -653,6 +675,30 @@ public class Config {
 
 	public void setLazadaURL(String lazadaURL) {
 		this.lazadaURL = lazadaURL;
+	}
+
+	public String getElevenStreetMYDefaultAccount() {
+		return elevenStreetMYDefaultAccount;
+	}
+
+	public void setElevenStreetMYDefaultAccount(String elevenStreetMYDefaultAccount) {
+		this.elevenStreetMYDefaultAccount = elevenStreetMYDefaultAccount;
+	}
+
+	public String getElevenStreetMYDefaultNickNameId() {
+		return elevenStreetMYDefaultNickNameId;
+	}
+
+	public void setElevenStreetMYDefaultNickNameId(String elevenStreetMYDefaultNickNameId) {
+		this.elevenStreetMYDefaultNickNameId = elevenStreetMYDefaultNickNameId;
+	}
+
+	public String getElevenStreetUrl() {
+		return elevenStreetUrl;
+	}
+
+	public void setElevenStreetUrl(String elevenStreetUrl) {
+		this.elevenStreetUrl = elevenStreetUrl;
 	}
 
 }
