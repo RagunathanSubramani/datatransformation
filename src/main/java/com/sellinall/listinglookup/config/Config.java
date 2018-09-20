@@ -39,7 +39,8 @@ public class Config {
 	private String shopeeUrl;
 	private String lazadaURL;
 	private String elevenStreetUrl;
-	
+	private String jdURL;
+
 	private String lazadaSGDefaultAccount;
 	private String lazadaIDDefaultAccount;
 	private String lazadaMYDefaultAccount;
@@ -86,6 +87,14 @@ public class Config {
 
 	public void setRagasiyam(String ragasiyam) {
 		Ragasiyam = ragasiyam;
+	}
+
+	public String getJdURL() {
+		return jdURL;
+	}
+
+	public void setJdURL(String jdURL) {
+		this.jdURL = jdURL;
 	}
 
 	public String getGrant_type() {
