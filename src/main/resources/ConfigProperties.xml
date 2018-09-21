@@ -74,6 +74,7 @@
 		<property name="snapdealClientId" value="${snapdealClientId}" />
 		<property name="snapdealAuthToken" value="${snapdealAuthToken}" />
 		<property name="lazadaURL" value="${lazadaURL}" />
+		<property name="jdURL" value="${jdURL}" />
 		
 		<!-- lazada -->
 		<property name="lazadaSGDefaultAccount" value="${lazadaSGDefaultAccount}" />
@@ -106,5 +107,10 @@
 		<property name="shopeeVNDefaultNickNameId" value="${shopeeVNDefaultNickNameId}" />
 		<property name="shopeeClientID" value="${shopeeClientID}" />
 		<property name="shopeeClientSecret" value="${shopeeClientSecret}" />
+
+		<!-- elevenStreet  -->
+		<property name="elevenStreetUrl" value="${elevenStreetUrl}" />
+		<property name="elevenStreetMYDefaultAccount" value="${elevenStreetMYDefaultAccount}" />
+		<property name="elevenStreetMYDefaultNickNameId" value="${elevenStreetMYDefaultNickNameId}" />
 	</bean>
 </beans>
