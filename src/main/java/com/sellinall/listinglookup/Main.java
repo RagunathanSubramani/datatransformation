@@ -115,17 +115,17 @@ public class Main {
 					return CategoryLookup.getCategoryNamePath(request.params(":countryCode"),
 							request.params(":categoryId"));
 				case "qoo10":
-					return CategoryNameLookup.getCategoryNameFromSIA(request.params(":countryCode"),
-							request.params(":categoryId"), request.params(":channelName"), null, null);
 				case "lazada":
-					return CategoryNameLookup.getCategoryNameFromSIA(request.params(":countryCode"),
-							request.params(":categoryId"), request.params(":channelName"), null, null);
+				case "elevenStreet":
+				case "shopee":
+				case "etsy":
 				case "shopify":
 					return CategoryNameLookup.getCategoryNameFromSIA(request.params(":countryCode"),
 							request.params(":categoryId"), request.params(":channelName"),
 							request.queryParams("nicknameID"), accountNumber);
 				default:
 					return "";
+
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
