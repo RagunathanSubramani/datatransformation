@@ -53,6 +53,7 @@ public class Main {
 					try{
 
 					String channelName = request.params("channelName");
+					channelName = channelName.toLowerCase();
 					switch (channelName) {
 					case "ebay":
 						return com.sellinall.listinglookup.ebay.CategoryLookup.getCategorySpecifics(
@@ -70,7 +71,7 @@ public class Main {
 						case "shopee":
 							return com.sellinall.listinglookup.shopee.CategoryLookup.getCategorySpecifics(
 									request.params(":countryCode"), request.params(":categoryId"));
-						case "elevenStreet":
+						case "elevenstreet":
 							return com.sellinall.listinglookup.elevenStreet.CategoryLookup.getCategorySpecifics(
 									request.params(":countryCode"), request.params(":categoryId"));
 						case "jd":
