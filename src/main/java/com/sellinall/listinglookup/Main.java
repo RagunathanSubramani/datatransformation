@@ -80,6 +80,12 @@ public class Main {
 							return com.sellinall.listinglookup.jd.CategoryLookup.getCategorySpecifics(
 									request.params(":countryCode"), request.params(":categoryId"), accountNumber,
 									nickNameId);
+						case "zalora":
+							accountNumber = Config.getZaloraAccountDetails(request.params(":countryCode"));
+							nickNameId = Config.getZaloraNickNameID(request.params(":countryCode"));
+							return com.sellinall.listinglookup.zalora.CategoryLookup.getCategorySpecifics(
+										request.params(":countryCode"), request.params(":categoryId"), accountNumber,
+										nickNameId);
 						default:
 							return com.sellinall.listinglookup.CategoryLookup.getCategorySpecifics(
 								request.params(":countryCode"), request.params(":categoryId"), channelName);
