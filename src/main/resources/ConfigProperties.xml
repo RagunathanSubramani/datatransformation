@@ -112,5 +112,20 @@
 		<property name="elevenStreetUrl" value="${elevenStreetUrl}" />
 		<property name="elevenStreetMYDefaultAccount" value="${elevenStreetMYDefaultAccount}" />
 		<property name="elevenStreetMYDefaultNickNameId" value="${elevenStreetMYDefaultNickNameId}" />
+
+		<property name="rocketEcomAdaptorUrl" value="${rocketEcomAdaptorUrl}" />
+		<!-- zalora -->
+		<property name="zaloraSGDefaultAccount" value="${zaloraSGDefaultAccount}" />
+		<property name="zaloraIDDefaultAccount" value="${zaloraIDDefaultAccount}" />
+		<property name="zaloraMYDefaultAccount" value="${zaloraMYDefaultAccount}" />
+		<property name="zaloraPHDefaultAccount" value="${zaloraPHDefaultAccount}" />
+		<property name="zaloraTHDefaultAccount" value="${zaloraTHDefaultAccount}" />
+
+		<property name="zaloraSGDefaultNickNameId" value="${zaloraSGDefaultNickNameId}" />
+		<property name="zaloraIDDefaultNickNameId" value="${zaloraIDDefaultNickNameId}" />
+		<property name="zaloraMYDefaultNickNameId" value="${zaloraMYDefaultNickNameId}" />
+		<property name="zaloraPHDefaultNickNameId" value="${zaloraPHDefaultNickNameId}" />
+		<property name="zaloraTHDefaultNickNameId" value="${zaloraTHDefaultNickNameId}" />
+
 	</bean>
 </beans>
