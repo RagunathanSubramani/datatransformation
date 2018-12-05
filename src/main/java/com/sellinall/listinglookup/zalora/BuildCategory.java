@@ -24,7 +24,7 @@ public class BuildCategory {
 		header.put("accountNumber", accountNumber);
 		header.put("Content-Type", "application/json");
 		JSONObject serviceResponse = HttpsURLConnectionUtil
-				.doGet(/*Config.getConfig().getRocketEcomAdaptorUrl()*/ "http://localhost:8082/services"+ "/categories?nickNameID=" + nickNameID, header);
+				.doGet(Config.getConfig().getRocketEcomAdaptorUrl() + "/categories?nickNameID=" + nickNameID, header);
 		if (serviceResponse.getInt("httpCode") == HttpStatus.OK_200) {
 			JSONObject response = new JSONObject(serviceResponse.getString("payload"));
 			if (response.has("SuccessResponse")) {
