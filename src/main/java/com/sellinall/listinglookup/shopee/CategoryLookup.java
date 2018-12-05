@@ -26,7 +26,7 @@ public class CategoryLookup {
 
 	static Logger log = Logger.getLogger(CategoryLookup.class.getName());
 
-	private static final long thirtyDays = 30 * 24 * 60 * 60;
+	private static final long SEVEN_DAYS = 7 * 24 * 60 * 60;
 
 	public static Object getCategorySpecifics(String countryCode, String categoryId)
 			throws JSONException, IOException, TemplateException {
@@ -104,7 +104,7 @@ public class CategoryLookup {
 		BasicDBObject searchQuery = new BasicDBObject();
 		searchQuery.put("countryCode", countryCode);
 		searchQuery.put("categoryId", categoryId);
-		long expiryTime = (System.currentTimeMillis() / 1000L) + thirtyDays;
+		long expiryTime = (System.currentTimeMillis() / 1000L) + SEVEN_DAYS;
 		BasicDBObject updateData = new BasicDBObject();
 		updateData.put("itemSpecifics", JSON.parse(itemSpecifics.toString()));
 		updateData.put("expiryTime", expiryTime);

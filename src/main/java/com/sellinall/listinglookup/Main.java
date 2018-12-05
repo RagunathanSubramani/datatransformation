@@ -80,6 +80,12 @@ public class Main {
 							return com.sellinall.listinglookup.jd.CategoryLookup.getCategorySpecifics(
 									request.params(":countryCode"), request.params(":categoryId"), accountNumber,
 									nickNameId);
+						case "zalora":
+							accountNumber = Config.getZaloraAccountDetails(request.params(":countryCode"));
+							nickNameId = Config.getZaloraNickNameID(request.params(":countryCode"));
+							return com.sellinall.listinglookup.zalora.CategoryLookup.getCategorySpecifics(
+										request.params(":countryCode"), request.params(":categoryId"), accountNumber,
+										nickNameId);
 						default:
 							return com.sellinall.listinglookup.CategoryLookup.getCategorySpecifics(
 								request.params(":countryCode"), request.params(":categoryId"), channelName);
@@ -286,11 +292,13 @@ public class Main {
 	private static void refreshCategory(String channelName, String countryCode, String callbackUrl)
 			throws JSONException, IOException {
 		String newCategory = "";
+		String accountNumber = "";
+		String nickNameId = "";
 		try {
 			switch (channelName) {
 			case "lazada":
-				String accountNumber = Config.getLazadaAccountDetails(countryCode);
-				String nickNameId = Config.getLazadaNickNameID(countryCode);
+				accountNumber = Config.getLazadaAccountDetails(countryCode);
+				nickNameId = Config.getLazadaNickNameID(countryCode);
 				newCategory = com.sellinall.listinglookup.lazada.BuildCategory.buildNewCategiryList(accountNumber,
 						nickNameId);
 				break;
@@ -308,6 +316,12 @@ public class Main {
 			case "shopee":
 				newCategory = com.sellinall.listinglookup.shopee.BuildCategory.buildNewCategoryList(countryCode)
 						.toString();
+				break;
+			case "zalora":
+				accountNumber = Config.getZaloraAccountDetails(countryCode);
+				nickNameId = Config.getZaloraNickNameID(countryCode);
+				newCategory = com.sellinall.listinglookup.zalora.BuildCategory
+						.buildNewCategoryList(accountNumber, nickNameId).toString();
 				break;
 			}
 		} catch (Exception e) {

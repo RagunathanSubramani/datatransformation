@@ -81,6 +81,20 @@ public class Config {
 	private String elevenStreetMYDefaultAccount;
 	private String elevenStreetMYDefaultNickNameId;
 
+	private String zaloraSGDefaultAccount;
+	private String zaloraIDDefaultAccount;
+	private String zaloraMYDefaultAccount;
+	private String zaloraPHDefaultAccount;
+	private String zaloraTHDefaultAccount;
+
+	private String zaloraSGDefaultNickNameId;
+	private String zaloraIDDefaultNickNameId;
+	private String zaloraMYDefaultNickNameId;
+	private String zaloraPHDefaultNickNameId;
+	private String zaloraTHDefaultNickNameId;
+
+	private String rocketEcomAdaptorUrl;
+
 	public String getRagasiyam() {
 		return Ragasiyam;
 	}
@@ -710,4 +724,126 @@ public class Config {
 		this.elevenStreetUrl = elevenStreetUrl;
 	}
 
+	public String getZaloraSGDefaultAccount() {
+		return zaloraSGDefaultAccount;
+	}
+
+	public void setZaloraSGDefaultAccount(String zaloraSGDefaultAccount) {
+		this.zaloraSGDefaultAccount = zaloraSGDefaultAccount;
+	}
+
+	public String getZaloraIDDefaultAccount() {
+		return zaloraIDDefaultAccount;
+	}
+
+	public void setZaloraIDDefaultAccount(String zaloraIDDefaultAccount) {
+		this.zaloraIDDefaultAccount = zaloraIDDefaultAccount;
+	}
+
+	public String getZaloraMYDefaultAccount() {
+		return zaloraMYDefaultAccount;
+	}
+
+	public void setZaloraMYDefaultAccount(String zaloraMYDefaultAccount) {
+		this.zaloraMYDefaultAccount = zaloraMYDefaultAccount;
+	}
+
+	public String getZaloraPHDefaultAccount() {
+		return zaloraPHDefaultAccount;
+	}
+
+	public void setZaloraPHDefaultAccount(String zaloraPHDefaultAccount) {
+		this.zaloraPHDefaultAccount = zaloraPHDefaultAccount;
+	}
+
+	public String getZaloraTHDefaultAccount() {
+		return zaloraTHDefaultAccount;
+	}
+
+	public void setZaloraTHDefaultAccount(String zaloraTHDefaultAccount) {
+		this.zaloraTHDefaultAccount = zaloraTHDefaultAccount;
+	}
+
+	public String getZaloraSGDefaultNickNameId() {
+		return zaloraSGDefaultNickNameId;
+	}
+
+	public void setZaloraSGDefaultNickNameId(String zaloraSGDefaultNickNameId) {
+		this.zaloraSGDefaultNickNameId = zaloraSGDefaultNickNameId;
+	}
+
+	public String getZaloraIDDefaultNickNameId() {
+		return zaloraIDDefaultNickNameId;
+	}
+
+	public void setZaloraIDDefaultNickNameId(String zaloraIDDefaultNickNameId) {
+		this.zaloraIDDefaultNickNameId = zaloraIDDefaultNickNameId;
+	}
+
+	public String getZaloraMYDefaultNickNameId() {
+		return zaloraMYDefaultNickNameId;
+	}
+
+	public void setZaloraMYDefaultNickNameId(String zaloraMYDefaultNickNameId) {
+		this.zaloraMYDefaultNickNameId = zaloraMYDefaultNickNameId;
+	}
+
+	public String getZaloraPHDefaultNickNameId() {
+		return zaloraPHDefaultNickNameId;
+	}
+
+	public void setZaloraPHDefaultNickNameId(String zaloraPHDefaultNickNameId) {
+		this.zaloraPHDefaultNickNameId = zaloraPHDefaultNickNameId;
+	}
+
+	public String getZaloraTHDefaultNickNameId() {
+		return zaloraTHDefaultNickNameId;
+	}
+
+	public void setZaloraTHDefaultNickNameId(String zaloraTHDefaultNickNameId) {
+		this.zaloraTHDefaultNickNameId = zaloraTHDefaultNickNameId;
+	}
+
+	public static String getZaloraAccountDetails(String countryCode){
+		switch (countryCode) {
+		case "SG":
+			return Config.getConfig().getZaloraSGDefaultAccount();
+		case "ID":
+			return Config.getConfig().getZaloraIDDefaultAccount();
+		case "MY":
+			return Config.getConfig().getZaloraMYDefaultAccount();
+		case "PH":
+			return Config.getConfig().getZaloraPHDefaultAccount();
+		case "TH":
+			return Config.getConfig().getZaloraTHDefaultAccount();
+		default:
+			return "";
+		} 
+	}
+	
+	public static String getZaloraNickNameID(String countryCode){
+		switch (countryCode) {
+		case "SG":
+			return Config.getConfig().getZaloraSGDefaultNickNameId();
+		case "ID":
+			return Config.getConfig().getZaloraIDDefaultNickNameId();
+		case "MY":
+			return Config.getConfig().getZaloraMYDefaultNickNameId();
+		case "PH":
+			return Config.getConfig().getZaloraPHDefaultNickNameId();
+		case "TH":
+			return Config.getConfig().getZaloraTHDefaultNickNameId();
+		default:
+			return "";
+		} 
+	}
+
+	public String getRocketEcomAdaptorUrl() {
+		return rocketEcomAdaptorUrl;
+	}
+
+	public void setRocketEcomAdaptorUrl(String rocketEcomAdaptorUrl) {
+		this.rocketEcomAdaptorUrl = rocketEcomAdaptorUrl;
+	}
+	
 }
