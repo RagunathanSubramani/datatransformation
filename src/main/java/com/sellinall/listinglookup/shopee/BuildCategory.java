@@ -10,19 +10,18 @@ import com.mongodb.BasicDBObject;
 import com.sellinall.listinglookup.config.Config;
 
 public class BuildCategory {
-	static JSONArray parsedCategorylist = new JSONArray();
-
 	public static Object buildNewCategoryList(String countryCode) throws JSONException, IOException {
-		parsedCategorylist = new JSONArray();
+		JSONArray parsedCategorylist = new JSONArray();
 		JSONObject categoryList = getCategorySpecificsFromShopee(countryCode);
 		if (categoryList.has("categories")) {
 			JSONArray categories = categoryList.getJSONArray("categories");
-			parseCategory("", 0, categories);
+			parseCategory("", 0, categories, parsedCategorylist);
 		}
 		return parsedCategorylist;
 	}
 
-	private static void parseCategory(String categoryName, int categoryID, JSONArray categories) throws JSONException {
+	private static void parseCategory(String categoryName, int categoryID, JSONArray categories,
+			JSONArray parsedCategorylist) throws JSONException {
 		Boolean isLastLeaf = true;
 		String appendCategory = "";
 		for (int i = 0; i < categories.length(); i++) {
@@ -35,7 +34,7 @@ public class BuildCategory {
 				appendCategory = categoryName + (categoryName.isEmpty() ? "" : ":")
 						+ category.getString("category_name");
 				category.put("processed", true);
-				parseCategory(appendCategory, category.getInt("category_id"), categories);
+				parseCategory(appendCategory, category.getInt("category_id"), categories, parsedCategorylist);
 
 			}
 		}
