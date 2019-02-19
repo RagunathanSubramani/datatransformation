@@ -104,6 +104,7 @@ public class EBayUtil {
 		sb.append("<eBayAuthToken>" + Config.getConfig().getEbayToken() + "</eBayAuthToken>");
 		sb.append("</RequesterCredentials>");
 		sb.append("<ErrorLanguage>en_US</ErrorLanguage>");
+		sb.append("<MaxValuesPerName>1000</MaxValuesPerName>");
 		sb.append("<WarningLevel>High</WarningLevel>");
 		sb.append("</GetCategorySpecificsRequest>");
 		String urlParameters = sb.toString();
