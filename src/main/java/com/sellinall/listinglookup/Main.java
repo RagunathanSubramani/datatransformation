@@ -299,8 +299,7 @@ public class Main {
 			case "lazada":
 				accountNumber = Config.getLazadaAccountDetails(countryCode);
 				nickNameId = Config.getLazadaNickNameID(countryCode);
-				newCategory = com.sellinall.listinglookup.lazada.BuildCategory.buildNewCategiryList(accountNumber,
-						nickNameId);
+				newCategory =  new com.sellinall.listinglookup.lazada.BuildCategory().buildNewCategiryList(accountNumber, nickNameId);
 				break;
 			case "qoo10":
 				newCategory = com.sellinall.listinglookup.qoo10.BuildCategory.buildNewCategiryList(countryCode);
