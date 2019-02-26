@@ -14,17 +14,15 @@ import com.sellinall.util.AuthConstant;
 import com.sellinall.util.HttpsURLConnectionUtil;
 
 public class BuildCategory {
-	private static String totalString = "";
+	String totalString = "";
 
-	public static String buildNewCategiryList(String accountNumber, String nickNameID)
-			throws IOException, JSONException {
-		totalString = "";
+	public String buildNewCategiryList(String accountNumber, String nickNameID) throws IOException, JSONException {
 		Map<String, String> header = new HashMap<String, String>();
 		header.put(AuthConstant.RAGASIYAM_KEY, Config.getConfig().getRagasiyam());
 		header.put("accountNumber", accountNumber);
 		header.put("Content-Type", "application/json");
 		JSONObject serviceResponse = HttpsURLConnectionUtil
-				.doGet(Config.getConfig().getLazadaURL() + "/categories?nickNameID="+nickNameID, header);
+				.doGet(Config.getConfig().getLazadaURL() + "/categories?nickNameID=" + nickNameID, header);
 		if (serviceResponse.getInt("httpCode") == HttpStatus.OK_200) {
 			JSONObject response = new JSONObject(serviceResponse.getString("payload"));
 			if (response.has("SuccessResponse")) {
@@ -39,7 +37,7 @@ public class BuildCategory {
 		return "";
 	}
 
-	private static void parseAndPrintFile(String categoryName, JSONArray jsonArray) throws JSONException {
+	private void parseAndPrintFile(String categoryName, JSONArray jsonArray) throws JSONException {
 		categoryName = categoryName.replaceAll("&amp;", "&");
 		for (int i = 0; i < jsonArray.length(); i++) {
 			JSONObject json = jsonArray.getJSONObject(i);
