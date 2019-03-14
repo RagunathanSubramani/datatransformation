@@ -80,6 +80,9 @@ public class Config {
 
 	private String elevenStreetMYDefaultAccount;
 	private String elevenStreetMYDefaultNickNameId;
+	private String smeUrl;
+	private String smeSGDefaultAccount;
+	private String smeSGDefaultNickNameId;
 
 	private String zaloraSGDefaultAccount;
 	private String zaloraIDDefaultAccount;
@@ -680,6 +683,24 @@ public class Config {
 		}
 	}
 
+	public static String get99SMEAccountDetails(String countryCode){
+		switch (countryCode) {
+		case "SG":
+			return Config.getConfig().getSmeSGDefaultAccount();
+		default:
+			return "";
+		}
+	}
+
+	public static String get99SMENickNameID(String countryCode){
+		switch (countryCode) {
+		case "SG":
+			return Config.getConfig().getSmeSGDefaultNickNameId();
+		default:
+			return "";
+		}
+	}
+
 	public static Config getConfig() {
 		return (Config) context.getBean("Config");
 	}
@@ -844,6 +865,30 @@ public class Config {
 
 	public void setRocketEcomAdaptorUrl(String rocketEcomAdaptorUrl) {
 		this.rocketEcomAdaptorUrl = rocketEcomAdaptorUrl;
+	}
+
+	public String getSmeSGDefaultAccount() {
+		return smeSGDefaultAccount;
+	}
+
+	public void setSmeSGDefaultAccount(String smeSGDefaultAccount) {
+		this.smeSGDefaultAccount = smeSGDefaultAccount;
+	}
+
+	public String getSmeSGDefaultNickNameId() {
+		return smeSGDefaultNickNameId;
+	}
+
+	public void setSmeSGDefaultNickNameId(String smeSGDefaultNickNameId) {
+		this.smeSGDefaultNickNameId = smeSGDefaultNickNameId;
+	}
+
+	public String getSmeUrl() {
+		return smeUrl;
+	}
+
+	public void setSmeUrl(String smeUrl) {
+		this.smeUrl = smeUrl;
 	}
 	
 }
