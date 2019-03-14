@@ -322,10 +322,15 @@ public class Main {
 				newCategory = com.sellinall.listinglookup.zalora.BuildCategory
 						.buildNewCategoryList(accountNumber, nickNameId).toString();
 				break;
+			case "99SME":
+				newCategory = com.sellinall.listinglookup.sme.BuildCategory.buildNewCategoryList(countryCode)
+						.toString();
+				break;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
 		if (!newCategory.isEmpty()) {
 			Map<String, String> header = new HashMap<String, String>();
 			header.put("Content-Type", "application/json");
