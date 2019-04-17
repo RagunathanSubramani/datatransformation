@@ -128,7 +128,7 @@
 		<property name="zaloraTHDefaultNickNameId" value="${zaloraTHDefaultNickNameId}" />
 
 		<!-- 99SME  -->
-		<property name="smeUrl" value="${smeUrl}" />
+		<property name="siaSmeUrl" value="${siaSmeUrl}" />
 		<property name="smeSGDefaultAccount" value="${smeSGDefaultAccount}" />
 		<property name="smeSGDefaultNickNameId" value="${smeSGDefaultNickNameId}" />
 
