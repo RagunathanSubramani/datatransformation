@@ -9,12 +9,14 @@ import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.eclipse.jetty.http.HttpStatus;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.sellinall.listinglookup.config.Config;
 import com.sellinall.listinglookup.database.DbUtilities;
+import com.sellinall.util.AuthConstant;
 import com.sellinall.util.EncryptionUtil;
 import com.sellinall.util.HttpsURLConnectionUtil;
 
@@ -53,33 +55,24 @@ public class BuildCategory {
 	}
 
 	private static JSONArray getCategoryList(String countryCode) throws JSONException, IOException {
-		JSONArray categoryList = new JSONArray();
 		String accountNumber = Config.getConfig().get99SMEAccountDetails(countryCode);
 		String nickNameId = Config.getConfig().get99SMENickNameID(countryCode);
-		BasicDBObject accountInformation = new BasicDBObject();
-		if (!accountNumber.isEmpty() && !nickNameId.isEmpty()) {
-			accountInformation = getAccountDetails(accountNumber, nickNameId);
-			if (accountInformation != null) {
-				categoryList = getCategoryList(accountInformation);
-			}
-		}
-		return categoryList;
+		return getCategoryListFromSME(accountNumber,nickNameId);
 	}
 
-	public static JSONArray getCategoryList(BasicDBObject account) throws JSONException, IOException {
-		EncryptionUtil.init();
-		String url = Config.getConfig().getSmeUrl() + "api/get_categories";
-		BasicDBObject postHelper = (BasicDBObject) account.get("postHelper");
-		String accessToken = postHelper.getString("accessToken");
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put("Content-Type", "application/json");
-		headers.put("Authorization", EncryptionUtil.decrypt(accessToken));
-		JSONObject response = HttpsURLConnectionUtil.doGet(url, headers);
-		JSONArray categoryArray = new JSONArray();
-		if (response.has("payload")) {
-			categoryArray = new JSONArray(response.getString("payload"));
+	public static JSONArray getCategoryListFromSME(String accountNumber, String nickNameID) throws JSONException, IOException {
+		JSONArray categories = new JSONArray();
+		Map<String, String> header = new HashMap<String, String>();
+		header.put(AuthConstant.RAGASIYAM_KEY, Config.getConfig().getRagasiyam());
+		header.put("accountNumber", accountNumber);
+		header.put("Content-Type", "application/json");
+		JSONObject serviceResponse = HttpsURLConnectionUtil
+				.doGet(Config.getConfig().getSiaSmeUrl() + "/categories?nickNameID=" + nickNameID, header);
+		if (serviceResponse.getInt("httpCode") == HttpStatus.OK_200) {
+			JSONObject payload = new JSONObject(serviceResponse.getString("payload"));
+			categories = payload.getJSONArray("categoryList");
 		}
-		return categoryArray;
+		return categories;
 	}
 
 	public static BasicDBObject getAccountDetails(String accountNumber, String nickNameId) {

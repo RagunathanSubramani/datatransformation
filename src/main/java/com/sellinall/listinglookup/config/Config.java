@@ -80,7 +80,7 @@ public class Config {
 
 	private String elevenStreetMYDefaultAccount;
 	private String elevenStreetMYDefaultNickNameId;
-	private String smeUrl;
+	private String siaSmeUrl;
 	private String smeSGDefaultAccount;
 	private String smeSGDefaultNickNameId;
 
@@ -883,12 +883,12 @@ public class Config {
 		this.smeSGDefaultNickNameId = smeSGDefaultNickNameId;
 	}
 
-	public String getSmeUrl() {
-		return smeUrl;
+	public String getSiaSmeUrl() {
+		return siaSmeUrl;
 	}
 
-	public void setSmeUrl(String smeUrl) {
-		this.smeUrl = smeUrl;
+	public void setSiaSmeUrl(String siaSmeUrl) {
+		this.siaSmeUrl = siaSmeUrl;
 	}
 	
 }
