@@ -27,7 +27,6 @@ public class FieldsMap {
 			standardFormatSource = convertToStandardFormatSource(source);
 		}
 		log.debug("standardFormatSource:" + standardFormatSource);
-
 		List<DBObject> results = readDB(jsonRequest, standardFormatSource);
 		String targetNicknameId = jsonRequest.getString("targetNicknameId");
 		String accountNumber = jsonRequest.getString("accountNumber");
@@ -225,11 +224,13 @@ public class FieldsMap {
 					if (sourceField.startsWith("itemSpecifics")) {
 						String itemSpecificTitle = sourceField.split("\\.")[1];
 						targetValue = getNamesFromItemSpecifics(sourceFromRequest, itemSpecificTitle);
+						if (!targetField.startsWith("itemSpecifics") && targetValue instanceof JSONArray) {
+							targetValue = ((JSONArray) targetValue).get(0);
+						}
 					} else {
 						targetValue = getValueFromSource(sourceField, sourceFromRequest);
 					}
 				}
-
 				if (targetValue != null) {
 					// special handling for item specifics
 					if (targetField.startsWith("itemSpecifics")) {
