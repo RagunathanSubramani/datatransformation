@@ -132,5 +132,9 @@
 		<property name="smeSGDefaultAccount" value="${smeSGDefaultAccount}" />
 		<property name="smeSGDefaultNickNameId" value="${smeSGDefaultNickNameId}" />
 
+		<!-- bukalapak  -->
+		<property name="siaBukalapakUrl" value="${siaBukalapakUrl}" />
+		<property name="bukalapakIDDefaultAccount" value="${bukalapakIDDefaultAccount}" />
+		<property name="bukalapakIDDefaultNickNameId" value="${bukalapakIDDefaultNickNameId}" />
 	</bean>
 </beans>
