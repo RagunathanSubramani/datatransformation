@@ -86,6 +86,12 @@ public class Main {
 							return com.sellinall.listinglookup.zalora.CategoryLookup.getCategorySpecifics(
 										request.params(":countryCode"), request.params(":categoryId"), accountNumber,
 										nickNameId);
+						case "bukalapak":
+							accountNumber = Config.getBukalapakAccountDetails(request.params(":countryCode"));
+							nickNameId = Config.getBukalapakNickNameID(request.params(":countryCode"));
+							return com.sellinall.listinglookup.bukalapak.CategoryLookup.getCategorySpecifics(
+									request.params(":countryCode"), request.params(":categoryId"), accountNumber,
+									nickNameId);
 						default:
 							return com.sellinall.listinglookup.CategoryLookup.getCategorySpecifics(
 								request.params(":countryCode"), request.params(":categoryId"), channelName);
@@ -123,6 +129,7 @@ public class Main {
 							request.params(":categoryId"));
 				case "qoo10":
 				case "lazada":
+				case "bukalapak":
 				case "elevenStreet":
 				case "shopee":
 				case "etsy":
