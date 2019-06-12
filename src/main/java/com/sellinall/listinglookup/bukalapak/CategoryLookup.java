@@ -42,7 +42,11 @@ public class CategoryLookup {
 			JSONObject response = new JSONObject(serviceResponse.getString("payload"));
 			attributes = response.getJSONArray("data");
 		}
-		return persistToDB(countryCode, categoryId, attributes);
+		if (attributes.length() > 0) {
+			return persistToDB(countryCode, categoryId, attributes);
+		} else {
+			return new JSONObject().put("attributes", attributes);
+		}
 	}
 
 	private static BasicDBObject getCategoryAttributesFromDB(String countryCode, String categoryId) {
