@@ -136,5 +136,10 @@
 		<property name="siaBukalapakUrl" value="${siaBukalapakUrl}" />
 		<property name="bukalapakIDDefaultAccount" value="${bukalapakIDDefaultAccount}" />
 		<property name="bukalapakIDDefaultNickNameId" value="${bukalapakIDDefaultNickNameId}" />
+
+		<!-- tokopedia  -->
+		<property name="siaTokopediaUrl" value="${siaTokopediaUrl}" />
+		<property name="tokopediaIDDefaultAccount" value="${tokopediaIDDefaultAccount}" />
+		<property name="tokopediaIDDefaultNickNameId" value="${tokopediaIDDefaultNickNameId}" />
 	</bean>
 </beans>
