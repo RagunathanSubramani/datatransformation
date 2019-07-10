@@ -84,6 +84,10 @@ public class Config {
 	private String smeSGDefaultAccount;
 	private String smeSGDefaultNickNameId;
 
+	private String siaBukalapakUrl;
+	private String bukalapakIDDefaultAccount;
+	private String bukalapakIDDefaultNickNameId;
+
 	private String zaloraSGDefaultAccount;
 	private String zaloraIDDefaultAccount;
 	private String zaloraMYDefaultAccount;
@@ -701,6 +705,24 @@ public class Config {
 		}
 	}
 
+	public static String getBukalapakAccountDetails(String countryCode) {
+		switch (countryCode) {
+		case "ID":
+			return Config.getConfig().getBukalapakIDDefaultAccount();
+		default:
+			return "";
+		}
+	}
+
+	public static String getBukalapakNickNameID(String countryCode) {
+		switch (countryCode) {
+		case "ID":
+			return Config.getConfig().getBukalapakIDDefaultNickNameId();
+		default:
+			return "";
+		}
+	}
+
 	public static Config getConfig() {
 		return (Config) context.getBean("Config");
 	}
@@ -889,6 +911,30 @@ public class Config {
 
 	public void setSiaSmeUrl(String siaSmeUrl) {
 		this.siaSmeUrl = siaSmeUrl;
+	}
+
+	public String getSiaBukalapakUrl() {
+		return siaBukalapakUrl;
+	}
+
+	public void setSiaBukalapakUrl(String siaBukalapakUrl) {
+		this.siaBukalapakUrl = siaBukalapakUrl;
+	}
+
+	public String getBukalapakIDDefaultAccount() {
+		return bukalapakIDDefaultAccount;
+	}
+
+	public void setBukalapakIDDefaultAccount(String bukalapakIDDefaultAccount) {
+		this.bukalapakIDDefaultAccount = bukalapakIDDefaultAccount;
+	}
+
+	public String getBukalapakIDDefaultNickNameId() {
+		return bukalapakIDDefaultNickNameId;
+	}
+
+	public void setBukalapakIDDefaultNickNameId(String bukalapakIDDefaultNickNameId) {
+		this.bukalapakIDDefaultNickNameId = bukalapakIDDefaultNickNameId;
 	}
 	
 }
