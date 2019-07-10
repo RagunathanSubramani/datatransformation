@@ -337,6 +337,10 @@ public class Main {
 				newCategory = com.sellinall.listinglookup.bukalapak.BuildCategory.buildNewCategoryList(countryCode)
 						.toString();
 				break;
+			case "tokopedia":
+				newCategory = com.sellinall.listinglookup.tokopedia.BuildCategory.buildNewCategoryList(countryCode)
+						.toString();
+				break;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
