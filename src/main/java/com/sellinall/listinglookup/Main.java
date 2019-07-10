@@ -92,6 +92,12 @@ public class Main {
 							return com.sellinall.listinglookup.bukalapak.CategoryLookup.getCategorySpecifics(
 									request.params(":countryCode"), request.params(":categoryId"), accountNumber,
 									nickNameId);
+						case "tokopedia":
+							accountNumber = Config.getTokopediaAccountDetails(request.params(":countryCode"));
+							nickNameId = Config.getTokopediaNickNameID(request.params(":countryCode"));
+							return com.sellinall.listinglookup.tokopedia.CategoryLookup.getCategorySpecifics(
+									request.params(":countryCode"), request.params(":categoryId"), accountNumber,
+									nickNameId);
 						default:
 							return com.sellinall.listinglookup.CategoryLookup.getCategorySpecifics(
 								request.params(":countryCode"), request.params(":categoryId"), channelName);
