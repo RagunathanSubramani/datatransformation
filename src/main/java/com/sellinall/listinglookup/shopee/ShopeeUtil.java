@@ -50,6 +50,7 @@ public class ShopeeUtil {
 		payload.put("partner_id", Config.getConfig().getShopeeClientID());
 		payload.put("shopid", credential.getLong("shopID"));
 		payload.put("timestamp", System.currentTimeMillis() / 1000);
+		payload.put("language", "en");
 		Map<String, String> headers = new HashMap<String, String>();
 		headers.put("Content-Type", "application/json");
 		headers.put("Authorization", getSignature(Config.getConfig().getShopeeClientSecret(), url, payload.toString()));

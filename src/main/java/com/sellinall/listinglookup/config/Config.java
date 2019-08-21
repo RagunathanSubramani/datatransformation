@@ -88,6 +88,10 @@ public class Config {
 	private String bukalapakIDDefaultAccount;
 	private String bukalapakIDDefaultNickNameId;
 
+	private String siaTokopediaUrl;
+	private String tokopediaIDDefaultAccount;
+	private String tokopediaIDDefaultNickNameId;
+
 	private String zaloraSGDefaultAccount;
 	private String zaloraIDDefaultAccount;
 	private String zaloraMYDefaultAccount;
@@ -705,6 +709,24 @@ public class Config {
 		}
 	}
 
+	public static String getTokopediaAccountDetails(String countryCode) {
+		switch (countryCode) {
+		case "ID":
+			return Config.getConfig().getTokopediaIDDefaultAccount();
+		default:
+			return "";
+		}
+	}
+
+	public static String getTokopediaNickNameID(String countryCode) {
+		switch (countryCode) {
+		case "ID":
+			return Config.getConfig().getTokopediaIDDefaultNickNameId();
+		default:
+			return "";
+		}
+	}
+
 	public static String getBukalapakAccountDetails(String countryCode) {
 		switch (countryCode) {
 		case "ID":
@@ -935,6 +957,30 @@ public class Config {
 
 	public void setBukalapakIDDefaultNickNameId(String bukalapakIDDefaultNickNameId) {
 		this.bukalapakIDDefaultNickNameId = bukalapakIDDefaultNickNameId;
+	}
+
+	public String getTokopediaIDDefaultAccount() {
+		return tokopediaIDDefaultAccount;
+	}
+
+	public void setTokopediaIDDefaultAccount(String tokopediaIDDefaultAccount) {
+		this.tokopediaIDDefaultAccount = tokopediaIDDefaultAccount;
+	}
+
+	public String getTokopediaIDDefaultNickNameId() {
+		return tokopediaIDDefaultNickNameId;
+	}
+
+	public void setTokopediaIDDefaultNickNameId(String tokopediaIDDefaultNickNameId) {
+		this.tokopediaIDDefaultNickNameId = tokopediaIDDefaultNickNameId;
+	}
+
+	public String getSiaTokopediaUrl() {
+		return siaTokopediaUrl;
+	}
+
+	public void setSiaTokopediaUrl(String siaTokopediaUrl) {
+		this.siaTokopediaUrl = siaTokopediaUrl;
 	}
 	
 }
