@@ -83,6 +83,11 @@
 		<property name="lazadaPHDefaultAccount" value="${lazadaPHDefaultAccount}" />
 		<property name="lazadaTHDefaultAccount" value="${lazadaTHDefaultAccount}" />
 		
+		<!-- Qoo10 -->
+		<property name="qoo10URL" value="${qoo10URL}" />
+		<property name="qoo10SGDefaultNickNameId" value="${qoo10SGDefaultNickNameId}" />
+		<property name="qoo10SGDefaultAccount" value="${qoo10SGDefaultAccount}" />
+
 		<property name="lazadaSGDefaultNickNameId" value="${lazadaSGDefaultNickNameId}" />
 		<property name="lazadaIDDefaultNickNameId" value="${lazadaIDDefaultNickNameId}" />
 		<property name="lazadaMYDefaultNickNameId" value="${lazadaMYDefaultNickNameId}" />
