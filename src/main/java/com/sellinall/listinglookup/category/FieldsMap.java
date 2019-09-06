@@ -1,17 +1,27 @@
 package com.sellinall.listinglookup.category;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.codehaus.jettison.json.JSONException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.mongodb.AggregationOutput;
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
+import com.sellinall.listinglookup.config.Config;
 import com.sellinall.listinglookup.database.DbUtilities;
+import com.sellinall.util.HttpsURLConnectionUtil;
 
 public class FieldsMap {
 	static Logger log = Logger.getLogger(FieldsMap.class.getName());
@@ -407,6 +417,133 @@ public class FieldsMap {
 		key = key + enclosingChar + field.replace(" ", "_").replace("+", "_").replace(".", "_").replace("\"", "") + "_";
 		key = key + value.replace(" ", "_").replace("+", "_").replace(".", "_").replace("\"", "") + enclosingChar;
 		return key;
+	}
+
+	public static Object constructMappedCategory(String request) throws IOException, JSONException {
+		JSONObject requestObj = new JSONObject(request);
+		JSONObject response = new JSONObject();
+		List<String> mappedCategoryList = new ArrayList<String>();
+		if (!requestObj.getString("accountNumber").equals(CategoryUtil.DEFAULT_ACCOUNT_NUMBER)) {
+			response = getMappedCategory(requestObj, requestObj.getString("accountNumber"), mappedCategoryList);
+			if (requestObj.getString("categoryType").equals("accountwiseUnmapped")) {
+				response = getAccountSpecificUnmappedCategory(requestObj, mappedCategoryList);
+			}
+		} else {
+			response = getMappedCategory(requestObj, CategoryUtil.DEFAULT_ACCOUNT_NUMBER, mappedCategoryList);
+			if (requestObj.getString("categoryType").equals("defaultUnmapped")) {
+				response = getDefaultUnmappedCategory(requestObj, mappedCategoryList);
+			}
+		}
+		return response;
+	}
+
+	private static JSONObject getDefaultUnmappedCategory(JSONObject requestObj, List<String> mappedCategoryList)
+			throws IOException, JSONException {
+		List<BasicDBObject> unmappedCategory = new ArrayList<BasicDBObject>();
+		int pageSize = requestObj.getInt("pageSize");
+		int pageNumber = requestObj.getInt("pageNumber");
+		String url = Config.getConfig().getSiaAdminUrl() + "/category/" + requestObj.getString("sourceChannel") + "/"
+				+ requestObj.getString("sourceCountryCode") + ".json?_=" + System.currentTimeMillis();
+		Map<String, String> config = new HashMap<String, String>();
+		config.put("Content-Type", "application/json");
+		org.codehaus.jettison.json.JSONObject res = HttpsURLConnectionUtil.doGet(url, config);
+		if (res.getInt("httpCode") != 200) {
+			return new JSONObject();
+		}
+		JSONArray categories = new JSONArray(res.getString("payload"));
+		for (int i = 0; i < categories.length(); i++) {
+			String categoryID = categories.getString(i).split("##")[1].trim();
+			if (!mappedCategoryList.contains(categoryID)) {
+				BasicDBObject categoryObj = new BasicDBObject();
+				categoryObj.put("sourceCategory", categories.getString(i));
+				categoryObj.put("targetCategory", "");
+				unmappedCategory.add(categoryObj);
+			}
+		}
+		long count = unmappedCategory.size();
+		long numberOfPages = ((count / pageSize) + (count % pageSize > 0 ? 1 : 0));
+		int endIndex = (int) (((pageSize * pageNumber) > count) ? count : (pageSize * pageNumber));
+		JSONObject response = new JSONObject();
+		response.put("categories",
+				new HashSet<DBObject>(unmappedCategory.subList((pageSize * (pageNumber - 1)), endIndex)));
+		response.put("numberOfPages", numberOfPages);
+		response.put("numberOfRecords", count);
+		return response;
+	}
+
+	private static JSONObject getAccountSpecificUnmappedCategory(JSONObject requestObj,
+			List<String> accountWiseMappedCategoryList) {
+		List<BasicDBObject> unmappedCategory = new ArrayList<BasicDBObject>();
+		int pageSize = requestObj.getInt("pageSize");
+		int pageNumber = requestObj.getInt("pageNumber");
+		DBCollection table = DbUtilities.getROInventoryDBCollection("inventory");
+		String sourceChannel = requestObj.getString("sourceChannel");
+		BasicDBObject matchObj = new BasicDBObject("accountNumber", requestObj.getString("accountNumber"));
+		matchObj.put(sourceChannel, new BasicDBObject("$exists", true));
+		BasicDBObject matchObj2 = new BasicDBObject();
+		matchObj2.put(sourceChannel + ".nickNameID",
+				new BasicDBObject("$in", requestObj.getJSONArray("sourceNickNameIds")));
+		BasicDBObject groupObj = new BasicDBObject("_id", null);
+		groupObj.put("categories", new BasicDBObject("$addToSet", "$" + sourceChannel + ".categoryName"));
+		AggregationOutput result = table.aggregate(new BasicDBObject("$match", matchObj),
+				new BasicDBObject("$unwind", "$" + sourceChannel), new BasicDBObject("$match", matchObj2),
+				new BasicDBObject("$group", groupObj));
+		ArrayList<DBObject> docList = (ArrayList<DBObject>) result.results();
+		if (docList.size() == 0) {
+			return new JSONObject();
+		}
+		List<String> categories = (List<String>) ((BasicDBObject) docList.get(0)).get("categories");
+		for (String category : categories) {
+			String categoryID = category.split("##")[1].trim();
+			if (!accountWiseMappedCategoryList.contains(categoryID)) {
+				BasicDBObject categoryObj = new BasicDBObject();
+				categoryObj.put("sourceCategory", category);
+				categoryObj.put("targetCategory", "");
+				unmappedCategory.add(categoryObj);
+			}
+		}
+		long count = unmappedCategory.size();
+		long numberOfPages = ((count / pageSize) + (count % pageSize > 0 ? 1 : 0));
+		int endIndex = (int) (((pageSize * pageNumber) > count) ? count : (pageSize * pageNumber));
+		JSONObject response = new JSONObject();
+		response.put("categories",
+				new HashSet<DBObject>(unmappedCategory.subList((pageSize * (pageNumber - 1)), endIndex)));
+		response.put("numberOfPages", numberOfPages);
+		response.put("numberOfRecords", count);
+		return response;
+	}
+
+	private static JSONObject getMappedCategory(JSONObject requestObj, String accountNumber,
+			List<String> mappedCategoryList) {
+		List<BasicDBObject> mappedCategory = new ArrayList<BasicDBObject>();
+		int pageSize = requestObj.getInt("pageSize");
+		int pageNumber = requestObj.getInt("pageNumber");
+		DBCollection collection = DbUtilities.getLookupDBCollection("fieldsMap");
+		BasicDBObject searchQuery = new BasicDBObject("accountNumber", accountNumber);
+		searchQuery.put("sourceNicknameId", requestObj.getString("sourceChannel"));
+		searchQuery.put("sourceCountryCode", requestObj.getString("sourceCountryCode"));
+		searchQuery.put("targetNicknameId", requestObj.getString("targetChannel"));
+		searchQuery.put("targetCountryCode", requestObj.getString("targetCountryCode"));
+		BasicDBObject projection = new BasicDBObject();
+		projection.put("sourceCategoryText", 1);
+		projection.put("targetCategoryText", 1);
+		List<DBObject> results = collection.find(searchQuery, projection).skip(pageSize * (pageNumber - 1))
+				.limit(pageSize).toArray();
+		for (DBObject resultObj : results) {
+			BasicDBObject categoryObj = new BasicDBObject();
+			String sourceCategory = ((String) resultObj.get("sourceCategoryText")).split("##")[1].trim();
+			categoryObj.put("sourceCategory", resultObj.get("sourceCategoryText"));
+			categoryObj.put("targetCategory", resultObj.get("targetCategoryText"));
+			mappedCategoryList.add(sourceCategory);
+			mappedCategory.add(categoryObj);
+		}
+		long count = collection.count(searchQuery);
+		long numberOfPages = ((count / pageSize) + (count % pageSize > 0 ? 1 : 0));
+		JSONObject response = new JSONObject();
+		response.put("categories", mappedCategory);
+		response.put("numberOfPages", numberOfPages);
+		response.put("numberOfRecords", count);
+		return response;
 	}
 
 }

@@ -193,6 +193,16 @@ public class Main {
 			}
 		});
 
+		post("/services/fieldsMap/mappedCategories", (request, response) -> {
+			try{
+				return FieldsMap.constructMappedCategory(request.body());
+			}catch (Exception e){
+				e.printStackTrace();
+				response.status(500);
+				return "500";
+			}
+		});
+
 		get("/services/categorySpecificValues/:nicknameId/:categoryId", (request, response) -> {
 			try{
 			if (Boolean.parseBoolean(request.queryParams("standardFormat"))) {
