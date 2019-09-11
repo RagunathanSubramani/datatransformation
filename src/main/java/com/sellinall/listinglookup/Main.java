@@ -125,6 +125,22 @@ public class Main {
 			return "Processing";
 		});
 
+		get("/services/:channelName/brand/:countryCode", (request, response) -> {
+			String channelName = request.params("channelName");
+			String countryCode = request.params("countryCode");
+			String callbackUrl = request.queryParams("callbackUrl");
+			new Thread(() -> {
+				try {
+					refreshBrand(channelName, countryCode, callbackUrl);
+				} catch (JSONException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}).start();
+			return "Processing";
+		});
+
 		get("/services/:channelName/category/categoryNamePath/:countryCode/:categoryId", (request, response) -> {
 			try {
 				String channelName = request.params("channelName");
@@ -301,7 +317,42 @@ public class Main {
 		}
 		return flag;
 	}
-	
+
+	private static void refreshBrand(String channelName, String countryCode, String callbackUrl)
+			throws IOException, JSONException {
+		String newBrand = "";
+		String accountNumber = "";
+		String nickNameId = "";
+		try {
+			switch (channelName) {
+			case "lazada":
+				accountNumber = Config.getLazadaAccountDetails(countryCode);
+				nickNameId = Config.getLazadaNickNameID(countryCode);
+				newBrand = com.sellinall.listinglookup.lazada.BuildBrand.buildBrand(accountNumber, nickNameId);
+				break;
+
+			case "qoo10":
+				accountNumber = Config.getQoo10AccountDetails(countryCode);
+				nickNameId = Config.getQoo10NickNameID(countryCode);
+				newBrand = com.sellinall.listinglookup.qoo10.BuildBrand.buildBrand(accountNumber,nickNameId);
+				break;
+
+			default:
+				break;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (!newBrand.isEmpty()) {
+			Map<String, String> header = new HashMap<String, String>();
+			header.put("Content-Type", "application/json");
+			header.put(AuthConstant.RAGASIYAM_KEY, Config.getConfig().getRagasiyam());
+			JSONObject payload = new JSONObject();
+			payload.put("data", new JSONArray(newBrand));
+			HttpsURLConnectionUtil.doPost(callbackUrl, payload.toString(), header);
+		}
+	}
+
 	private static void refreshCategory(String channelName, String countryCode, String callbackUrl)
 			throws JSONException, IOException {
 		String newCategory = "";

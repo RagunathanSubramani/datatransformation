@@ -37,9 +37,15 @@ public class Config {
 	private String Ragasiyam;
 	private String etsyUrl;
 	private String shopeeUrl;
+	private String qoo10URL;
+
 	private String lazadaURL;
 	private String elevenStreetUrl;
 	private String jdURL;
+
+	private String qoo10SGDefaultNickNameId;
+	private String qoo10SGDefaultAccount;
+
 
 	private String lazadaSGDefaultAccount;
 	private String lazadaIDDefaultAccount;
@@ -130,6 +136,22 @@ public class Config {
 		this.grant_type = grant_type;
 	}
 
+	public String getQoo10URL() {
+		return qoo10URL;
+	}
+
+	public String getQoo10SGDefaultAccount() {
+		return qoo10SGDefaultAccount;
+	}
+
+	public void setQoo10SGDefaultAccount(String qoo10sgDefaultAccount) {
+		qoo10SGDefaultAccount = qoo10sgDefaultAccount;
+	}
+
+	public void setQoo10URL(String qoo10url) {
+		qoo10URL = qoo10url;
+	}
+
 	public String getClient_secret() {
 		return client_secret;
 	}
@@ -160,6 +182,14 @@ public class Config {
 
 	public void setUsername(String username) {
 		this.username = username;
+	}
+
+	public String getQoo10SGDefaultNickNameId() {
+		return qoo10SGDefaultNickNameId;
+	}
+
+	public void setQoo10SGDefaultNickNameId(String qoo10sgDefaultNickNameId) {
+		qoo10SGDefaultNickNameId = qoo10sgDefaultNickNameId;
 	}
 
 	public String getShopcluesItemSpecificationUrl() {
@@ -610,6 +640,25 @@ public class Config {
 		default:
 			return "";
 		} 
+	}
+
+
+	public static String getQoo10AccountDetails(String countryCode){
+		switch (countryCode) {
+		case "SG":
+			return Config.getConfig().getQoo10SGDefaultAccount();
+		default:
+			return "";
+		}
+	}
+
+	public static String getQoo10NickNameID(String countryCode){
+		switch (countryCode) {
+		case "SG":
+			return Config.getConfig().getQoo10SGDefaultNickNameId();
+		default:
+			return "";
+		}
 	}
 
 
