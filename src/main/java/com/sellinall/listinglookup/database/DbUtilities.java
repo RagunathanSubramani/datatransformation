@@ -13,12 +13,24 @@ public class DbUtilities {
 	static ApplicationContext lookupContext = new AnnotationConfigApplicationContext(LookupCfg.class);
 	static DB lookupDB = (DB) lookupContext.getBean("db");
 
+	static ApplicationContext inventoryContext = new AnnotationConfigApplicationContext(InventoryCfg.class);
+	static DB inventoryDB = (DB) inventoryContext.getBean("db");
+	static DB inventoryRODB = (DB) inventoryContext.getBean("dbRO");
+
 	public static DBCollection getLookupDBCollection(String collectionName) {
 		return lookupDB.getCollection(collectionName);
 	}
 	
 	public static DBCollection getUserDBCollection(String collectionName) {
 		return userDB.getCollection(collectionName);
+	}
+
+	public static DBCollection getInventoryDBCollection(String collectionName) {
+		return inventoryDB.getCollection(collectionName);
+	}
+
+	public static DBCollection getROInventoryDBCollection(String collectionName) {
+		return inventoryRODB.getCollection(collectionName);
 	}
 
 }
