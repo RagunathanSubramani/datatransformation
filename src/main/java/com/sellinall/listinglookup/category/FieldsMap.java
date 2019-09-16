@@ -455,8 +455,8 @@ public class FieldsMap {
 			String categoryID = categories.getString(i).split("##")[1].trim();
 			if (!mappedCategoryList.contains(categoryID)) {
 				BasicDBObject categoryObj = new BasicDBObject();
-				categoryObj.put("sourceCategory", categories.getString(i));
-				categoryObj.put("targetCategory", "");
+				categoryObj.put("sourceCategoryID", categoryID);
+				categoryObj.put("targetCategoryID", "");
 				unmappedCategory.add(categoryObj);
 			}
 		}
@@ -484,7 +484,7 @@ public class FieldsMap {
 		matchObj2.put(sourceChannel + ".nickNameID",
 				new BasicDBObject("$in", requestObj.getJSONArray("sourceNickNameIds")));
 		BasicDBObject groupObj = new BasicDBObject("_id", null);
-		groupObj.put("categories", new BasicDBObject("$addToSet", "$" + sourceChannel + ".categoryName"));
+		groupObj.put("categories", new BasicDBObject("$addToSet", "$" + sourceChannel + ".categoryID"));
 		AggregationOutput result = table.aggregate(new BasicDBObject("$match", matchObj),
 				new BasicDBObject("$unwind", "$" + sourceChannel), new BasicDBObject("$match", matchObj2),
 				new BasicDBObject("$group", groupObj));
@@ -493,12 +493,11 @@ public class FieldsMap {
 			return new JSONObject();
 		}
 		List<String> categories = (List<String>) ((BasicDBObject) docList.get(0)).get("categories");
-		for (String category : categories) {
-			String categoryID = category.split("##")[1].trim();
+		for (String categoryID : categories) {
 			if (!accountWiseMappedCategoryList.contains(categoryID)) {
 				BasicDBObject categoryObj = new BasicDBObject();
-				categoryObj.put("sourceCategory", category);
-				categoryObj.put("targetCategory", "");
+				categoryObj.put("sourceCategoryID", categoryID);
+				categoryObj.put("targetCategoryID", "");
 				unmappedCategory.add(categoryObj);
 			}
 		}
@@ -524,17 +523,22 @@ public class FieldsMap {
 		searchQuery.put("sourceCountryCode", requestObj.getString("sourceCountryCode"));
 		searchQuery.put("targetNicknameId", requestObj.getString("targetChannel"));
 		searchQuery.put("targetCountryCode", requestObj.getString("targetCountryCode"));
+		searchQuery.put("map.source.field", "categoryID");
 		BasicDBObject projection = new BasicDBObject();
-		projection.put("sourceCategoryText", 1);
-		projection.put("targetCategoryText", 1);
+		projection.put("_id", 0);
+		projection.put("map.$", 1);
 		List<DBObject> results = collection.find(searchQuery, projection).skip(pageSize * (pageNumber - 1))
 				.limit(pageSize).toArray();
 		for (DBObject resultObj : results) {
 			BasicDBObject categoryObj = new BasicDBObject();
-			String sourceCategory = ((String) resultObj.get("sourceCategoryText")).split("##")[1].trim();
-			categoryObj.put("sourceCategory", resultObj.get("sourceCategoryText"));
-			categoryObj.put("targetCategory", resultObj.get("targetCategoryText"));
-			mappedCategoryList.add(sourceCategory);
+			ArrayList<BasicDBObject> mapList = (ArrayList<BasicDBObject>) resultObj.get("map");
+			BasicDBObject mapObj = mapList.get(0);
+			ArrayList<BasicDBObject> sourceList = (ArrayList<BasicDBObject>) mapObj.get("source");
+			String sourceCategoryID = ((BasicDBObject) sourceList.get(0)).getString("value");
+			String targetCategoryID = ((BasicDBObject) mapObj.get("target")).getString("value");
+			categoryObj.put("sourceCategoryID", sourceCategoryID);
+			categoryObj.put("targetCategoryID", targetCategoryID);
+			mappedCategoryList.add(sourceCategoryID);
 			mappedCategory.add(categoryObj);
 		}
 		long count = collection.count(searchQuery);
