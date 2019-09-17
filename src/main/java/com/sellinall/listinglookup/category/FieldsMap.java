@@ -21,6 +21,7 @@ import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import com.sellinall.listinglookup.config.Config;
 import com.sellinall.listinglookup.database.DbUtilities;
+import com.sellinall.util.AuthConstant;
 import com.sellinall.util.HttpsURLConnectionUtil;
 
 public class FieldsMap {
@@ -472,27 +473,36 @@ public class FieldsMap {
 	}
 
 	private static JSONObject getAccountSpecificUnmappedCategory(JSONObject requestObj,
-			List<String> accountWiseMappedCategoryList) {
+			List<String> accountWiseMappedCategoryList) throws IOException, JSONException {
 		List<BasicDBObject> unmappedCategory = new ArrayList<BasicDBObject>();
 		int pageSize = requestObj.getInt("pageSize");
 		int pageNumber = requestObj.getInt("pageNumber");
-		DBCollection table = DbUtilities.getROInventoryDBCollection("inventory");
-		String sourceChannel = requestObj.getString("sourceChannel");
-		BasicDBObject matchObj = new BasicDBObject("accountNumber", requestObj.getString("accountNumber"));
-		matchObj.put(sourceChannel, new BasicDBObject("$exists", true));
-		BasicDBObject matchObj2 = new BasicDBObject();
-		matchObj2.put(sourceChannel + ".nickNameID",
-				new BasicDBObject("$in", requestObj.getJSONArray("sourceNickNameIds")));
-		BasicDBObject groupObj = new BasicDBObject("_id", null);
-		groupObj.put("categories", new BasicDBObject("$addToSet", "$" + sourceChannel + ".categoryID"));
-		AggregationOutput result = table.aggregate(new BasicDBObject("$match", matchObj),
-				new BasicDBObject("$unwind", "$" + sourceChannel), new BasicDBObject("$match", matchObj2),
-				new BasicDBObject("$group", groupObj));
-		ArrayList<DBObject> docList = (ArrayList<DBObject>) result.results();
-		if (docList.size() == 0) {
+		JSONArray nickNameIds = requestObj.getJSONArray("sourceNickNameIds");
+		Set<String> categories = new HashSet<String>();
+		Map<String, String> config = new HashMap<String, String>();
+		config.put(AuthConstant.RAGASIYAM_KEY, Config.getConfig().getRagasiyam());
+		config.put("accountNumber", requestObj.getString("accountNumber"));
+		config.put("Content-Type", "application/json");
+		for (int i = 0; i < nickNameIds.length(); i++) {
+			String url = Config.getConfig().getSiaInventoryUrl() + "/inventory/categories?nicknameID="
+					+ nickNameIds.getString(i);
+			org.codehaus.jettison.json.JSONObject response = HttpsURLConnectionUtil.doGet(url, config);
+			if (response.getInt("httpCode") != 200) {
+				continue;
+			}
+			JSONObject payload = new JSONObject(response.getString("payload"));
+			if (payload.has("data") && payload.getJSONArray("data").length() > 0) {
+				JSONArray data = payload.getJSONArray("data");
+				for (int j = 0; j < data.length(); j++) {
+					if(data.getString(j).contains("##")) {
+						categories.add(data.getString(j).split("##")[1].trim());
+					}
+				}
+			}
+		}
+		if (categories.size() == 0) {
 			return new JSONObject();
 		}
-		List<String> categories = (List<String>) ((BasicDBObject) docList.get(0)).get("categories");
 		for (String categoryID : categories) {
 			if (!accountWiseMappedCategoryList.contains(categoryID)) {
 				BasicDBObject categoryObj = new BasicDBObject();

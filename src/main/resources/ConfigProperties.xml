@@ -64,9 +64,6 @@
 		<property name="UserCollectionHostName" value="${UserCollectionHostName}" />
 		<property name="UserCollectionPort" value="${UserCollectionPort}" />
 		<property name="UserCollectionDBName" value="${UserCollectionDBName}" />
-		<property name="InventoryCollectionHostName" value="${InventoryCollectionHostName}" />
-		<property name="InventoryCollectionPort" value="${InventoryCollectionPort}" />
-		<property name="InventoryCollectionDBName" value="${InventoryCollectionDBName}" />
 		<property name="SIAAuthServerURL" value="${SIAAuthServerURL}" />
 
 		<!-- Admin -->
@@ -151,5 +148,6 @@
 		<property name="tokopediaIDDefaultNickNameId" value="${tokopediaIDDefaultNickNameId}" />
 
 		<property name="siaAdminUrl" value="${siaAdminUrl}" />
+		<property name="siaInventoryUrl" value="${siaInventoryUrl}" />
 	</bean>
 </beans>

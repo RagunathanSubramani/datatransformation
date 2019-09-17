@@ -21,9 +21,6 @@ public class Config {
 	private String UserCollectionHostName;
 	private String UserCollectionPort;
 	private String UserCollectionDBName;
-	private String InventoryCollectionHostName;
-	private String InventoryCollectionPort;
-	private String InventoryCollectionDBName;
 
 	private String SIAAuthServerURL;
 
@@ -116,6 +113,7 @@ public class Config {
 
 	private String rocketEcomAdaptorUrl;
 	private String siaAdminUrl;
+	private String siaInventoryUrl;
 
 	public String getRagasiyam() {
 		return Ragasiyam;
@@ -1037,36 +1035,20 @@ public class Config {
 		this.siaTokopediaUrl = siaTokopediaUrl;
 	}
 
-	public String getInventoryCollectionHostName() {
-		return InventoryCollectionHostName;
-	}
-
-	public void setInventoryCollectionHostName(String inventoryCollectionHostName) {
-		InventoryCollectionHostName = inventoryCollectionHostName;
-	}
-
-	public String getInventoryCollectionPort() {
-		return InventoryCollectionPort;
-	}
-
-	public void setInventoryCollectionPort(String inventoryCollectionPort) {
-		InventoryCollectionPort = inventoryCollectionPort;
-	}
-
-	public String getInventoryCollectionDBName() {
-		return InventoryCollectionDBName;
-	}
-
-	public void setInventoryCollectionDBName(String inventoryCollectionDBName) {
-		InventoryCollectionDBName = inventoryCollectionDBName;
-	}
-
 	public String getSiaAdminUrl() {
 		return siaAdminUrl;
 	}
 
 	public void setSiaAdminUrl(String siaAdminUrl) {
 		this.siaAdminUrl = siaAdminUrl;
+	}
+
+	public String getSiaInventoryUrl() {
+		return siaInventoryUrl;
+	}
+
+	public void setSiaInventoryUrl(String siaInventoryUrl) {
+		this.siaInventoryUrl = siaInventoryUrl;
 	}
 	
 }
