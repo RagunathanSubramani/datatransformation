@@ -21,6 +21,7 @@ public class Config {
 	private String UserCollectionHostName;
 	private String UserCollectionPort;
 	private String UserCollectionDBName;
+
 	private String SIAAuthServerURL;
 
 	private String shopcluesItemSpecificationUrl;
@@ -111,6 +112,8 @@ public class Config {
 	private String zaloraTHDefaultNickNameId;
 
 	private String rocketEcomAdaptorUrl;
+	private String siaAdminUrl;
+	private String siaInventoryUrl;
 
 	public String getRagasiyam() {
 		return Ragasiyam;
@@ -1030,6 +1033,22 @@ public class Config {
 
 	public void setSiaTokopediaUrl(String siaTokopediaUrl) {
 		this.siaTokopediaUrl = siaTokopediaUrl;
+	}
+
+	public String getSiaAdminUrl() {
+		return siaAdminUrl;
+	}
+
+	public void setSiaAdminUrl(String siaAdminUrl) {
+		this.siaAdminUrl = siaAdminUrl;
+	}
+
+	public String getSiaInventoryUrl() {
+		return siaInventoryUrl;
+	}
+
+	public void setSiaInventoryUrl(String siaInventoryUrl) {
+		this.siaInventoryUrl = siaInventoryUrl;
 	}
 	
 }
