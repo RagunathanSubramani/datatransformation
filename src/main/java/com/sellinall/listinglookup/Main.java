@@ -100,7 +100,7 @@ public class Main {
 									nickNameId);
 						case "magento":
 							accountNumber = request.headers("accountNumber");
-							nickNameId = request.queryParams("nickNameID");
+							nickNameId = request.queryParams("nickNameId");
 							return com.sellinall.listinglookup.magento.CategoryLookup.getCategorySpecifics(
 									request.params(":countryCode"), request.params(":categoryId"), accountNumber,
 									nickNameId);
