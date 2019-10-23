@@ -43,6 +43,7 @@ public class Config {
 	private String lazadaURL;
 	private String elevenStreetUrl;
 	private String jdURL;
+	private String magentoURL;
 
 	private String qoo10SGDefaultNickNameId;
 	private String qoo10SGDefaultAccount;
@@ -1049,6 +1050,14 @@ public class Config {
 
 	public void setSiaInventoryUrl(String siaInventoryUrl) {
 		this.siaInventoryUrl = siaInventoryUrl;
+	}
+
+	public String getMagentoURL() {
+		return magentoURL;
+	}
+
+	public void setMagentoURL(String magentoURL) {
+		this.magentoURL = magentoURL;
 	}
 	
 }

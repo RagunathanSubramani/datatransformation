@@ -98,6 +98,12 @@ public class Main {
 							return com.sellinall.listinglookup.tokopedia.CategoryLookup.getCategorySpecifics(
 									request.params(":countryCode"), request.params(":categoryId"), accountNumber,
 									nickNameId);
+						case "magento":
+							accountNumber = request.headers("accountNumber");
+							nickNameId = request.queryParams("nickNameId");
+							return com.sellinall.listinglookup.magento.CategoryLookup.getCategorySpecifics(
+									request.params(":countryCode"), request.params(":categoryId"), accountNumber,
+									nickNameId);
 						default:
 							return com.sellinall.listinglookup.CategoryLookup.getCategorySpecifics(
 								request.params(":countryCode"), request.params(":categoryId"), channelName);

@@ -75,6 +75,7 @@
 		<property name="snapdealAuthToken" value="${snapdealAuthToken}" />
 		<property name="lazadaURL" value="${lazadaURL}" />
 		<property name="jdURL" value="${jdURL}" />
+		<property name="magentoURL" value="${magentoURL}" />
 		
 		<!-- lazada -->
 		<property name="lazadaSGDefaultAccount" value="${lazadaSGDefaultAccount}" />
