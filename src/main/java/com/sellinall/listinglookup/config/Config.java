@@ -96,6 +96,8 @@ public class Config {
 	private String bukalapakIDDefaultAccount;
 	private String bukalapakIDDefaultNickNameId;
 
+	private String siaBlibliUrl;
+
 	private String siaTokopediaUrl;
 	private String tokopediaIDDefaultAccount;
 	private String tokopediaIDDefaultNickNameId;
@@ -1058,6 +1060,14 @@ public class Config {
 
 	public void setMagentoURL(String magentoURL) {
 		this.magentoURL = magentoURL;
+	}
+
+	public String getSiaBlibliUrl() {
+		return siaBlibliUrl;
+	}
+
+	public void setSiaBlibliUrl(String siaBlibliUrl) {
+		this.siaBlibliUrl = siaBlibliUrl;
 	}
 	
 }

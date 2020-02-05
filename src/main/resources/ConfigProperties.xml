@@ -148,6 +148,9 @@
 		<property name="tokopediaIDDefaultAccount" value="${tokopediaIDDefaultAccount}" />
 		<property name="tokopediaIDDefaultNickNameId" value="${tokopediaIDDefaultNickNameId}" />
 
+		<!-- blibli  -->
+		<property name="siaBlibliUrl" value="${siaBlibliUrl}" />
+
 		<property name="siaAdminUrl" value="${siaAdminUrl}" />
 		<property name="siaInventoryUrl" value="${siaInventoryUrl}" />
 	</bean>

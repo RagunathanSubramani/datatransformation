@@ -104,6 +104,12 @@ public class Main {
 							return com.sellinall.listinglookup.magento.CategoryLookup.getCategorySpecifics(
 									request.params(":countryCode"), request.params(":categoryId"), accountNumber,
 									nickNameId);
+						case "blibli":
+							accountNumber = request.headers("accountNumber");
+							nickNameId = request.queryParams("nickNameId");
+							return com.sellinall.listinglookup.blibli.CategoryLookup.getCategorySpecifics(
+									request.params(":countryCode"), request.params(":categoryId"), accountNumber,
+									nickNameId);
 						default:
 							return com.sellinall.listinglookup.CategoryLookup.getCategorySpecifics(
 								request.params(":countryCode"), request.params(":categoryId"), channelName);

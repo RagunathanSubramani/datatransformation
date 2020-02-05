@@ -66,8 +66,9 @@ public class CategoryLookup {
 		if (lookupData != null) {
 			long expiryTime = lookupData.getLong("expiryTime");
 			long currentTime = (System.currentTimeMillis() / 1000L);
-			BasicDBObject attributesData = new BasicDBObject();
+			BasicDBObject attributesData = null;
 			if (currentTime < expiryTime) {
+				attributesData = new BasicDBObject();
 				attributesData.put("attributes", lookupData.get("attributes"));
 			}
 			return attributesData;
