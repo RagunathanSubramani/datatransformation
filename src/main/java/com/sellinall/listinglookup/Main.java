@@ -359,6 +359,10 @@ public class Main {
 				newBrand = com.sellinall.listinglookup.qoo10.BuildBrand.buildBrand(accountNumber,nickNameId);
 				break;
 
+			case "blibli":
+				accountNumber = Config.getConfig().getBlibliDefaultAccount();
+				nickNameId = Config.getConfig().getBlibliDefaultNickNameId();
+				newBrand = com.sellinall.listinglookup.blibli.BuildBrand.buildBrand(accountNumber,nickNameId);
 			default:
 				break;
 			}
