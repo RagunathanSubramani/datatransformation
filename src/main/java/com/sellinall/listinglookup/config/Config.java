@@ -97,6 +97,8 @@ public class Config {
 	private String bukalapakIDDefaultNickNameId;
 
 	private String siaBlibliUrl;
+	private String blibliDefaultAccount;
+	private String blibliDefaultNickNameId;
 
 	private String siaTokopediaUrl;
 	private String tokopediaIDDefaultAccount;
@@ -1068,6 +1070,22 @@ public class Config {
 
 	public void setSiaBlibliUrl(String siaBlibliUrl) {
 		this.siaBlibliUrl = siaBlibliUrl;
+	}
+
+	public String getBlibliDefaultAccount() {
+		return blibliDefaultAccount;
+	}
+
+	public void setBlibliDefaultAccount(String blibliIDDefaultAccount) {
+		this.blibliDefaultAccount = blibliIDDefaultAccount;
+	}
+
+	public String getBlibliDefaultNickNameId() {
+		return blibliDefaultNickNameId;
+	}
+
+	public void setBlibliDefaultNickNameId(String blibliIDDefaultNickNameId) {
+		this.blibliDefaultNickNameId = blibliIDDefaultNickNameId;
 	}
 	
 }

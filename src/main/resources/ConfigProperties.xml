@@ -150,6 +150,8 @@
 
 		<!-- blibli  -->
 		<property name="siaBlibliUrl" value="${siaBlibliUrl}" />
+		<property name="blibliDefaultAccount" value="${blibliDefaultAccount}" />
+		<property name="blibliDefaultNickNameId" value="${blibliDefaultNickNameId}" />
 
 		<property name="siaAdminUrl" value="${siaAdminUrl}" />
 		<property name="siaInventoryUrl" value="${siaInventoryUrl}" />
