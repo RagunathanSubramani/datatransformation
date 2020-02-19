@@ -274,7 +274,10 @@ public class FieldsMap {
 		if (sourceFromRequest.has("itemSpecifics")) {
 			JSONArray itemSpecifics = sourceFromRequest.getJSONArray("itemSpecifics");
 			for (int i = 0; i < itemSpecifics.length(); i++) {
-				if (itemSpecifics.getJSONObject(i).getString("title").equals(itemSpecificTitle)) {
+				String title = itemSpecifics.getJSONObject(i).getString("title");
+				if (title.equals(itemSpecificTitle)) {
+					return itemSpecifics.getJSONObject(i).getJSONArray("names");
+				} else if (title.replace("normal.", "").replace("sku.", "").equals(itemSpecificTitle)) {
 					return itemSpecifics.getJSONObject(i).getJSONArray("names");
 				}
 			}
