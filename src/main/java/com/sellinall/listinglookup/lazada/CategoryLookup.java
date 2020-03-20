@@ -122,7 +122,7 @@ public class CategoryLookup {
 				inputType = filterFields.getString("inputType");
 			}
 			if (attributeType.equals("sku") && (inputType.equals("singleSelect") || inputType.equals("multiSelect")
-					|| inputType.equals("multiEnumInput"))) {
+					|| inputType.equals("multiEnumInput") || inputType.equals("enumInput"))) {
 				variations.put(filterFields.get("name"));
 			}
 			if (filterFields.get("name").equals("warranty_type")) {
