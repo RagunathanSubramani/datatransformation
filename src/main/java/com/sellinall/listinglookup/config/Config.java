@@ -96,6 +96,10 @@ public class Config {
 	private String bukalapakIDDefaultAccount;
 	private String bukalapakIDDefaultNickNameId;
 
+	private String siaBlibliUrl;
+	private String blibliDefaultAccount;
+	private String blibliDefaultNickNameId;
+
 	private String siaTokopediaUrl;
 	private String tokopediaIDDefaultAccount;
 	private String tokopediaIDDefaultNickNameId;
@@ -1058,6 +1062,30 @@ public class Config {
 
 	public void setMagentoURL(String magentoURL) {
 		this.magentoURL = magentoURL;
+	}
+
+	public String getSiaBlibliUrl() {
+		return siaBlibliUrl;
+	}
+
+	public void setSiaBlibliUrl(String siaBlibliUrl) {
+		this.siaBlibliUrl = siaBlibliUrl;
+	}
+
+	public String getBlibliDefaultAccount() {
+		return blibliDefaultAccount;
+	}
+
+	public void setBlibliDefaultAccount(String blibliIDDefaultAccount) {
+		this.blibliDefaultAccount = blibliIDDefaultAccount;
+	}
+
+	public String getBlibliDefaultNickNameId() {
+		return blibliDefaultNickNameId;
+	}
+
+	public void setBlibliDefaultNickNameId(String blibliIDDefaultNickNameId) {
+		this.blibliDefaultNickNameId = blibliIDDefaultNickNameId;
 	}
 	
 }

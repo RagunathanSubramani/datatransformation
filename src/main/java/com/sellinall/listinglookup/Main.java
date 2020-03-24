@@ -104,6 +104,12 @@ public class Main {
 							return com.sellinall.listinglookup.magento.CategoryLookup.getCategorySpecifics(
 									request.params(":countryCode"), request.params(":categoryId"), accountNumber,
 									nickNameId);
+						case "blibli":
+							accountNumber = request.headers("accountNumber");
+							nickNameId = request.queryParams("nickNameId");
+							return com.sellinall.listinglookup.blibli.CategoryLookup.getCategorySpecifics(
+									request.params(":countryCode"), request.params(":categoryId"), accountNumber,
+									nickNameId);
 						default:
 							return com.sellinall.listinglookup.CategoryLookup.getCategorySpecifics(
 								request.params(":countryCode"), request.params(":categoryId"), channelName);
@@ -353,6 +359,10 @@ public class Main {
 				newBrand = com.sellinall.listinglookup.qoo10.BuildBrand.buildBrand(accountNumber,nickNameId);
 				break;
 
+			case "blibli":
+				accountNumber = Config.getConfig().getBlibliDefaultAccount();
+				nickNameId = Config.getConfig().getBlibliDefaultNickNameId();
+				newBrand = com.sellinall.listinglookup.blibli.BuildBrand.buildBrand(accountNumber,nickNameId);
 			default:
 				break;
 			}

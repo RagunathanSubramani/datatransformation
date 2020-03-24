@@ -51,12 +51,12 @@ public class CategoryLookup {
 				data = response.getJSONArray("data");
 			}
 		}
+		JSONObject itemSpecifics = new JSONObject();
+		itemSpecifics.put("data", data);
 		if (data.length() > 0) {
-			JSONObject itemSpecifics = new JSONObject();
-			itemSpecifics.put("data", data);
 			return persistToDB(countryCode, categoryId, itemSpecifics);
 		} else {
-			return new JSONObject().put("data", data);
+			return new JSONObject().put("itemSpecifics", itemSpecifics);
 		}
 	}
 
