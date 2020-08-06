@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
@@ -47,7 +48,7 @@ public class Main {
 
 		Config.context = new ClassPathXmlApplicationContext("ConfigProperties.xml");		
 		Config.getConfig().setRagasiyam(System.getenv(AuthConstant.RAGASIYAM_KEY));
-
+		BasicConfigurator.configure();
 		get("/services/:channelName/category/:countryCode/:categoryId",
 				(request, response) -> {
 					try{
