@@ -14,9 +14,8 @@ public class Config {
 
 	private String DbUserName;
 	private String DbPassword;
-	private String LookupCollectionHostName;
-	private String LookupCollectionPort;
-	private String LookupCollectionDBName;
+	private String lookupDBURI;
+	private String lookupDBName;
 	
 	private String UserCollectionHostName;
 	private String UserCollectionPort;
@@ -288,28 +287,20 @@ public class Config {
 		DbPassword = dbPassword;
 	}
 
-	public String getLookupCollectionHostName() {
-		return LookupCollectionHostName;
+	public String getLookupDBURI() {
+		return lookupDBURI;
 	}
 
-	public void setLookupCollectionHostName(String userCollectionHostName) {
-		LookupCollectionHostName = userCollectionHostName;
+	public void setLookupDBURI(String lookupDBURI) {
+		this.lookupDBURI = lookupDBURI;
 	}
 
-	public String getLookupCollectionPort() {
-		return LookupCollectionPort;
+	public String getLookupDBName() {
+		return lookupDBName;
 	}
 
-	public void setLookupCollectionPort(String userCollectionPort) {
-		LookupCollectionPort = userCollectionPort;
-	}
-
-	public String getLookupCollectionDBName() {
-		return LookupCollectionDBName;
-	}
-
-	public void setLookupCollectionDBName(String userCollectionDBName) {
-		LookupCollectionDBName = userCollectionDBName;
+	public void setLookupDBName(String lookupDBName) {
+		this.lookupDBName = lookupDBName;
 	}
 
 	public String getSIAAuthServerURL() {

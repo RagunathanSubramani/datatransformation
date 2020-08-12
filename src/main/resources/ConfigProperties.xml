@@ -57,9 +57,8 @@
 		<!-- DB Values -->
 		<property name="DbUserName" value="${DbUserName}" />
 		<property name="DbPassword" value="${DbPassword}" />
-		<property name="LookupCollectionHostName" value="${LookupCollectionHostName}" />
-		<property name="LookupCollectionPort" value="${LookupCollectionPort}" />
-		<property name="LookupCollectionDBName" value="${LookupCollectionDBName}" />
+		<property name="lookupDBURI" value="${lookupDBURI}" />
+		<property name="lookupDBName" value="${lookupDBName}" />
 		
 		<property name="UserCollectionHostName" value="${UserCollectionHostName}" />
 		<property name="UserCollectionPort" value="${UserCollectionPort}" />
