@@ -60,9 +60,8 @@
 		<property name="lookupDBURI" value="${lookupDBURI}" />
 		<property name="lookupDBName" value="${lookupDBName}" />
 		
-		<property name="UserCollectionHostName" value="${UserCollectionHostName}" />
-		<property name="UserCollectionPort" value="${UserCollectionPort}" />
-		<property name="UserCollectionDBName" value="${UserCollectionDBName}" />
+		<property name="userCollectionDBURI" value="${userCollectionDBURI}" />
+		<property name="userCollectionDBName" value="${userCollectionDBName}" />
 		<property name="SIAAuthServerURL" value="${SIAAuthServerURL}" />
 
 		<!-- Admin -->
