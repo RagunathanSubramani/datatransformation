@@ -17,9 +17,8 @@ public class Config {
 	private String lookupDBURI;
 	private String lookupDBName;
 	
-	private String UserCollectionHostName;
-	private String UserCollectionPort;
-	private String UserCollectionDBName;
+	private String userCollectionDBURI;
+	private String userCollectionDBName;
 
 	private String SIAAuthServerURL;
 
@@ -335,30 +334,6 @@ public class Config {
 		this.snapdealAuthToken = snapdealAuthToken;
 	}
 
-	public String getUserCollectionHostName() {
-		return UserCollectionHostName;
-	}
-
-	public void setUserCollectionHostName(String userCollectionHostName) {
-		UserCollectionHostName = userCollectionHostName;
-	}
-
-	public String getUserCollectionPort() {
-		return UserCollectionPort;
-	}
-
-	public void setUserCollectionPort(String userCollectionPort) {
-		UserCollectionPort = userCollectionPort;
-	}
-
-	public String getUserCollectionDBName() {
-		return UserCollectionDBName;
-	}
-
-	public void setUserCollectionDBName(String userCollectionDBName) {
-		UserCollectionDBName = userCollectionDBName;
-	}
-	
 	public String getLazadaSGDefaultAccount() {
 		return lazadaSGDefaultAccount;
 	}
@@ -1077,6 +1052,22 @@ public class Config {
 
 	public void setBlibliDefaultNickNameId(String blibliIDDefaultNickNameId) {
 		this.blibliDefaultNickNameId = blibliIDDefaultNickNameId;
+	}
+
+	public String getUserCollectionDBURI() {
+		return userCollectionDBURI;
+	}
+
+	public void setUserCollectionDBURI(String userCollectionDBURI) {
+		this.userCollectionDBURI = userCollectionDBURI;
+	}
+
+	public String getUserCollectionDBName() {
+		return userCollectionDBName;
+	}
+
+	public void setUserCollectionDBName(String userCollectionDBName) {
+		this.userCollectionDBName = userCollectionDBName;
 	}
 	
 }

@@ -168,6 +168,7 @@ public class Main {
 				case "elevenStreet":
 				case "shopee":
 				case "etsy":
+				case "zalora":
 				case "shopify":
 					return CategoryNameLookup.getCategoryNameFromSIA(request.params(":countryCode"),
 							request.params(":categoryId"), request.params(":channelName"),
