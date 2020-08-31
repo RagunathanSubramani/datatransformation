@@ -293,9 +293,22 @@ public class FieldsMap {
 			if (sourceFromRequest.has(fields[0])) {
 				return sourceFromRequest.get(fields[0]);
 			} else {
-				return null;
+				// source name contain like package_weight but destination value
+				// like packageWeight
+				String keyValue = fields[0].replace("_", "").toLowerCase();
+				return compareWithoutCaseSensitive(keyValue, sourceFromRequest);
 			}
 		}
+	}
+
+	private static Object compareWithoutCaseSensitive(String field, JSONObject sourceFromRequest) {
+		for (String key : sourceFromRequest.keySet()) {
+			if (key.toLowerCase().equals(field.toLowerCase())) {
+				return sourceFromRequest.get(key);
+			}
+		}
+		return null;
+
 	}
 
 	public static BasicDBObject createMap(String request) {
