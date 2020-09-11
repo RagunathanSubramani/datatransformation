@@ -109,6 +109,7 @@ public class CategoryLookup {
 		JSONArray variations = new JSONArray();
 		String attributeType = "";
 		String inputType = "";
+		int isSaleProp = 0;
 		for (int i = 0; i < lazadaAttributes.length(); i++) {
 			JSONObject filterFields = lazadaAttributes.getJSONObject(i);
 			if (filterFields.has("attribute_type")) {
@@ -121,8 +122,11 @@ public class CategoryLookup {
 			} else if (filterFields.has("inputType")) {
 				inputType = filterFields.getString("inputType");
 			}
+			if(filterFields.has("is_sale_prop")) {
+				isSaleProp = filterFields.getInt("is_sale_prop");
+			}
 			if (attributeType.equals("sku") && (inputType.equals("singleSelect") || inputType.equals("multiSelect")
-					|| inputType.equals("multiEnumInput") || inputType.equals("enumInput"))) {
+					|| inputType.equals("multiEnumInput") || inputType.equals("enumInput") || isSaleProp == 1)) {
 				variations.put(filterFields.get("name"));
 			}
 			if (filterFields.get("name").equals("warranty_type")) {
