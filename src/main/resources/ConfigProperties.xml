@@ -55,8 +55,6 @@
 	<property name="shopeeUrl" value="${shopeeUrl}" />
 
 		<!-- DB Values -->
-		<property name="DbUserName" value="${DbUserName}" />
-		<property name="DbPassword" value="${DbPassword}" />
 		<property name="lookupDBURI" value="${lookupDBURI}" />
 		<property name="lookupDBName" value="${lookupDBName}" />
 		
