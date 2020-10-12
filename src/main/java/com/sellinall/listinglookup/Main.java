@@ -170,6 +170,7 @@ public class Main {
 				case "etsy":
 				case "zalora":
 				case "shopify":
+				case "tokopedia":	
 					return CategoryNameLookup.getCategoryNameFromSIA(request.params(":countryCode"),
 							request.params(":categoryId"), request.params(":channelName"),
 							request.queryParams("nicknameID"), accountNumber);

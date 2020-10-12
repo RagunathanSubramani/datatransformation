@@ -12,8 +12,6 @@ public class Config {
 	private String EbayOpenApiURL;
 	private String EbayToken;
 
-	private String DbUserName;
-	private String DbPassword;
 	private String lookupDBURI;
 	private String lookupDBName;
 	
@@ -268,22 +266,6 @@ public class Config {
 
 	public void setEtsyUrl(String etsyUrl) {
 		this.etsyUrl = etsyUrl;
-	}
-
-	public String getDbUserName() {
-		return DbUserName;
-	}
-
-	public void setDbUserName(String dbUserName) {
-		DbUserName = dbUserName;
-	}
-
-	public String getDbPassword() {
-		return DbPassword;
-	}
-
-	public void setDbPassword(String dbPassword) {
-		DbPassword = dbPassword;
 	}
 
 	public String getLookupDBURI() {
