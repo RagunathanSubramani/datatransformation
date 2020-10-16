@@ -3,8 +3,10 @@ package com.sellinall.listinglookup.qoo10;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.XML;
+import org.apache.log4j.Logger;
 
 public class BuildCategory {
+	static Logger log = Logger.getLogger(BuildCategory.class.getName());
 
 	public static String buildNewCategiryList(String countryCode) {
 		String params = "lang_cd=ENG";
@@ -20,6 +22,10 @@ public class BuildCategory {
 		org.json.JSONObject serviceResponseJSON = XML.toJSONObject(out);
 		org.json.JSONObject serviceResponse = serviceResponseJSON
 				.getJSONObject("StdCustomResultOfListOfCommonCategoryInfo");
+		if (!serviceResponse.has("ResultObject")) {
+			log.error("ResultObject not found for countryCode : " + countryCode + " and response : " + serviceResponse);
+			return "";
+		} 
 		org.json.JSONObject serviceResponse1 = serviceResponse.getJSONObject("ResultObject");
 		return parseAndPrintFile((JSONArray) serviceResponse1.get("CommonCategoryInfo"));
 	}
