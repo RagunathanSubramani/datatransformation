@@ -16,18 +16,15 @@ public class BuildCategory {
 		String userId = "SELLinALLAPI";
 		String password = "";
 		String method = "POST";
-		String action = "GMKT.INC.Front.OpenApiService/CommonInfoAPIService.api/GetCatagoryListAll";
+		String action = "GMKT.INC.Front.QAPIService/Giosis.qapi/CommonInfoLookup.GetCatagoryListAll";
 		String out = Qoo10ConnectionUtil.getQoo10ApiResponse(params, ScApiHost, action, apiKey, userId, password,
 				method);
-		org.json.JSONObject serviceResponseJSON = XML.toJSONObject(out);
-		org.json.JSONObject serviceResponse = serviceResponseJSON
-				.getJSONObject("StdCustomResultOfListOfCommonCategoryInfo");
+		JSONObject serviceResponse = new JSONObject(out);
 		if (!serviceResponse.has("ResultObject")) {
 			log.error("ResultObject not found for countryCode : " + countryCode + " and response : " + serviceResponse);
 			return "";
 		} 
-		org.json.JSONObject serviceResponse1 = serviceResponse.getJSONObject("ResultObject");
-		return parseAndPrintFile((JSONArray) serviceResponse1.get("CommonCategoryInfo"));
+		return parseAndPrintFile((JSONArray) serviceResponse.get("ResultObject"));
 	}
 
 	private static String parseAndPrintFile(JSONArray jsonArray) {
